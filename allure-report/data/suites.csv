@@ -1,4 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","6817","should be logged in","firefox","Tue Jan 28 17:41:40 CET 2025","passed","Tue Jan 28 17:41:47 CET 2025","Login","","",""
-"","7334","should be logged in","webkit","Tue Jan 28 17:41:40 CET 2025","passed","Tue Jan 28 17:41:47 CET 2025","Login","","",""
-"","6863","should be logged in","chromium","Tue Jan 28 17:41:40 CET 2025","passed","Tue Jan 28 17:41:47 CET 2025","Login","","",""
