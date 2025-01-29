@@ -26,6 +26,9 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run tests
+        env:
+            USER_EMAIL: ${{ secrets.USER_EMAIL }}
+            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
         run: npx playwright test
 
       - name: Generate Allure Report
@@ -37,7 +40,7 @@ jobs:
         uses: actions/configure-pages@v4
         with:
           enablement: true
-          
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
