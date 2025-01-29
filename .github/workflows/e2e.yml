@@ -11,6 +11,9 @@ permissions:
 jobs:
   test-e2e:
     runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          shards: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,7 +32,7 @@ jobs:
         env:
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
-        run: npx playwright test
+        run: npx playwright test --shard=${{ matrix.shards }}/${{ strategy.job-total }}
 
       - name: Upload test results
         if: always()
