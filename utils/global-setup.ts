@@ -4,6 +4,7 @@ import path from 'path';
 
 async function globalSetup(config: FullConfig) {
   const authFile = path.join(__dirname, '../auth/loggedInState.json');
+  const unAuthFile = path.join(__dirname, '../auth/notLoggedInState.json');
 
   if (!fs.existsSync(path.dirname(authFile))) {
     fs.mkdirSync(path.dirname(authFile), { recursive: true });
@@ -14,6 +15,7 @@ async function globalSetup(config: FullConfig) {
     const page = await browser.newPage();
 
     await page.goto('https://idv-suite.identity-platform.dev/');
+    await page.context().storageState({ path: unAuthFile });
 
     const emailField = page.getByRole('textbox', { name: 'Email address' });
     await emailField.waitFor({ state: 'visible' });
