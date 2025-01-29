@@ -5,16 +5,16 @@
   "scripts": {
     "ui": "playwright test --ui",
     "test": "playwright test",
-    "api:test": "DEBUG=pw:api npx playwright test upload.spec.ts:75",
+    "api:test": "DEBUG=pw:api npx playwright test login.spec.ts",
     "watch:mode": "PWTEST_WATCH=1 npx playwright test",
-    "specific:test:webkit": "npx playwright test --project=webkit upload.spec.ts:104",
-    "open:inspector": "PWDEBUG=1 npx playwright test account.spec.ts",
+    "open:inspector": "PWDEBUG=1 npx playwright test login.spec.ts",
+    "specific:test:webkit": "npx playwright test --project=webkit login.spec.ts",
     "lint:tests": "eslint tests/**.ts --fix",
     "define:workers": "npx playwright test tests --workers 5",
     "open:allure": "npx allure generate allure-results --clean && npx allure open allure-report"
   },
   "keywords": [],
-  "author": "",
+  "author": "Marcelo Costa",
   "license": "ISC",
   "description": "",
   "devDependencies": {
