@@ -38,7 +38,12 @@ export default defineConfig({
       {
         detail: true,
         outputFolder: 'test-results',
-        suiteTitle: false,
+        suiteTitle: true,
+        attachments: true,
+        labels: true,
+        links: true,
+        video: true,
+        screenshots: true,
       },
     ],
     ['list'],
@@ -50,6 +55,8 @@ export default defineConfig({
     baseURL: 'https://idv-suite.identity-platform.dev/',
     trace: 'on',
     storageState: './auth/loggedInState.json',
+    video: 'on',
+    screenshot: 'on',
   },
 
   /* Configure projects for major browsers */

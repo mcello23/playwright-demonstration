@@ -31,6 +31,15 @@ jobs:
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
         run: npx playwright test
 
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-results
+          path: |
+            test-results
+          retention-days: 30
+
       - name: Generate Allure Report
         run: |
           npm install -g allure-commandline
