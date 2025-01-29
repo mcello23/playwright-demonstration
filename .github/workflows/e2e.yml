@@ -11,12 +11,9 @@ permissions:
 jobs:
   test-e2e:
     runs-on: ubuntu-latest
-    strategy:
-        matrix:
-          shards: [1, 2, 3]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4.2.0
         with:
           node-version: '20'
 
@@ -32,11 +29,11 @@ jobs:
         env:
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
-        run: npx playwright test --shard=${{ matrix.shards }}/${{ strategy.job-total }}
+        run: npx playwright test
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: playwright-results
           path: |
@@ -49,7 +46,7 @@ jobs:
           allure generate allure-results --clean -o allure-report
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5.0.0
         with:
           enablement: true
 
