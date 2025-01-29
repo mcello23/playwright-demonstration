@@ -6,7 +6,6 @@ import playwright from 'eslint-plugin-playwright';
 interface ESLintRules extends Linter.RulesRecord {
   'playwright/no-wait-for-timeout': Linter.RuleEntry;
   'playwright/prefer-web-first-assertions': Linter.RuleEntry;
-  'playwright/quotes': ['error' | 'warn' | 'off', 'single' | 'double'];
   quotes: [
     'error' | 'warn' | 'off',
     'single' | 'double',
@@ -50,7 +49,6 @@ const config: ESLintConfig[] = [
       'playwright/no-wait-for-timeout': 'warn',
       'playwright/prefer-web-first-assertions': 'warn',
       quotes: ['error', 'single'],
-      'playwright/quotes': ['error', 'single'],
     },
   },
   {
