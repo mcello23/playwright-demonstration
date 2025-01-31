@@ -1,8 +1,8 @@
-import { chromium, expect, FullConfig } from '@playwright/test';
+import { chromium, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup() {
   const authFile = path.join(__dirname, '../auth/loggedInState.json');
   const unAuthFile = path.join(__dirname, '../auth/notLoggedInState.json');
 
@@ -14,7 +14,7 @@ async function globalSetup(config: FullConfig) {
     const browser = await chromium.launch();
     const page = await browser.newPage();
 
-    await page.goto('https://idv-suite.identity-platform.dev/');
+    await page.goto('https://idv-suite.identity-platform.dev/en');
     await page.context().storageState({ path: unAuthFile });
 
     const emailField = page.getByRole('textbox', { name: 'Email address' });

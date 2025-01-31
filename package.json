@@ -10,7 +10,7 @@
     "open:inspector": "PWDEBUG=1 npx playwright test login.spec.ts",
     "specific:test:webkit": "npx playwright test --project=webkit login.spec.ts",
     "lint:tests": "eslint tests/**.ts --fix",
-    "define:workers": "npx playwright test tests --workers 5",
+    "define:workers": "npx playwright test tests --workers 1",
     "open:allure": "npx allure generate allure-results --clean && npx allure open allure-report"
   },
   "keywords": [],
