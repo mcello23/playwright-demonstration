@@ -6,14 +6,33 @@ const menuItems = {
   pt: { lang: 'pt' },
 };
 
-for (const [lang, data] of Object.entries(menuItems)) {
-  test(`should execute a visual test for ${lang}`, async ({ page }) => {
-    await page.goto(`/${data.lang}`);
-    await expect(page).toHaveTitle(/IDV Suite/);
+test.describe('Visual Tests', () => {
+  test.describe.configure({ mode: 'parallel' });
 
-    await expect(page).toHaveScreenshot(`${lang}-menu.png`, {
-      timeout: 15000,
-      maxDiffPixelRatio: 0.2,
-    });
-  });
-}
+  for (const [lang, data] of Object.entries(menuItems)) {
+    if (process.env.CI) {
+      // eslint-disable-next-line
+      test.skip(`should execute a visual test for ${lang}`, async ({
+        page,
+      }) => {
+        await page.goto(`/${data.lang}`);
+        await expect(page).toHaveTitle(/IDV Suite/);
+
+        await expect(page).toHaveScreenshot(`${lang}-menu.png`, {
+          timeout: 15000,
+          maxDiffPixelRatio: 0.2,
+        });
+      });
+    } else {
+      test(`should execute a visual test for ${lang}`, async ({ page }) => {
+        await page.goto(`/${data.lang}`);
+        await expect(page).toHaveTitle(/IDV Suite/);
+
+        await expect(page).toHaveScreenshot(`${lang}-menu.png`, {
+          timeout: 15000,
+          maxDiffPixelRatio: 0.2,
+        });
+      });
+    }
+  }
+});
