@@ -34,20 +34,23 @@ jobs:
 
       - name: Install Playwright
         run: npx playwright install --with-deps
-
+  
+      - name: Update snapshots
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: npx playwright test --update-snapshots
+  
       - name: Run tests
         env:
-            USER_EMAIL: ${{ secrets.USER_EMAIL }}
-            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+          USER_EMAIL: ${{ secrets.USER_EMAIL }}
+          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
         run: npx playwright test
-
-      - name: Upload test results
+  
+      - name: Upload snapshots
         if: always()
         uses: actions/upload-artifact@v4.6.0
         with:
-          name: playwright-results
-          path: |
-            test-results
+          name: snapshots
+          path: tests/visual-tests.spec.ts-snapshots
           retention-days: 30
 
       - name: Generate Allure Report

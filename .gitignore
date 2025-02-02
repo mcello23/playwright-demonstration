@@ -6,4 +6,3 @@ playwright-report/
 allure-results
 allure-report
 .DS_Store
-tests/visual-tests.spec.ts-snapshots

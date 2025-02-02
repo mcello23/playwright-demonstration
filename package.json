@@ -11,7 +11,9 @@
     "specific:test:webkit": "npx playwright test --project=webkit login.spec.ts",
     "lint:tests": "eslint tests/**.ts --fix",
     "define:workers": "npx playwright test tests --workers 1",
-    "open:allure": "npx allure generate allure-results --clean && npx allure open allure-report"
+    "open:allure": "npx allure generate allure-results --clean && npx allure open allure-report",
+    "test:update-snapshots": "playwright test --update-snapshots",
+    "test:visual": "playwright test visual-tests.spec.ts"
   },
   "keywords": [],
   "author": "Marcelo Costa",
