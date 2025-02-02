@@ -65,7 +65,9 @@ test.describe('Login', () => {
   });
 
   for (const [lang, data] of Object.entries(menuItems)) {
-    test(`should validate menu items in ${lang}`, async ({ page }) => {
+    test(`should validate menu items in ${lang} (parametrized test)`, async ({
+      page,
+    }) => {
       // Arrange
       await page.goto(`/${data.lang}`);
       await expect(page).toHaveTitle(/IDV Suite/);
