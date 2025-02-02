@@ -35,11 +35,14 @@ jobs:
 
       - name: Install Playwright
         run: npx playwright install --with-deps
-
+  
       - name: Compile TypeScript
         run: npm run build
 
       - name: Run global setup
+        env:
+            USER_EMAIL: ${{ secrets.USER_EMAIL }}
+            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
         run: node dist/utils/global-setup.js
 
       - name: Run tests
