@@ -12,13 +12,7 @@ jobs:
   test-e2e:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.2.0
-        with:
-          node-version: 20.17.0
+      - uses: actions/checkout@v4.2.2
 
       - name: Cache Node.js modules
         uses: actions/cache@v4.2.0
@@ -28,6 +22,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.2.0
+        with:
+          node-version: '20'
+
       - name: Install dependencies
         run: |
           npm install -g npm@latest
@@ -36,15 +35,11 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps
 
-      - name: Run global setup
-        run: npx playwright global-setup
-
       - name: Run tests
         env:
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
         run: npx playwright test
-        continue-on-error: true
 
       - name: Upload test results
         if: always()

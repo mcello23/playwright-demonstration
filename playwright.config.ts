@@ -26,7 +26,6 @@ export default defineConfig({
         screenshots: true,
       },
     ],
-    ['html'],
     ['list'],
   ],
   use: {
