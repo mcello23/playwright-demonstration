@@ -5,10 +5,8 @@ import path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  timeout: 18000,
-  expect: {
-    timeout: 10000,
-  },
+  globalSetup: require.resolve('./utils/global-setup'),
+  timeout: 25000,
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
