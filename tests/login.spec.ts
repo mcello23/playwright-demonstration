@@ -43,7 +43,7 @@ test.describe('Login', () => {
     await expect(page).toHaveTitle(/IDV Suite/);
   });
 
-  test('should validate elements in dashboard (with texts variables)', async ({
+  test('should validate elements in dashboard (hardcoded)', async ({
     page,
   }) => {
     await page.goto('/es');
@@ -66,6 +66,7 @@ test.describe('Login', () => {
 
   for (const [lang, data] of Object.entries(menuItems)) {
     test(`should validate menu items in ${lang}`, async ({ page }) => {
+      // Arrange
       await page.goto(`/${data.lang}`);
       await expect(page).toHaveTitle(/IDV Suite/);
       await page
@@ -73,9 +74,11 @@ test.describe('Login', () => {
         // eslint-disable-next-line
         .click({ force: true });
 
+      // Act
       const menuElements = page.getByRole('menuitem');
       const actualTexts = await menuElements.allTextContents();
 
+      // Assert
       expect(actualTexts).toEqual(data.texts);
     });
   }
