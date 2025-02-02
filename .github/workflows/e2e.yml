@@ -36,8 +36,11 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps
 
+      - name: Compile TypeScript
+        run: npm run build
+
       - name: Run global setup
-        run: npx playwright global-setup
+        run: node dist/utils/global-setup.js
 
       - name: Run tests
         env:
