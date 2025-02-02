@@ -37,6 +37,9 @@ jobs:
   
       - name: Update snapshots
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          USER_EMAIL: ${{ secrets.USER_EMAIL }}
+          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
         run: npx playwright test --update-snapshots
   
       - name: Run tests
