@@ -31,7 +31,7 @@ export default defineConfig({
   ],
   use: {
     baseURL: 'https://idv-suite.identity-platform.dev/',
-    trace: 'on-first-retry',
+    trace: 'on',
     storageState: './auth/loggedInState.json',
     screenshot: 'on',
     video: 'on',
@@ -45,28 +45,20 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: 'firefox',
+      name: 'webkit',
       use: {
-        ...devices['Desktop Firefox'],
+        ...devices['Desktop Safari'],
         launchOptions: {
-          args: process.env.CI ? ['--no-sandbox', '--disable-gpu'] : [],
-          firefoxUserPrefs: {
-            'browser.cache.disk.enable': false,
-            'browser.cache.memory.enable': false,
-            'browser.cache.offline.enable': false,
-            'network.http.use-cache': false,
-          },
+          args: process.env.CI ? ['--no-sandbox'] : [],
         },
         contextOptions: {
           reducedMotion: 'reduce',
           strictSelectors: true,
         },
+        actionTimeout: process.env.CI ? 30000 : 15000,
+        navigationTimeout: process.env.CI ? 45000 : 30000,
       },
       retries: process.env.CI ? 5 : 0,
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
     },
   ],
 });
