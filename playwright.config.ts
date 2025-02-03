@@ -42,6 +42,9 @@ export default defineConfig({
     screenshot: 'on',
     video: 'on',
     viewport: { width: 1920, height: 1080 },
+    launchOptions: {
+      slowMo: 200,
+    },
   },
   projects: [
     {
