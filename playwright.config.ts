@@ -11,7 +11,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
-  workers: process.env.CI ? 1 : 6, // Reduzido workers no CI
+  workers: process.env.CI ? 3 : 6,
   reporter: [
     [
       'allure-playwright',
@@ -34,7 +34,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     storageState: './auth/loggedInState.json',
     screenshot: 'on',
-    video: 'retain-on-failure',
+    video: 'on',
     viewport: { width: 1920, height: 1080 },
     actionTimeout: process.env.CI ? 15000 : 5000,
     navigationTimeout: process.env.CI ? 30000 : 15000,
@@ -62,7 +62,7 @@ export default defineConfig({
           strictSelectors: true,
         },
       },
-      retries: process.env.CI ? 5 : 0, // Mais retentativas para Firefox no CI
+      retries: process.env.CI ? 5 : 0,
     },
     {
       name: 'webkit',
