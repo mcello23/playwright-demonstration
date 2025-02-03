@@ -45,18 +45,20 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
       name: 'webkit',
       use: {
         ...devices['Desktop Safari'],
-        launchOptions: {
-          args: process.env.CI ? ['--no-sandbox'] : [],
-        },
         contextOptions: {
           reducedMotion: 'reduce',
           strictSelectors: true,
         },
         actionTimeout: process.env.CI ? 30000 : 15000,
         navigationTimeout: process.env.CI ? 45000 : 30000,
+        viewport: { width: 1920, height: 1080 },
       },
       retries: process.env.CI ? 5 : 0,
     },
