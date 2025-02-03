@@ -1,10 +1,27 @@
 import { chromium, expect } from '@playwright/test';
-import fs from 'fs';
-import path from 'path';
+import fs, { rmSync } from 'fs';
+import path, { join } from 'path';
 
 async function globalSetup() {
+  // Auth files
   const authFile = path.join(__dirname, '../auth/loggedInState.json');
   const unAuthFile = path.join(__dirname, '../auth/notLoggedInState.json');
+
+  // Allure clean up
+  try {
+    const allureResultsPath = join(__dirname, '../allure-results');
+    const allureReportPath = join(__dirname, '../allure-report');
+
+    // Config for CI
+    if (fs.existsSync(allureResultsPath)) {
+      rmSync(allureResultsPath, { recursive: true, force: true });
+    }
+    if (fs.existsSync(allureReportPath)) {
+      rmSync(allureReportPath, { recursive: true, force: true });
+    }
+  } catch (error: unknown) {
+    console.log('Allure folder not found:', error);
+  }
 
   if (!fs.existsSync(path.dirname(authFile))) {
     fs.mkdirSync(path.dirname(authFile), { recursive: true });

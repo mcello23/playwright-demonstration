@@ -24,7 +24,9 @@ test.describe('Visual Tests', () => {
         });
       });
     } else {
-      test(`should execute a visual test for ${lang}`, async ({ page }) => {
+      test(`should execute a visual test for ${lang} @smoke`, async ({
+        page,
+      }) => {
         await page.goto(`/${data.lang}`);
         await expect(page).toHaveTitle(/IDV Suite/);
 
