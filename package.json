@@ -1,6 +1,7 @@
 {
   "name": "idv-qa",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf test-results/",
@@ -13,7 +14,7 @@
     "lint:tests": "eslint tests/**.ts --fix",
     "define:workers": "npx playwright test tests --workers 1",
     "clean:allure": "rm -rf allure-results/ allure-report/",
-    "open:allure": "npx allure generate allure-results --clean && npx allure open allure-report",
+    "open:allure": "node --no-warnings ./node_modules/.bin/allure generate allure-results --clean && node --no-warnings ./node_modules/.bin/allure open allure-report",
     "grep:smoke": "npx playwright test --grep @smoke",
     "grep:invert": "npx playwright test --grep-invert @smoke"
   },

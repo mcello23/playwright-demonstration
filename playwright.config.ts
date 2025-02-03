@@ -1,17 +1,22 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  globalSetup: require.resolve('./utils/global-setup'),
-  globalTimeout: process.env.CI ? 60000 : 30000, // Aumentado timeout no CI
+  globalTimeout: 80000,
+  timeout: 40000,
+  expect: {
+    timeout: 15000,
+  },
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
-  workers: process.env.CI ? 3 : 6,
+  workers: process.env.CI ? 3 : 4,
   reporter: [
     [
       'allure-playwright',
@@ -29,6 +34,7 @@ export default defineConfig({
     ['list'],
     ['html'],
   ],
+  globalSetup: './utils/global-setup.ts',
   use: {
     baseURL: 'https://idv-suite.identity-platform.dev/',
     trace: 'on',
@@ -36,31 +42,25 @@ export default defineConfig({
     screenshot: 'on',
     video: 'on',
     viewport: { width: 1920, height: 1080 },
-    actionTimeout: process.env.CI ? 15000 : 5000,
-    navigationTimeout: process.env.CI ? 30000 : 15000,
   },
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+      },
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+      },
     },
     {
       name: 'webkit',
       use: {
-        ...devices['Desktop Safari'],
-        contextOptions: {
-          reducedMotion: 'reduce',
-          strictSelectors: true,
-        },
-        actionTimeout: process.env.CI ? 30000 : 15000,
-        navigationTimeout: process.env.CI ? 45000 : 30000,
-        viewport: { width: 1920, height: 1080 },
+        ...devices['Desktop Webkit'],
       },
-      retries: process.env.CI ? 5 : 0,
     },
   ],
 });

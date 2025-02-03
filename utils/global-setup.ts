@@ -1,28 +1,27 @@
 import { chromium, expect } from '@playwright/test';
-import fs, { rmSync } from 'fs';
-import path, { join } from 'path';
+import fs from 'fs';
+import path from 'path';
 
 async function globalSetup() {
-  // Auth files
-  const authFile = path.join(__dirname, '../auth/loggedInState.json');
-  const unAuthFile = path.join(__dirname, '../auth/notLoggedInState.json');
+  const authFile = path.join(process.cwd(), 'auth/loggedInState.json');
+  const unAuthFile = path.join(process.cwd(), 'auth/notLoggedInState.json');
 
-  // Allure clean up
+  // Limpar diretórios Allure
+  const allureResultsPath = path.join(process.cwd(), 'allure-results');
+  const allureReportPath = path.join(process.cwd(), 'allure-report');
+
   try {
-    const allureResultsPath = join(__dirname, '../allure-results');
-    const allureReportPath = join(__dirname, '../allure-report');
-
-    // Config for CI
     if (fs.existsSync(allureResultsPath)) {
-      rmSync(allureResultsPath, { recursive: true, force: true });
+      fs.rmSync(allureResultsPath, { recursive: true, force: true });
     }
     if (fs.existsSync(allureReportPath)) {
-      rmSync(allureReportPath, { recursive: true, force: true });
+      fs.rmSync(allureReportPath, { recursive: true, force: true });
     }
-  } catch (error: unknown) {
-    console.log('Allure folder not found:', error);
+  } catch (error) {
+    console.log('Diretórios Allure não encontrados:', error);
   }
 
+  // Criar diretório auth se não existir
   if (!fs.existsSync(path.dirname(authFile))) {
     fs.mkdirSync(path.dirname(authFile), { recursive: true });
   }
@@ -36,7 +35,7 @@ async function globalSetup() {
 
     const emailField = page.getByRole('textbox', { name: 'Email address' });
     await emailField.waitFor({ state: 'visible' });
-    await emailField.fill(process.env.USER_EMAIL!);
+    await emailField.fill(process.env.USER_EMAIL ?? '');
 
     const nextButton = page.getByRole('button', { name: 'Next' });
     await nextButton.waitFor({ state: 'visible' });
@@ -44,7 +43,7 @@ async function globalSetup() {
 
     const passwordField = page.getByRole('textbox', { name: 'Password' });
     await passwordField.waitFor({ state: 'visible' });
-    await passwordField.fill(process.env.USER_PASSWORD!);
+    await passwordField.fill(process.env.USER_PASSWORD ?? '');
     await passwordField.press('Enter');
 
     await page.waitForURL('**/en');
@@ -54,7 +53,7 @@ async function globalSetup() {
     await page.context().storageState({ path: authFile });
     await browser.close();
   } catch (error) {
-    console.error('Error at global setup:', error);
+    console.error('Erro no setup global:', error);
     throw error;
   }
 }
