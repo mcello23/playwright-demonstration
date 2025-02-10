@@ -89,7 +89,7 @@ test.describe('Login @login', () => {
     await expect(page).toHaveTitle(/IDV Suite/);
   });
 
-  test('should validate elements in dashboard (hardcoded) @smoke', async ({
+  test('should validate elements in dashboard (hardcoded) @regression', async ({
     page,
   }) => {
     await page.goto('/es');
@@ -117,7 +117,7 @@ test.describe('Login @login', () => {
       // Arrange
       await page.goto(`/${data.lang}`);
       await expect(page).toHaveTitle(/IDV Suite/);
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState();
       await page
         .locator('[data-test="input-right-icon"]')
         .click({ force: true });
@@ -135,7 +135,7 @@ test.describe('Login @login', () => {
       // Arrange
       await page.goto(`/${data.lang}`);
       await expect(page).toHaveTitle(/IDV Suite/);
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState();
 
       // Act
       for (const link of data.texts) {
@@ -148,4 +148,12 @@ test.describe('Login @login', () => {
       }
     });
   }
+});
+
+test.describe('Validation of Operations', () => {
+  test('Should visit operations', async ({ page }) => {
+    await page.goto('/en/operations');
+    // await page.waitForLoadState();
+    await page.getByText('Operation-0').isVisible();
+  });
 });

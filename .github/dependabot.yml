@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "09:00"
+    labels:
+      - "dependencies updates"
+    reviewers:
+      - "MarceloCosta-Facephi"
+    assignees:
+      - "MarceloCosta-Facephi"
+    pull-request-branch-name:
+      separator: "-"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "10:00"
+    labels:
+      - "github-actions"
+    reviewers:
+      - "MarceloCosta-Facephi"
+    assignees:
+      - "MarceloCosta-Facephi"
+    pull-request-branch-name:
+      separator: "-"
