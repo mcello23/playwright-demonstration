@@ -1,11 +1,12 @@
-// import { expect } from '@playwright/test';
+// import { test as base, expect } from '@playwright/test';
+// import { loginCommands } from '../utils/custom_commands/gui_commands.controller';
 
 // const test = base.extend<{
-//   dashPage: dashboardPageCommands;
+//   loginPage: loginCommands;
 // }>({
-//   dashPage: async ({ page }, use) => {
-//     const homePage = new dashboardPageCommands(page);
-//     await use(homePage);
+//   loginPage: async ({ page }, use) => {
+//     const loginPage = new loginCommands(page);
+//     await use(loginPage);
 //   },
 // });
 

@@ -6,7 +6,6 @@ async function globalSetup() {
   const authFile = path.join(process.cwd(), 'auth/loggedInState.json');
   const unAuthFile = path.join(process.cwd(), 'auth/notLoggedInState.json');
 
-  // Limpar diretórios Allure
   const allureResultsPath = path.join(process.cwd(), 'allure-results');
   const allureReportPath = path.join(process.cwd(), 'allure-report');
 
@@ -18,10 +17,9 @@ async function globalSetup() {
       fs.rmSync(allureReportPath, { recursive: true, force: true });
     }
   } catch (error) {
-    console.log('Diretórios Allure não encontrados:', error);
+    console.log('Allure directories not found:', error);
   }
 
-  // Criar diretório auth se não existir
   if (!fs.existsSync(path.dirname(authFile))) {
     fs.mkdirSync(path.dirname(authFile), { recursive: true });
   }
@@ -53,7 +51,7 @@ async function globalSetup() {
     await page.context().storageState({ path: authFile });
     await browser.close();
   } catch (error) {
-    console.error('Erro no setup global:', error);
+    console.error('Global Setup error:', error);
     throw error;
   }
 }

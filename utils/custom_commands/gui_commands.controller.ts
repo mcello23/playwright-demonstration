@@ -1,61 +1,27 @@
-// import { expect, Page, test } from '@playwright/test';
-// import path from 'path';
+// import { expect, Page } from '@playwright/test';
 
-// class homePageCommands {
+// export class loginCommands {
 //   page: Page;
 //   constructor(page: Page) {
 //     this.page = page;
 //   }
 
-//   async navigateToHomePage() {
-//     await this.page.goto('/');
+//   async login() {
+//     await this.page.route('**/graphql', async (route, request) => {
+//       const postData = JSON.parse(request.postData()!);
+//       await route.fulfill({
+//         status: 200,
+//         contentType: 'application/json',
+//       });
+//       expect(postData.operationName === 'getAggregateStatistics').toBe(true);
+//     });
+
+//     await this.page.goto('/en');
 //   }
 
-//   async verifyTitle() {
-//     await expect(this.page).toHaveTitle(
-//       /Practice E-Commerce Site – SDET Unicorns/,
-//     );
-//   }
-
-//   async clickGetStartedButton() {
-//     await expect(this.page).not.toHaveURL(/.*#get-started/);
-//     await this.page.locator('#get-started').click();
-//   }
-
-//   async verifyGetStartedButton() {
-//     await expect(this.page).toHaveURL(/.*#get-started/);
-//   }
-
-//   async verifyHeadingText() {
-//     const headingText = this.page.locator(
-//       "text='Think different. Make different.'",
-//     );
-//     await expect(headingText).toBeVisible();
-//   }
-
-//   async locatesEnabledHomeLink() {
-//     const homeLink = this.page.locator("#zak-primary-menu:has-text('Home')");
-//     await expect(homeLink).toBeEnabled();
-//   }
-
-//   async verifySearchIconXPATH() {
-//     const homeText = await this.page.locator(
-//       '//*[@id="zak-masthead"]/div/div/div/div[2]/div[1]/div[1]/a',
-//     );
-//     await expect(homeText).toBeVisible();
-//   }
-
-//   async verifyTextOfAllNavLinks() {
-//     const expectedLinks = [
-//       'Home',
-//       'About',
-//       'Shop',
-//       'Blog',
-//       'Contact',
-//       'My account',
-//     ];
-//     const navLinks = this.page.locator('#zak-primary-menu li[id*=menu]');
-//     expect(await navLinks.allTextContents()).toEqual(expectedLinks);
+//   async logout() {
+//     await this.page.locator('[data-test="user-name"]').click();
+//     await this.page.getByText('Log out').click();
 //   }
 // }
 
@@ -221,11 +187,3 @@
 //     expect(test.info().errors.length).toBeLessThan(2);
 //   }
 // }
-
-// export {
-//   aboutPageCommands,
-//   blogPageCommands,
-//   cartPageCommands,
-//   contactPageCommands,
-//   homePageCommands,
-// };
