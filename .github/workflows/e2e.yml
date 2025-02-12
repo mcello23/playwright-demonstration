@@ -13,19 +13,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4.2.0
         with:
-          node-version: '22.10'
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
         run: |
           npm install -g npm@latest
-          npm ci
+          npm ci --prefer-offline
 
-      - name: Install Playwright
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps --no-install-browsers
+
+      - name: Download and cache Playwright browsers
+        id: cache-browsers
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright/chromium-*
+            ~/.cache/ms-playwright/firefox-*
+            ~/.cache/ms-playwright/webkit-*
+          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright Browsers (if not cached)
+        if: steps.cache-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
+
+      - name: Download and cache Auth State
+        id: cache-auth
+        uses: actions/cache@v4
+        with:
+          path: ./auth/loggedInState.json
+          key: ${{ runner.os }}-auth-${{ hashFiles('./utils/global-setup.ts') }}
 
       - name: Run tests
         continue-on-error: true
