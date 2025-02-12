@@ -5,14 +5,8 @@ import path from 'path';
 async function globalSetup(config: FullConfig) {
   console.log('Running global setup...');
 
-  const authFile = path.join(config.rootDir, 'auth/loggedInState.json');
-  const unAuthFile = path.join(config.rootDir, 'auth/notLoggedInState.json');
-
-  const allureResultsPath = path.join(config.rootDir, 'allure-results');
-  const allureReportPath = path.join(config.rootDir, 'allure-report');
-
-  // Cleanup Allure reports
-  await cleanupAllure(allureResultsPath, allureReportPath);
+  const authFile = './auth/loggedInState.json';
+  const unAuthFile = './auth/notLoggedInState.json';
 
   // Ensure auth directory exists
   if (!fs.existsSync(path.dirname(authFile))) {
@@ -20,31 +14,12 @@ async function globalSetup(config: FullConfig) {
   }
 
   // Authenticate and save state
-  await authenticateAndSaveState(authFile, unAuthFile, config.rootDir); // Pass rootDir
+  await authenticateAndSaveState(authFile, unAuthFile);
 
   console.log('Global setup completed.');
 }
 
-async function cleanupAllure(resultsPath: string, reportPath: string) {
-  try {
-    if (fs.existsSync(resultsPath)) {
-      fs.rmSync(resultsPath, { recursive: true, force: true });
-      console.log(`Deleted Allure results directory: ${resultsPath}`);
-    }
-    if (fs.existsSync(reportPath)) {
-      fs.rmSync(reportPath, { recursive: true, force: true });
-      console.log(`Deleted Allure report directory: ${reportPath}`);
-    }
-  } catch (error) {
-    console.warn('Error cleaning Allure directories:', error);
-  }
-}
-
-async function authenticateAndSaveState(
-  authFile: string,
-  unAuthFile: string,
-  rootDir: string,
-) {
+async function authenticateAndSaveState(authFile: string, unAuthFile: string) {
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage();
@@ -53,10 +28,8 @@ async function authenticateAndSaveState(
     );
 
     // Save unauthenticated state
-    await page.context().storageState({ path: path.join(rootDir, unAuthFile) }); // Use rootDir
-    console.log(
-      `Unauthenticated state saved to ${path.join(rootDir, unAuthFile)}`,
-    );
+    await page.context().storageState({ path: unAuthFile }); // Use rootDir
+    console.log('Unauthenticated state saved to ./auth/notLoggedInState.json');
 
     // Perform login
     const emailField = page.getByRole('textbox', { name: 'Email address' });
@@ -74,8 +47,8 @@ async function authenticateAndSaveState(
 
     // Save authenticated state
     await page.waitForURL(process.env.LOGIN_REDIRECT_URL || '**/en');
-    await page.context().storageState({ path: path.join(rootDir, authFile) }); // Use rootDir
-    console.log(`Authenticated state saved to ${path.join(rootDir, authFile)}`);
+    await page.context().storageState({ path: authFile }); // Use rootDir
+    console.log('Authenticated state saved to ./auth/loggedInState.json)}');
   } catch (error) {
     console.error('Authentication failed:', error);
     throw error;

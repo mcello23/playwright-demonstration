@@ -7,6 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
+  globalTimeout: process.env.CI ? 60 * 60 * 1000 : undefined,
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -29,11 +30,9 @@ export default defineConfig({
     ['list'],
     ['html'],
   ],
-  globalSetup: './utils/global-setup.ts',
   use: {
     baseURL: 'https://idv-suite.identity-platform.dev/en',
     trace: 'on',
-    storageState: './auth/loggedInState.json',
     screenshot: 'on',
     video: 'on',
     viewport: { width: 1920, height: 1080 },

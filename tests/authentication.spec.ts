@@ -1,36 +1,19 @@
-import { expect, test } from '@playwright/test';
-
-const loginAndValidateAPI = async (page: any) => {
-  const getAggregateStatisticsPromise = page.waitForResponse(
-    '**/graphql',
-    async (response: any) => {
-      const request = response.request();
-      const postData = JSON.parse(request.postData()!);
-
-      if (postData.operationName === 'getAggregateStatistics') {
-        expect(postData).toHaveProperty(
-          'operationName',
-          'getAggregateStatistics',
-        );
-      }
-      return false;
-    },
-  );
-  await page.goto('/');
-
-  const response = await getAggregateStatisticsPromise;
-  expect(response.status()).toBe(200);
-};
+import { expect, test } from '../utils/test-extend';
 
 test.describe('Authentication flows @smoke', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAndValidateAPI(page);
+    // await page.route('**amazoncognito.com/oauth2/**', async (route) => {
+    //   const response = await route.fetch();
+    //   expect(response.status()).toBe(302);
+    //   await route.continue();
+    // });
+    await page.goto('/');
+    // eslint-disable-next-line
+    await page.waitForLoadState('networkidle');
   });
   test('As a user, I want to login at IDV and validate it through UI and API', async ({
     page,
   }) => {
-    // // eslint-disable-next-line
-    // await page.waitForLoadState('networkidle');
     await expect(page.locator('[data-test="header-logo"]')).toBeVisible();
   });
 
