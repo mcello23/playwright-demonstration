@@ -51,7 +51,7 @@ jobs:
         id: cache-auth
         uses: actions/cache@v4
         with:
-          path: ./auth/loggedInState.json
+          path: auth/loggedInState.json
           key: ${{ runner.os }}-auth-${{ hashFiles('./utils/global-setup.ts') }}
 
       - name: Run tests

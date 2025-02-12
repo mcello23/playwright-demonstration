@@ -20,7 +20,7 @@ async function globalSetup(config: FullConfig) {
   }
 
   // Authenticate and save state
-  await authenticateAndSaveState(authFile, unAuthFile);
+  await authenticateAndSaveState(authFile, unAuthFile, config.rootDir); // Pass rootDir
 
   console.log('Global setup completed.');
 }
@@ -40,7 +40,11 @@ async function cleanupAllure(resultsPath: string, reportPath: string) {
   }
 }
 
-async function authenticateAndSaveState(authFile: string, unAuthFile: string) {
+async function authenticateAndSaveState(
+  authFile: string,
+  unAuthFile: string,
+  rootDir: string,
+) {
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage();
@@ -49,8 +53,10 @@ async function authenticateAndSaveState(authFile: string, unAuthFile: string) {
     );
 
     // Save unauthenticated state
-    await page.context().storageState({ path: unAuthFile });
-    console.log(`Unauthenticated state saved to ${unAuthFile}`);
+    await page.context().storageState({ path: path.join(rootDir, unAuthFile) }); // Use rootDir
+    console.log(
+      `Unauthenticated state saved to ${path.join(rootDir, unAuthFile)}`,
+    );
 
     // Perform login
     const emailField = page.getByRole('textbox', { name: 'Email address' });
@@ -68,8 +74,8 @@ async function authenticateAndSaveState(authFile: string, unAuthFile: string) {
 
     // Save authenticated state
     await page.waitForURL(process.env.LOGIN_REDIRECT_URL || '**/en');
-    await page.context().storageState({ path: authFile });
-    console.log(`Authenticated state saved to ${authFile}`);
+    await page.context().storageState({ path: path.join(rootDir, authFile) }); // Use rootDir
+    console.log(`Authenticated state saved to ${path.join(rootDir, authFile)}`);
   } catch (error) {
     console.error('Authentication failed:', error);
     throw error;
