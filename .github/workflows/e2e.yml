@@ -32,7 +32,7 @@ jobs:
         env:
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
-        run: npx playwright test --project=firefox --project=chromium
+        run: npx playwright test
 
       - name: Upload test results
         if: always()

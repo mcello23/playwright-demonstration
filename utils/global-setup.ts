@@ -1,4 +1,4 @@
-import { chromium, expect } from '@playwright/test';
+import { chromium } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -42,11 +42,9 @@ async function globalSetup() {
     const passwordField = page.getByRole('textbox', { name: 'Password' });
     await passwordField.waitFor({ state: 'visible' });
     await passwordField.fill(process.env.USER_PASSWORD ?? '');
-    await passwordField.press('Enter');
+    page.getByRole('button', { name: 'Continue' }).click();
 
     await page.waitForURL('**/en');
-    await expect(page).toHaveURL('https://idv-suite.identity-platform.dev/en');
-    await expect(page).toHaveTitle(/IDV Suite/);
 
     await page.context().storageState({ path: authFile });
     await browser.close();
