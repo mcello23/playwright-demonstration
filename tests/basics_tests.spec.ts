@@ -94,6 +94,7 @@ test.describe('Authentication flows @smoke', () => {
       expect(postData.operationName === 'getAggregateStatistics').toBe(true);
     });
     await page.goto('/en');
+    await page.waitForLoadState('networkidle');
     await expect(page).toHaveTitle(/IDV Suite/);
   });
 
