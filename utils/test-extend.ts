@@ -1,8 +1,20 @@
-import { test as baseTest, expect } from '@playwright/test';
+import { test as baseTest, expect, Page } from '@playwright/test';
 import fs from 'fs';
-import path from 'path';
 
 export * from '@playwright/test';
+
+async function isAuthStateValid(page: Page): Promise<boolean> {
+  try {
+    await page.goto('https://idv-suite.identity-platform.dev/en');
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('[data-test="header-logo"]')).toBeVisible({
+      timeout: 5000,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export const test = baseTest.extend<{}, { workerStorageState: string }>({
   storageState: ({ workerStorageState }, use) => use(workerStorageState),
@@ -10,26 +22,31 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
   workerStorageState: [
     async ({ browser }, use) => {
       const workerId = test.info().parallelIndex;
-      const authFileName = path.resolve(
-        test.info().project.outputDir,
-        `.auth/${workerId}.json`,
-      );
+      const authFileName = `./auth/${workerId}.json`;
 
+      let isValid = false;
       if (fs.existsSync(authFileName)) {
-        console.log(`Reusing authentication state from ${authFileName}`);
+        const page: Page = await browser.newPage({
+          storageState: authFileName,
+        });
+        isValid = await isAuthStateValid(page);
+        await page.close();
+      }
+
+      if (isValid) {
+        console.log(`Reusing valid authentication state from ${authFileName}`);
         await use(authFileName);
         return;
       }
 
-      const page = await browser.newPage({ storageState: undefined });
+      const page: Page = await browser.newPage({ storageState: undefined });
       try {
-        console.log('Iniciando processo de login...');
+        console.log('Starting login...');
 
         // Navegar para a página de login
         const baseUrl =
           process.env.BASE_URL || 'https://idv-suite.identity-platform.dev';
         await page.goto(`${baseUrl}/en`);
-        console.log('Página carregada:', page.url());
 
         // Aguardar o formulário de login
         await page.waitForLoadState('networkidle');
@@ -37,7 +54,6 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
         await emailInput.waitFor({ state: 'visible', timeout: 10000 });
 
         // Preencher email
-        console.log('Preenchendo email:', process.env.USER_EMAIL);
         await emailInput.fill(process.env.USER_EMAIL ?? '');
         await page.getByRole('button', { name: 'Next' }).click();
 
@@ -45,9 +61,8 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
         const passwordInput = page.getByRole('textbox', { name: 'Password' });
         await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
         await passwordInput.fill(process.env.USER_PASSWORD ?? '');
-
-        // Clicar em login e aguardar navegação
         await page.getByRole('button', { name: 'Continue' }).click();
+        console.log('Email and password set!');
 
         // Verificar se o login foi bem sucedido
         await page.waitForURL('**/en', { timeout: 15000 });
@@ -57,16 +72,16 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
           timeout: 15000,
         });
 
-        console.log('Login realizado com sucesso!');
+        console.log('Login sucessful!');
 
         // Salvar o estado da autenticação
         await page.context().storageState({ path: authFileName });
-        console.log(`Estado de autenticação salvo em: ${authFileName}`);
+        console.log(`Auth file saved at: ${authFileName}`);
 
         await use(authFileName);
       } catch (error) {
-        console.error('Erro durante o processo de login:', error);
-        console.error('URL atual:', page.url());
+        console.error('Erro at login:', error);
+        console.error('Actual URL:', page.url());
 
         // Capturar screenshot em caso de erro
         await page.screenshot({

@@ -1,3 +1,5 @@
+// For future use
+// Account management login for different roles
 type TestAccount = {
   username: string;
   password: string;

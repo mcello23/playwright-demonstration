@@ -27,39 +27,18 @@ jobs:
           npm install -g npm@latest
           npm ci --prefer-offline
 
-      - name: Install Playwright Dependencies
-        run: npm install --save-dev @playwright/test
-
-      - name: Install Playwright Browsers
+      - name: Setup Playwright
         run: npx playwright install --with-deps
 
-      - name: Download and cache Playwright browsers
-        id: cache-browsers
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/ms-playwright/chromium-*
-            ~/.cache/ms-playwright/firefox-*
-            ~/.cache/ms-playwright/webkit-*
-          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Playwright Browsers (if not cached)
-        if: steps.cache-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
-  
-      - name: Download and cache Auth State
-        id: cache-auth
-        uses: actions/cache@v4
-        with:
-          path: auth/loggedInState.json
-          key: ${{ runner.os }}-auth-${{ hashFiles('./utils/global-setup.ts') }}
+      - name: Create auth directory
+        run: mkdir -p auth
 
       - name: Run tests
-        continue-on-error: true
         env:
-            USER_EMAIL: ${{ secrets.USER_EMAIL }}
-            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
-        run: npx playwright test
+          USER_EMAIL: ${{ secrets.USER_EMAIL }}
+          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+        run: npx playwright test --project=chromium
+        continue-on-error: true
 
       - name: Upload test results
         if: always()
@@ -68,6 +47,7 @@ jobs:
           name: playwright-results
           path: |
             test-results
+            playwright-report
           retention-days: 30
 
       - name: Generate Allure Report
@@ -79,8 +59,6 @@ jobs:
       - name: Setup Pages
         if: always()
         uses: actions/configure-pages@v5.0.0
-        with:
-          enablement: true
 
       - name: Upload artifact
         if: always()

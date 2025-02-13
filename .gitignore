@@ -1,9 +1,13 @@
+# Installation files
 node_modules/
+.DS_Store
+
+# Auth files
 auth/
 .env
+
+# Reports
 test-results/
 playwright-report/
 allure-results
 allure-report
-.DS_Store
-tests/visual-tests.spec.ts-snapshots

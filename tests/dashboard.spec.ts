@@ -1,124 +1,100 @@
+import { faker } from '@faker-js/faker';
 import { expect, test } from '../utils/test-extend';
+import { dashboardTexts } from '../utils/texts/dashboard.texts';
 
-const loginAndValidateAPI = async (page: any, locale: string) => {
-  // const getAggregateStatisticsPromise = page.waitForResponse(
-  //   '**/graphql',
-  //   async (response: any) => {
-  //     const request = response.request();
-  //     const postData = JSON.parse(request.postData()!);
-
-  //     if (postData.operationName === 'getAggregateStatistics') {
-  //       expect(postData).toHaveProperty(
-  //         'operationName',
-  //         'getAggregateStatistics',
-  //       );
-  //     }
-  //     return false;
-  //   },
-  // );
-  await page.goto(`/${locale}`);
-  // const response = await getAggregateStatisticsPromise;
-  // expect(response.status()).toBe(200);
-};
-
-const dashboardTexts = {
-  en: {
-    hours: '24 hours',
-    sevenDays: '7 days',
-    thirtyDays: '30 days',
-    newOnboardings: 'New onboardings',
-    authentications: 'Authentications',
-    onboardings: 'Onboardings',
-    successRate: 'Success rate',
-    errorRate: 'Error rate',
-    allOperations: 'All operations (%)',
-    succeeded: 'Succeeded',
-    started: 'Started',
-    expired: 'Expired',
-    cancelled: 'Cancelled',
-    blocked: 'Blocked',
-    denied: 'Denied',
-    error: 'Error',
-  },
-  es: {
-    hours: '24 horas',
-    sevenDays: '7 días',
-    thirtyDays: '30 días',
-    newOnboardings: 'Nuevos registros',
-    authentications: 'Autenticaciones',
-    onboardings: 'Onboardings',
-    successRate: 'Tasa de éxito',
-    errorRate: 'Tasa de errores',
-    allOperations: 'Todas las operaciones (%)',
-    succeeded: 'Exitoso',
-    started: 'Iniciado',
-    expired: 'Expirado',
-    cancelled: 'Cancelado',
-    blocked: 'Bloqueado',
-    denied: 'Denegado',
-    error: 'Error',
-  },
-  pt: {
-    hours: '24 horas',
-    sevenDays: '7 dias',
-    thirtyDays: '30 dias',
-    newOnboardings: 'Novos registros',
-    authentications: 'Autenticações',
-    onboardings: 'Onboardings',
-    successRate: 'Taxa de sucesso',
-    errorRate: 'Taxa de erro',
-    allOperations: 'Todas as operações (%)',
-    succeeded: 'Bem-sucedido',
-    started: 'Iniciado',
-    expired: 'Expirado',
-    cancelled: 'Cancelado',
-    blocked: 'Bloqueado',
-    denied: 'Negado',
-    error: 'Erro',
-  },
-};
+function formatDate(date: Date): string {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 test.describe('Dashboard validation flows @regression', () => {
-  const locales: Array<'en' | 'es' | 'pt'> = ['en', 'es', 'pt'];
-
-  locales.forEach((locale) => {
+  for (const [locale, data] of Object.entries(dashboardTexts)) {
     test(`As a user, I want to see all elements present in the dashboard in ${locale}`, async ({
       page,
     }) => {
-      await loginAndValidateAPI(page, locale);
+      await page.goto(`/${locale}`);
+      await page.waitForLoadState('networkidle');
 
-      const texts = dashboardTexts[locale];
+      const assertions = [
+        // Upper section
+        {
+          locator: page.getByRole('checkbox', { name: data.hours }),
+          isEnabled: false,
+        },
+        {
+          locator: page.getByRole('checkbox', { name: data.sevenDays }),
+          isEnabled: false,
+        },
+        {
+          locator: page.getByRole('checkbox', { name: data.thirtyDays }),
+          isEnabled: false,
+        },
+        {
+          locator: page.locator('[data-test="filter-by-date"]'),
+          isEnabled: true,
+        },
 
-      // Upper section
-      await expect(
-        page.getByRole('checkbox', { name: texts.hours }),
-      ).toBeVisible();
-      await expect(
-        page.getByRole('checkbox', { name: texts.sevenDays }),
-      ).toBeVisible();
-      await expect(
-        page.getByRole('checkbox', { name: texts.thirtyDays }),
-      ).toBeVisible();
-      await expect(page.locator('[data-test="filter-by-date"]')).toBeEnabled();
+        // Middle section
+        { locator: page.getByText(data.newOnboardings), isEnabled: false },
+        { locator: page.getByText(data.authentications), isEnabled: false },
+        {
+          locator: page.getByText(data.onboardings, { exact: true }),
+          isEnabled: false,
+        },
+        { locator: page.getByText(data.successRate), isEnabled: false },
+        { locator: page.getByText(data.errorRate), isEnabled: false },
+        { locator: page.getByText(data.allOperations), isEnabled: false },
 
-      // Middle section
-      await expect(page.getByText(texts.newOnboardings)).toBeVisible();
-      await expect(page.getByText(texts.authentications)).toBeVisible();
-      await expect(
-        page.getByText(texts.onboardings, { exact: true }),
-      ).toBeVisible();
-      await expect(page.getByText(texts.successRate)).toBeVisible();
-      await expect(page.getByText(texts.errorRate)).toBeVisible();
-      await expect(page.getByText(texts.allOperations)).toBeVisible();
+        // Bottom section
+        { locator: page.getByText(data.succeeded), isEnabled: false },
+        { locator: page.getByText(data.started), isEnabled: false },
+        { locator: page.getByText(data.expired), isEnabled: false },
+        { locator: page.getByText(data.cancelled), isEnabled: false },
+        { locator: page.getByText(data.blocked), isEnabled: false },
+        { locator: page.getByText(data.denied), isEnabled: false },
+        {
+          locator: page.getByText(data.error, { exact: true }),
+          isEnabled: false,
+        },
+      ];
 
-      // Bottom section
-      await expect(page.getByText(texts.succeeded)).toBeVisible();
-      await expect(page.getByText(texts.started)).toBeVisible();
-      await expect(page.getByText(texts.expired)).toBeVisible();
-      await expect(page.getByText(texts.cancelled)).toBeVisible();
-      await expect(page.getByText(texts.blocked)).toBeVisible();
-      await expect(page.getByText(texts.denied)).toBeVisible();
-      await expect(page.getByText(texts.error, { exact: true })).toBeVisible();
+      // Valida todos os elementos
+      for (const assertion of assertions) {
+        if (assertion.isEnabled) {
+          await expect(assertion.locator).toBeEnabled();
+        } else {
+          await expect(assertion.locator).toBeVisible();
+        }
+      }
     });
+  }
+
+  test('As a user, I want to insert random dates in the dashboard filter and validate via UI @regression', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    const daysInPast = faker.number.int({ min: 1, max: 365 });
+    const startDate = new Date(
+      new Date().setDate(new Date().getDate() - daysInPast),
+    );
+    const daysInFuture = faker.number.int({ min: 1, max: 365 });
+    const endDate = new Date(
+      new Date().setDate(new Date().getDate() + daysInFuture),
+    );
+    const formattedDateRange = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+
+    const filterByDateLocator = page.locator('[data-test="filter-by-date"]');
+    await filterByDateLocator.click();
+    await filterByDateLocator.fill(formattedDateRange);
+
+    await expect(filterByDateLocator).toHaveValue(formattedDateRange);
   });
 });
+
+//TODO: Add more tests
+// Buttons tests
+// Create spec for Operations and validate Buttons and elements

@@ -31,11 +31,11 @@ export default defineConfig({
     ['html'],
   ],
   use: {
-    baseURL: 'https://idv-suite.identity-platform.dev/en',
+    baseURL: 'https://idv-suite.identity-platform.dev',
     trace: 'on',
     screenshot: 'on',
     video: 'on',
-    viewport: { width: 1920, height: 1080 },
+    viewport: { width: 2560, height: 1440 },
   },
   projects: [
     {
