@@ -7,12 +7,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  globalTimeout: process.env.CI ? 60 * 60 * 1000 : undefined,
+  timeout: 80000,
+  expect: {
+    timeout: 60000,
+  },
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 1,
-  workers: process.env.CI ? 3 : 3,
+  workers: process.env.CI ? 2 : 3,
   reporter: [
     [
       'allure-playwright',
@@ -35,7 +38,7 @@ export default defineConfig({
     trace: 'on',
     screenshot: 'on',
     video: 'on',
-    viewport: { width: 2560, height: 1440 },
+    viewport: { width: 1920, height: 1080 },
   },
   projects: [
     {
