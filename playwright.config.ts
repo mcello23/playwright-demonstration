@@ -27,7 +27,6 @@ export default defineConfig({
         labels: true,
         links: true,
         video: true,
-        screenshots: true,
       },
     ],
     ['list'],
@@ -36,6 +35,7 @@ export default defineConfig({
   use: {
     baseURL: 'https://idv-suite.identity-platform.dev',
     trace: 'on',
+    screenshot: 'on',
     video: 'on',
     viewport: { width: 1920, height: 1080 },
   },
