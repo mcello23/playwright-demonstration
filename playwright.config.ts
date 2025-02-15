@@ -27,6 +27,7 @@ export default defineConfig({
         labels: true,
         links: true,
         video: true,
+        screenshots: false,
       },
     ],
     ['list'],
