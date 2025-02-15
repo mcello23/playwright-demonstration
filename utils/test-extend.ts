@@ -80,7 +80,7 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
 
         await use(authFileName);
       } catch (error) {
-        console.error('Erro at login:', error);
+        console.error('Error at login:', error);
         console.error('Actual URL:', page.url());
 
         // Capturar screenshot em caso de erro

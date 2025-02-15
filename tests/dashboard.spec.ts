@@ -60,7 +60,7 @@ test.describe('Dashboard validation flows @regression', () => {
         },
       ];
 
-      // Valida todos os elementos
+      // Valida todos los elementos
       for (const assertion of assertions) {
         if (assertion.isEnabled) {
           await expect(assertion.locator).toBeEnabled();
