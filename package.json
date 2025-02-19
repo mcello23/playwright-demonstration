@@ -10,7 +10,7 @@
   "scripts": {
     "clean": "rm -rf test-results/",
     "ui": "playwright test --ui",
-    "test": "yarn run clean:allure && yarn playwright test",
+    "test": "NODE_OPTIONS='--no-warnings' yarn run clean:allure && yarn playwright test",
     "api:test": "DEBUG=pw:api yarn playwright test authentication.spec.ts",
     "watch:mode": "PWTEST_WATCH=1 yarn playwright test",
     "open:inspector": "PWDEBUG=1 yarn playwright test authentication.spec.ts",
