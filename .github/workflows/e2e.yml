@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 permissions:
   contents: write
@@ -35,10 +35,6 @@ jobs:
           mkdir -p .yarn/cache
         shell: bash
 
-      - name: Install dependencies
-        run: yarn install
-        shell: bash
-
       - name: Cache Yarn dependencies
         uses: actions/cache@v4.2.0
         with:
@@ -48,6 +44,10 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install
+        shell: bash
 
       - name: Setup Playwright
         run: yarn playwright install --with-deps
