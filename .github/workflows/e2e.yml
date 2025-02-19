@@ -27,7 +27,7 @@ jobs:
       - name: Set up Node.js and Yarn
         uses: actions/setup-node@v4.2.0
         with:
-          node-version: .nvmrc
+          node-version: "20.17.0"
           cache: "yarn"
 
       - name: Install Correct Yarn Version
