@@ -44,9 +44,8 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
         console.log('Starting login...');
 
         // Navegar para a página de login
-        const baseUrl =
-          process.env.BASE_URL || 'https://idv-suite.identity-platform.dev';
-        await page.goto(`${baseUrl}/en`);
+        const baseUrl = process.env.BASE_URL || 'https://idv-suite.identity-platform.dev';
+        await page.goto(`${baseUrl}/`);
 
         // Aguardar o formulário de login
         await page.waitForLoadState('networkidle');
@@ -63,9 +62,6 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
         await passwordInput.fill(process.env.USER_PASSWORD ?? '');
         await page.getByRole('button', { name: 'Continue' }).click();
         console.log('Email and password set!');
-
-        // Verificar se o login foi bem sucedido
-        await page.waitForURL('**/en', { timeout: 15000 });
 
         // Verificar se o elemento que indica login bem sucedido está presente
         await expect(page.locator('[data-test="header-logo"]')).toBeVisible({
@@ -85,7 +81,7 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
 
         // Capturar screenshot em caso de erro
         await page.screenshot({
-          path: `login-error-${workerId}.png`,
+          path: `./auth/login-error-${workerId}.png`,
           fullPage: true,
         });
 

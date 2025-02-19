@@ -1,4 +1,4 @@
-import { expect, test } from '../utils/test-extend';
+import { expect, test } from '../utils/test-extend.ts';
 
 async function validateOpenIDTokenRequest(route: any, request: any) {
   expect(request.method()).toBe('POST');
@@ -21,33 +21,28 @@ async function validateOpenIDAuthResponse(route: any) {
   await route.continue();
 }
 
-test.describe('Authentication flows @smoke', () => {
-  test('As a user, I login to IDV validating OpenID token request and UI', async ({
-    page,
-  }) => {
+test.describe('Authentication flows @regression', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  test('As a user, I login to IDV validating OpenID token request and UI @smoke', async ({ page }) => {
     await page.route('**/openid-connect/token', async (route, request) => {
       await validateOpenIDTokenRequest(route, request);
     });
 
-    await page.goto('/');
     await page.waitForLoadState('load');
 
     await expect(page.locator('[data-test="header-logo"]')).toBeVisible();
   });
 
-  test('As a user, I logout from IDV validating OpenID response and UI', async ({
-    page,
-  }) => {
-    await page.goto('/');
+  test('As a user, I logout from IDV validating OpenID response and UI @smoke', async ({ page }) => {
     await page.locator('[data-test="user-name"]').click();
     await page.getByText('Log out').click();
 
-    await page.route(
-      '**/auth/realms/idv/protocol/openid-connect/auth**',
-      async (route) => {
-        await validateOpenIDAuthResponse(route);
-      },
-    );
+    await page.route('**/auth/realms/idv/protocol/openid-connect/auth**', async (route) => {
+      await validateOpenIDAuthResponse(route);
+    });
     await page.waitForURL(/.*login.*/);
     expect(page.url()).toMatch(/.*login.*/);
   });

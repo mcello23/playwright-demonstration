@@ -2,34 +2,38 @@
   "name": "idv-qa",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "playwright.config.ts",
+  "packageManager": "yarn@4.6.0",
+  "engines": {
+    "node": ">=20.17.0"
+  },
   "scripts": {
     "clean": "rm -rf test-results/",
     "ui": "playwright test --ui",
-    "test": "npm run clean:allure && npx playwright test",
-    "api:test": "DEBUG=pw:api npx playwright test authentication.spec.ts",
-    "watch:mode": "PWTEST_WATCH=1 npx playwright test",
-    "open:inspector": "PWDEBUG=1 npx playwright test authentication.spec.ts",
-    "specific:test:webkit": "npx playwright test --project=webkit authentication.spec.ts",
+    "test": "yarn run clean:allure && yarn playwright test",
+    "api:test": "DEBUG=pw:api yarn playwright test authentication.spec.ts",
+    "watch:mode": "PWTEST_WATCH=1 yarn playwright test",
+    "open:inspector": "PWDEBUG=1 yarn playwright test authentication.spec.ts",
+    "specific:test:webkit": "yarn playwright test --project=webkit authentication.spec.ts",
     "lint:tests": "eslint tests/**.ts --fix",
-    "define:workers": "npx playwright test tests --workers 1",
+    "define:workers": "yarn playwright test tests --workers 1",
     "clean:allure": "rm -rf allure-results/ allure-report/",
-    "open:allure": "node --no-warnings ./node_modules/.bin/allure generate allure-results --clean && node --no-warnings ./node_modules/.bin/allure open allure-report",
-    "grep:smoke": "npx playwright test --grep @smoke",
-    "grep:invert": "npx playwright test --grep-invert @smoke"
+    "open:allure": "allure generate allure-results --clean && allure open allure-report",
+    "grep:smoke": "yarn playwright test --grep @smoke",
+    "grep:invert": "yarn playwright test --grep-invert @smoke"
   },
   "keywords": [],
   "author": "Marcelo Costa",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@faker-js/faker": "^9.4.0",
+    "@faker-js/faker": "^9.5.0",
     "@playwright/test": "^1.50.1",
-    "@types/node": "^22.13.1",
-    "@typescript-eslint/eslint-plugin": "^8.24.0",
-    "@typescript-eslint/parser": "^8.24.0",
+    "@types/node": "^22.13.4",
+    "@typescript-eslint/eslint-plugin": "^8.24.1",
+    "@typescript-eslint/parser": "^8.24.1",
     "allure-commandline": "^2.32.2",
-    "allure-playwright": "^3.1.0",
+    "allure-playwright": "^3.2.0",
     "amazon-cognito-identity-js": "^6.3.12",
     "aws-amplify": "^6.13.0",
     "dotenv": "^16.4.7",
@@ -39,6 +43,7 @@
     "eslint-plugin-playwright": "^2.2.0",
     "eslint-plugin-prettier": "^5.2.3",
     "jiti": "^2.4.2",
-    "prettier": "^3.5.0"
+    "prettier": "^3.5.1",
+    "typescript": "^5.7.3"
   }
 }

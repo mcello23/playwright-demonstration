@@ -20,15 +20,14 @@ jobs:
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install dependencies
         run: |
-          npm install -g npm@latest
-          npm ci --prefer-offline
+          yarn install --frozen-lockfile
 
       - name: Setup Playwright
-        run: npx playwright install --with-deps
+        run: yarn playwright install --with-deps
 
       - name: Create auth directory
         run: mkdir -p auth
@@ -37,7 +36,7 @@ jobs:
         env:
           USER_EMAIL: ${{ secrets.USER_EMAIL }}
           USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
-        run: npx playwright test
+        run: yarn playwright test
         continue-on-error: true
 
       - name: Upload test results
@@ -52,7 +51,7 @@ jobs:
       - name: Generate Allure Report
         if: always()
         run: |
-          npm install -g allure-commandline
+          yarn global add allure-commandline
           allure generate allure-results --clean -o allure-report
 
       - name: Setup Pages
