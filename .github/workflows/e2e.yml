@@ -1,8 +1,17 @@
-name: E2E Testing
+name: Regression E2E Tests
 
 on:
+  workflow_dispatch:
   push:
-    branches: ["main"]
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -10,12 +19,11 @@ permissions:
   id-token: write
 
 jobs:
-  test-e2e:
+  E2E-Tests-Execution:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
 
       - name: Set up Node.js
         uses: actions/setup-node@v4.2.0
@@ -23,17 +31,33 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "yarn"
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Configure Corepack
+        run: |
+          corepack enable
+          yarn set version 4.6.0
+        shell: bash
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+        shell: bash
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4.2.0
+        with:
+          path: |
+            ${{ github.workspace }}/.yarn/cache
+            ${{ github.workspace }}/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Setup Playwright
         run: yarn playwright install --with-deps
+        shell: bash
 
       - name: Create auth directory
         run: mkdir -p auth
+        shell: bash
 
       - name: Run tests
         env:
@@ -41,6 +65,7 @@ jobs:
           USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
         run: yarn playwright test
         continue-on-error: true
+        shell: bash
 
       - name: Upload test results
         if: always()
@@ -56,6 +81,7 @@ jobs:
         run: |
           yarn global add allure-commandline
           allure generate allure-results --clean -o allure-report
+        shell: bash
 
       - name: Setup Pages
         if: always()
@@ -69,11 +95,11 @@ jobs:
 
   deploy:
     if: always()
-    needs: test-e2e
+    needs: E2E-Tests-Execution
     runs-on: ubuntu-latest
     environment:
       name: github-pages
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v4.0.5
