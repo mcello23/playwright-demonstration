@@ -30,7 +30,6 @@ jobs:
       - name: Configure Corepack
         run: |
           corepack enable
-          yarn set version 4.6.0
           corepack prepare yarn@4.6.0 --activate
           mkdir -p .yarn/cache
         shell: bash
@@ -67,7 +66,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: |
@@ -83,7 +82,7 @@ jobs:
 
       - name: Setup Pages
         if: always()
-        uses: actions/configure-pages@v5.0.0
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         if: always()
