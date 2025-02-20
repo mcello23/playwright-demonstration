@@ -1,4 +1,4 @@
-import { expect, test } from '../utils/test-extend.ts';
+import { expect, test } from '@playwright/test';
 
 test.describe('Profile and tenants validation @regression', () => {
   test.beforeEach(async ({ page }) => {

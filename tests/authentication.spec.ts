@@ -1,4 +1,4 @@
-import { expect, test } from '../utils/test-extend.ts';
+import { expect, test } from '@playwright/test';
 
 async function validateOpenIDTokenRequest(route: any, request: any) {
   expect(request.method()).toBe('POST');
