@@ -1,5 +1,5 @@
 import { test as baseTest } from '@playwright/test';
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import type { BrowserContextOptions } from 'playwright';
 import { getCognitoAuthTokens } from '../cognitoAuth.ts';
 
@@ -12,21 +12,23 @@ interface TestOptions {
 export const test = baseTest.extend<TestOptions, { authToken: string }>({
   authToken: [
     async ({}, use) => {
-      let token = '';
       const authFile = './auth/auth.json';
-
-      if (fs.existsSync(authFile)) {
-        token = JSON.parse(fs.readFileSync(authFile, 'utf-8')).idToken;
-      } else {
+      let token: string;
+      try {
+        // Tenta ler o token salvo de forma assíncrona
+        const fileContent = await fs.readFile(authFile, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+        token = parsed.idToken;
+      } catch (error) {
+        // Se não for possível ler o arquivo ou o token estiver inválido, refaz a autenticação
         token = await getCognitoAuthTokens();
       }
-
       await use(token);
     },
     { scope: 'worker' },
   ],
   storageState: async ({ authToken }, use) => {
-    const storageState = {
+    const storageState: BrowserContextOptions['storageState'] = {
       cookies: [],
       origins: [
         {
