@@ -6,7 +6,6 @@ export * from '@playwright/test';
 async function isAuthStateValid(page: Page): Promise<boolean> {
   try {
     await page.goto('https://idv-suite.identity-platform.dev/en');
-    await page.waitForLoadState('networkidle');
     await expect(page.locator('[data-test="header-logo"]')).toBeVisible({
       timeout: 5000,
     });

@@ -20,7 +20,8 @@
     "clean:allure": "rm -rf allure-results/ allure-report/",
     "open:allure": "allure generate allure-results --clean && allure open allure-report",
     "grep:smoke": "yarn playwright test --grep @smoke",
-    "grep:invert": "yarn playwright test --grep-invert @smoke"
+    "grep:invert": "yarn playwright test --grep-invert @smoke",
+    "flaky:repeat": "yarn test tests/dashboard --repeat-each=10 --workers=8"
   },
   "keywords": [],
   "author": "Marcelo Costa",

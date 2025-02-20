@@ -17,9 +17,7 @@ async function interceptGetAggreate(route: any, request: any) {
   //   from: expect.any(String),
   //   to: expect.any(String),
   // });
-
   const response = await route.fetch();
-
   expect(response.status()).toBe(200);
 
   console.log('Request method:', request.method());
