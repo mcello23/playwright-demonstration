@@ -44,10 +44,10 @@ export default defineConfig({
   ],
   globalSetup: globalSetupPath,
   use: {
-    baseURL: process.env.BASE_URL || 'https://idv-suite.identity-platform.dev',
-    trace: process.env.CI ? 'retain-on-failure' : 'on',
-    screenshot: process.env.CI ? 'only-on-failure' : 'on',
-    video: process.env.CI ? 'retain-on-failure' : 'on',
+    baseURL: 'https://idv-suite.identity-platform.dev',
+    trace: 'on',
+    screenshot: 'on',
+    video: 'on',
     viewport: { width: 1920, height: 1080 },
     storageState: path.resolve(authDir, `worker-${process.env.PLAYWRIGHT_WORKER_INDEX || 0}.json`),
   },
@@ -65,10 +65,10 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
     /* Test against branded browsers. */
-    {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' }, // or 'msedge-dev'
-    },
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    // },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
