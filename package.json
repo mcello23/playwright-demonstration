@@ -30,12 +30,14 @@
     "@faker-js/faker": "^9.5.0",
     "@playwright/test": "^1.50.1",
     "@types/node": "^22.13.4",
+    "@types/qs": "^6",
     "@typescript-eslint/eslint-plugin": "^8.24.1",
     "@typescript-eslint/parser": "^8.24.1",
     "allure-commandline": "^2.32.2",
     "allure-playwright": "^3.2.0",
     "amazon-cognito-identity-js": "6.3.12",
     "aws-amplify": "^6.13.0",
+    "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
@@ -44,6 +46,8 @@
     "eslint-plugin-prettier": "^5.2.3",
     "jiti": "^2.4.2",
     "prettier": "^3.5.1",
+    "qa": "^0.0.31",
+    "qs": "^6.14.0",
     "typescript": "^5.7.3"
   }
 }

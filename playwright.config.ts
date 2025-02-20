@@ -39,7 +39,9 @@ export default defineConfig({
     screenshot: 'on',
     video: 'on',
     viewport: { width: 1920, height: 1080 },
+    storageState: 'storageState.json', // Aponta para o estado de armazenamento gerado
   },
+  globalSetup: './utils/global-setup.ts', // Define o setup global
   projects: [
     {
       name: 'chromium',

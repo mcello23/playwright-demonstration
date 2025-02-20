@@ -1,7 +1,8 @@
+// test-extend.ts
+import type { BrowserContextOptions } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
 import fs from 'fs';
-import type { BrowserContextOptions } from 'playwright';
-import { getCognitoAuthTokens } from '../cognitoAuth.ts';
+import { authenticateWithKeycloak } from '../cognitoAuth.ts';
 
 export * from '@playwright/test';
 
@@ -16,9 +17,9 @@ export const test = baseTest.extend<TestOptions, { authToken: string }>({
       const authFile = './auth/auth.json';
 
       if (fs.existsSync(authFile)) {
-        token = JSON.parse(fs.readFileSync(authFile, 'utf-8')).idToken;
+        token = JSON.parse(fs.readFileSync(authFile, 'utf-8')).accessToken;
       } else {
-        token = await getCognitoAuthTokens();
+        token = await authenticateWithKeycloak();
       }
 
       await use(token);
@@ -31,7 +32,7 @@ export const test = baseTest.extend<TestOptions, { authToken: string }>({
       origins: [
         {
           origin: 'https://idv-suite.identity-platform.dev',
-          localStorage: [{ name: 'CognitoIdToken', value: authToken }],
+          localStorage: [{ name: 'accessToken', value: authToken }],
         },
       ],
     };
