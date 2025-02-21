@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 test.describe('Authentication with Dynamically Updated Mocked Storage State @regression', () => {
   const storageStatePath = path.resolve(__dirname, '../utils/fixtures/mockedStorageState.json');
 
-  test.only('As a user, I can log in with a dynamically updated mocked storage state @smoke', async ({
+  test('As a user, I can log in with a dynamically updated mocked storage state @smoke', async ({
     page,
     browserName,
   }) => {
