@@ -11,14 +11,6 @@ const __dirname = path.dirname(__filename);
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-// Validate required environment variables
-const requiredEnvVars = ['BASE_URL', 'USER_EMAIL', 'USER_PASSWORD'];
-requiredEnvVars.forEach((varName) => {
-  if (!process.env[varName]) {
-    throw new Error(`❌ Missing environment variable: ${varName}`);
-  }
-});
-
 // Define authentication storage paths
 const authDir = path.resolve(__dirname, 'auth');
 const unsignedStatePath = path.join(authDir, 'unsigned.json');
@@ -30,7 +22,7 @@ if (!fs.existsSync(authDir)) {
 }
 
 // Optimize workers for CI and local execution
-const numWorkers = process.env.CI ? Math.min(os.cpus().length, 4) : 3;
+const numWorkers = process.env.CI ? Math.min(os.cpus().length, 2) : 3;
 
 // Function to retrieve the correct storage state file
 const getStorageStatePath = (workerIndex: number) => {
@@ -65,10 +57,10 @@ export default defineConfig({
   ],
   globalSetup: path.resolve(__dirname, 'utils/global-setup.ts'),
   use: {
-    baseURL: process.env.BASE_URL,
-    trace: 'on',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    baseURL: 'https://idv-suite.identity-platform.dev',
+    trace: 'retain-on-failure',
+    screenshot: 'on',
+    video: 'on',
     viewport: { width: 1920, height: 1080 },
     ignoreHTTPSErrors: true,
     storageState: getStorageStatePath(parseInt(process.env.PLAYWRIGHT_WORKER_INDEX || '0', 10)),

@@ -13,7 +13,7 @@ const authDir = path.resolve(__dirname, '../auth');
 const unsignedStatePath = path.join(authDir, 'unsigned.json'); // Store unsigned state
 
 // Validate required environment variables
-const requiredEnvVars = ['BASE_URL', 'USER_EMAIL', 'USER_PASSWORD'];
+const requiredEnvVars = ['USER_EMAIL', 'USER_PASSWORD'];
 requiredEnvVars.forEach((varName) => {
   if (!process.env[varName]) {
     throw new Error(`❌ Missing environment variable: ${varName}`);
@@ -35,7 +35,7 @@ async function createUnsignedState() {
 
   try {
     // Visit the base URL (ensuring no authentication is triggered)
-    await page.goto(process.env.BASE_URL!);
+    await page.goto('https://idv-suite.identity-platform.dev');
 
     // Save the unsigned state (empty session)
     await context.storageState({ path: unsignedStatePath });
@@ -61,7 +61,7 @@ async function loginAndSaveState(workerIndex: number, browser: any) {
   const page = await context.newPage();
 
   try {
-    await page.goto(process.env.BASE_URL!);
+    await page.goto('https://idv-suite.identity-platform.dev');
     await page.waitForLoadState('networkidle');
 
     await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.USER_EMAIL!);
