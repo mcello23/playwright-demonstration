@@ -3,8 +3,11 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+const globalSetupPath = path.resolve(__dirname, 'utils/global-setup.ts');
 
 export default defineConfig({
   timeout: 80000,
@@ -33,12 +36,17 @@ export default defineConfig({
     ['list'],
     ['html'],
   ],
+  globalSetup: globalSetupPath,
   use: {
-    baseURL: 'https://idv-suite.identity-platform.dev',
+    baseURL: process.env.BASE_URL || 'https://idv-suite.identity-platform.dev',
     trace: 'on',
     screenshot: 'on',
     video: 'on',
     viewport: { width: 1920, height: 1080 },
+    storageState: path.join(__dirname, 'auth/auth.json'),
+    ignoreHTTPSErrors: true,
+    actionTimeout: 10000,
+    navigationTimeout: 10000,
   },
   projects: [
     {

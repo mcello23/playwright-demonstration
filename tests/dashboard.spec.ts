@@ -1,4 +1,4 @@
-import { expect, test } from '../utils/test-extend.ts';
+import { expect, test } from '@playwright/test';
 
 function formatDate(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
