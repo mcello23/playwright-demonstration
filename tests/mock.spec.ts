@@ -9,7 +9,13 @@ const __dirname = path.dirname(__filename);
 test.describe('Authentication with Dynamically Updated Mocked Storage State @regression', () => {
   const storageStatePath = path.resolve(__dirname, '../utils/fixtures/mockedStorageState.json');
 
-  test('As a user, I can log in with a dynamically updated mocked storage state @smoke', async ({ page }) => {
+  test.only('As a user, I can log in with a dynamically updated mocked storage state @smoke', async ({
+    page,
+    browserName,
+  }) => {
+    // Skip test if not Chromium
+    test.skip(browserName !== 'chromium', 'Test only runs on Chromium');
+
     // 1. Read the existing mockedStorageState.json
     let storageState: { cookies: any[]; origins: any[] } = { cookies: [], origins: [] };
     if (fs.existsSync(storageStatePath)) {

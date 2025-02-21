@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "AUTH_SESSION_ID",
-      "value": "dynamic_session_id_1740165245086",
+      "value": "dynamic_session_id_1740166589327",
       "domain": "idp.identity-platform.dev",
       "path": "/auth/realms/idv/",
       "expires": -1,
@@ -194,6 +194,18 @@
         {
           "name": "my_custom_local_storage_item",
           "value": "my_custom_local_storage_value_1740165245086"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740166337373"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740166356998"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740166589327"
         }
       ]
     },
