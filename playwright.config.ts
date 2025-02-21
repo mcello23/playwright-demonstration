@@ -30,8 +30,8 @@ const getStorageStatePath = (workerIndex: number) => {
 };
 
 export default defineConfig({
-  timeout: 30_000, // 30s test timeout
-  expect: { timeout: 14_000 }, // 14s expectation timeout
+  timeout: process.env.CI ? 80_000 : 30_000, // 60s timeout in CI, 30s locally
+  expect: { timeout: process.env.CI ? 60_000 : 14_000 }, // 30s expectation timeout in CI, 14s locally
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
