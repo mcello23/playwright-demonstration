@@ -22,7 +22,7 @@ if (!fs.existsSync(authDir)) {
 }
 
 // Optimize workers for CI and local execution
-const numWorkers = process.env.CI ? Math.min(os.cpus().length, 2) : 3;
+const numWorkers = process.env.CI ? Math.min(os.cpus().length, 3) : 3;
 
 // Function to retrieve the correct storage state file
 const getStorageStatePath = (workerIndex: number) => {
@@ -35,7 +35,6 @@ export default defineConfig({
   expect: { timeout: 14_000 }, // 14s expectation timeout
   testDir: './tests',
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 1, // More retries in CI
   workers: numWorkers,
   reporter: [
