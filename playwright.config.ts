@@ -1,38 +1,59 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const globalSetupPath = path.resolve(__dirname, 'utils/global-setup.ts');
-const authDir = path.resolve(__dirname, 'auth');
+// Validate required environment variables
+const requiredEnvVars = ['BASE_URL', 'USER_EMAIL', 'USER_PASSWORD'];
+requiredEnvVars.forEach((varName) => {
+  if (!process.env[varName]) {
+    throw new Error(`❌ Missing environment variable: ${varName}`);
+  }
+});
 
-import fs from 'fs';
+// Define authentication storage paths
+const authDir = path.resolve(__dirname, 'auth');
+const unsignedStatePath = path.join(authDir, 'unsigned.json');
+
+// Ensure auth directory exists
 if (!fs.existsSync(authDir)) {
   fs.mkdirSync(authDir, { recursive: true });
+  console.log(`✅ Auth directory created: ${authDir}`);
 }
 
+// Optimize workers for CI and local execution
+const numWorkers = process.env.CI ? Math.min(os.cpus().length, 4) : 3;
+
+// Function to retrieve the correct storage state file
+const getStorageStatePath = (workerIndex: number) => {
+  const workerStatePath = path.join(authDir, `worker-${workerIndex}.json`);
+  return fs.existsSync(workerStatePath) ? workerStatePath : unsignedStatePath;
+};
+
 export default defineConfig({
-  timeout: 80000,
-  expect: {
-    timeout: 60000,
-  },
+  timeout: 30_000, // 30s test timeout
+  expect: { timeout: 14_000 }, // 14s expectation timeout
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 3 : 1,
-  workers: process.env.CI ? 3 : 4,
+  retries: process.env.CI ? 3 : 1, // More retries in CI
+  workers: numWorkers,
   reporter: [
     ['list'],
     ['html'],
     [
       'allure-playwright',
       {
-        detail: true,
         outputFolder: 'test-results',
+        detail: true,
         suiteTitle: true,
         attachments: true,
         labels: true,
@@ -42,41 +63,37 @@ export default defineConfig({
       },
     ],
   ],
-  globalSetup: globalSetupPath,
+  globalSetup: path.resolve(__dirname, 'utils/global-setup.ts'),
   use: {
-    baseURL: 'https://idv-suite.identity-platform.dev',
+    baseURL: process.env.BASE_URL,
     trace: 'on',
-    screenshot: 'on',
-    video: 'on',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
     viewport: { width: 1920, height: 1080 },
-    storageState: path.resolve(authDir, `worker-${process.env.PLAYWRIGHT_WORKER_INDEX || 0}.json`),
+    ignoreHTTPSErrors: true,
+    storageState: getStorageStatePath(parseInt(process.env.PLAYWRIGHT_WORKER_INDEX || '0', 10)),
   },
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: ['--disable-gpu', '--disable-dev-shm-usage', '--no-sandbox'],
+        },
+      },
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+      },
     },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: {
+        ...devices['Desktop Safari'],
+      },
     },
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
   ],
 });

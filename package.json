@@ -2,14 +2,15 @@
   "name": "idv-qa",
   "version": "1.0.0",
   "type": "module",
-  "main": "playwright.config.ts",
   "packageManager": "yarn@4.6.0",
   "engines": {
     "node": ">=20.17.0"
   },
   "scripts": {
-    "clean": "rm -rf test-results/",
-    "ui": "playwright test --ui",
+    "clean": "rimraf test-results/",
+    "clean:all": "rimraf allure-results/ allure-report/ test-results/",
+    "clean:auth": "rimraf auth/",
+    "ui": "yarn clean:auth && playwright test --ui",
     "test": "NODE_OPTIONS='--no-warnings' yarn run clean:allure && yarn playwright test",
     "api:test": "DEBUG=pw:api yarn playwright test authentication.spec.ts",
     "watch:mode": "PWTEST_WATCH=1 yarn playwright test",
@@ -17,7 +18,7 @@
     "specific:test:webkit": "yarn playwright test --project=webkit authentication.spec.ts",
     "lint:tests": "eslint tests/**.ts --fix",
     "define:workers": "yarn playwright test tests --workers 1",
-    "clean:allure": "rm -rf allure-results/ allure-report/",
+    "clean:allure": "rimraf allure-results/ allure-report/",
     "open:allure": "allure generate allure-results --clean && allure open allure-report",
     "grep:smoke": "yarn playwright test --grep @smoke",
     "grep:invert": "yarn playwright test --grep-invert @smoke",
@@ -43,8 +44,8 @@
     "eslint-define-config": "^2.1.0",
     "eslint-plugin-playwright": "^2.2.0",
     "eslint-plugin-prettier": "^5.2.3",
-    "jiti": "^2.4.2",
     "prettier": "^3.5.1",
+    "rimraf": "^6.0.1",
     "typescript": "^5.7.3"
   }
 }

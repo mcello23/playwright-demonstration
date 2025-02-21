@@ -12,7 +12,7 @@ test.describe('Profile and tenants validation @regression', () => {
     await expect(logoutOption).toContainText('Log out');
   });
 
-  test('As a user, I want to see Tanants available in my profile @smoke', async ({ page }) => {
+  test('As a user, I want to see Tenants available in my profile @smoke', async ({ page }) => {
     await page.getByRole('button', { name: 'Demo' }).click();
     const tenantText = page.getByText('Select a tenant');
     await expect(tenantText).toBeVisible();
