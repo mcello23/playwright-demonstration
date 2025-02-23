@@ -1,4 +1,4 @@
-import { expect, test } from '../utils/test-extend.ts';
+import { expect, test } from '@playwright/test';
 import { dashboardTexts, operationsTexts } from '../utils/texts/strings.ts';
 
 test.describe('Strings validations of each sub-page, every locale @smoke', () => {
