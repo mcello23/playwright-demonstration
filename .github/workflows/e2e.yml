@@ -101,23 +101,23 @@ jobs:
           path: allure-results
           merge-multiple: true
 
-      - name: List downloaded test results
-        run: ls -la allure-results
-        shell: bash
+      # - name: List downloaded test results
+      #   run: ls -la allure-results
+      #   shell: bash
 
       # Reorganizar arquivos para estrutura esperada pelo Allure
-      - name: Reorganize Allure files
-        run: |
-          mkdir -p allure-flat
-          # Encontrar todos os arquivos relevantes e copiar para diretório plano
-          find allure-results -type f -name "*.xml" -o -name "*.json" -o -name "*.txt" -o -name "*.png" -o -name "*.html" | xargs -I{} cp {} allure-flat/
-          echo "Arquivos reorganizados:"
-          ls -la allure-flat
-        shell: bash
+      # - name: Reorganize Allure files
+      #   run: |
+      #     mkdir -p allure-flat
+      #     # Encontrar todos os arquivos relevantes e copiar para diretório plano
+      #     find allure-results -type f -name "*.xml" -o -name "*.json" -o -name "*.txt" -o -name "*.png" -o -name "*.html" | xargs -I{} cp {} allure-flat/
+      #     echo "Arquivos reorganizados:"
+      #     ls -la allure-flat
+      #   shell: bash
 
-      - name: Generate Allure Report from flat directory
+      - name: Generate Allure Report
         run: |
-          yarn dlx allure-commandline generate allure-flat --clean -o allure-report
+          yarn dlx allure-commandline generate allure-results --clean -o allure-report
         shell: bash
 
       - name: Setup Pages

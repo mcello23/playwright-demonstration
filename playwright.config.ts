@@ -30,7 +30,7 @@ export default defineConfig({
   expect: { timeout: process.env.CI ? 60_000 : 14_000 },
   testDir: './tests',
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 3 : 1,
+  retries: process.env.CI ? 2 : 1,
   workers: process.env.CI ? 1 : 3,
   shard: process.env.CI ? { total: 3, current: 1 } : undefined,
   fullyParallel: false,
