@@ -7,7 +7,7 @@
     "node": ">=20.17.0"
   },
   "scripts": {
-    "clean": "rimraf test-results/",
+    "clean": "rimraf allure-results/",
     "clean:all": "rimraf allure-results/ allure-report/ test-results/",
     "clean:auth": "rimraf auth/",
     "ui": "yarn clean:auth && playwright test --ui",

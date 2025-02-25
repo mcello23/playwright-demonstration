@@ -39,11 +39,14 @@ export default defineConfig({
     [
       'allure-playwright',
       {
-        outputFolder: 'test-results',
+        outputFolder: 'allure-results',
         detail: true,
         suiteTitle: true,
         attachments: true,
         labels: true,
+        links: true,
+        video: true,
+        screenshots: true,
         environmentInfo: {
           os_platform: os.platform(),
           os_release: os.release(),
