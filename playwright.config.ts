@@ -35,7 +35,6 @@ export default defineConfig({
   fullyParallel: false,
   reporter: [
     ['list'],
-    ['html'],
     [
       'allure-playwright',
       {

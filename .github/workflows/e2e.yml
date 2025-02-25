@@ -62,6 +62,10 @@ jobs:
         run: yarn playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         continue-on-error: true
 
+      - name: List test results directory
+        run: ls -l test-results
+        shell: bash
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4.6.0
@@ -100,6 +104,10 @@ jobs:
           pattern: allure-results-*
           path: allure-results
           merge-multiple: true
+
+      - name: List downloaded test results
+        run: ls -l allure-results
+        shell: bash
 
       - name: Generate Allure Report
         run: |
