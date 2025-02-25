@@ -71,7 +71,7 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
 
     await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.USER_EMAIL!);
     await page.getByRole('button', { name: 'Next' }).click();
-
+    await page.waitForLoadState('networkidle');
     await page.getByRole('textbox', { name: 'Password' }).fill(process.env.USER_PASSWORD!);
     await page.getByRole('button', { name: 'Continue' }).click();
 
