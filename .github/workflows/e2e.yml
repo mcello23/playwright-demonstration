@@ -62,14 +62,6 @@ jobs:
         run: yarn playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         continue-on-error: true
 
-      - name: Upload blob report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: blob-report-${{ matrix.shardIndex }}
-          path: blob-report
-          retention-days: 1
-
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4.6.0
@@ -102,26 +94,12 @@ jobs:
         run: yarn install --immutable
         shell: bash
 
-      - name: Install Playwright
-        run: yarn playwright install
-        shell: bash
-
-      - name: Download blob reports
-        uses: actions/download-artifact@v4
-        with:
-          pattern: blob-report-*
-          path: all-blob-reports
-          merge-multiple: true
-
       - name: Download all test results
         uses: actions/download-artifact@v4
         with:
           pattern: allure-results-*
           path: allure-results
           merge-multiple: true
-
-      - name: Merge blob reports
-        run: yarn playwright merge-reports --reporter html ./all-blob-reports
 
       - name: Generate Allure Report
         run: |
@@ -131,13 +109,6 @@ jobs:
       - name: Setup Pages
         if: always()
         uses: actions/configure-pages@v5
-
-      - name: Upload HTML report
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-report
-          path: playwright-report
-          retention-days: 30
 
       - name: Upload Allure Report to GitHub Pages
         uses: actions/upload-pages-artifact@v3.0.1
