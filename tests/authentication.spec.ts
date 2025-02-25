@@ -36,13 +36,17 @@ test.describe('Authentication @regression', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // Executa login
-    await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.USER_EMAIL_1 ?? '');
-    await page.getByRole('button', { name: 'Next' }).click();
-    await page.getByRole('textbox', { name: 'Password' }).fill(process.env.USER_PASSWORD_1 ?? '');
-    await page.getByRole('button', { name: 'Continue' }).click();
+    const emailInput = page.getByRole('textbox', { name: 'Email address' });
+    await emailInput.waitFor({ state: 'visible' });
+    await emailInput.fill(process.env.USER_EMAIL!, { timeout: 40000 });
 
-    await page.waitForLoadState('networkidle');
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    const passwordInput = page.getByRole('textbox', { name: 'Password' });
+    await passwordInput.waitFor({ state: 'visible' });
+    await passwordInput.fill(process.env.USER_PASSWORD!, { timeout: 40000 });
+
+    await page.getByRole('button', { name: 'Continue' }).click();
   });
 
   test('Should login successfully and validate OpenID token @smoke', async ({ page, browserName }) => {

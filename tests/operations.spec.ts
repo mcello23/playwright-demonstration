@@ -33,16 +33,16 @@ test.describe('Operations page validation @regression', () => {
 
     const filterByDateLocator = page.locator('[data-test="filter-by-date"]');
     await filterByDateLocator.click();
-    await filterByDateLocator.fill(formattedDateRange);
+    await filterByDateLocator.fill(formattedDateRange, { timeout: 2000 });
     await expect(filterByDateLocator).toHaveValue(formattedDateRange);
 
     // Test Search input
     page.locator('[data-test="filter-by-name"]').isEnabled();
-    const randomWord = faker.lorem.word(5);
-    page.locator('[data-test="filter-by-name"]').fill(randomWord);
+    const randomName = faker.person.firstName();
+    page.locator('[data-test="filter-by-name"]').fill(randomName);
     await page.locator('[data-test="clear-all"]').isVisible();
     await page.locator('[data-test="clear-all"]').click();
-    expect(page.locator('[data-test="filter-by-name"]')).not.toHaveValue(randomWord);
+    expect(page.locator('[data-test="filter-by-name"]')).not.toHaveValue(randomName);
 
     // Test Filter button
     page.locator('[data-test="filter-button"]').click();
