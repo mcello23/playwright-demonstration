@@ -5,9 +5,15 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const authDir = path.resolve(__dirname, '../auth');
 const unsignedStatePath = path.resolve(__dirname, '../auth/unsigned.json');
+const signedStatePath = {
+  chromium: path.resolve(authDir, 'auth-chromium.json'),
+  firefox: path.resolve(authDir, 'auth-firefox.json'),
+  webkit: path.resolve(authDir, 'auth-webkit.json'),
+};
 
-// Function to validate OpenID token request
+// Função para validar requisição do token OpenID
 async function validateOpenIDTokenRequest(route: any, request: any) {
   expect(request.method()).toBe('POST');
   console.log('Request method:', request.method());
@@ -22,7 +28,7 @@ async function validateOpenIDTokenRequest(route: any, request: any) {
   await route.continue();
 }
 
-// Function to validate OpenID auth response
+// Função para validar resposta de autenticação OpenID
 async function validateOpenIDAuthResponse(route: any) {
   console.log('Intercepted request:', route.request().url());
   const response = await route.fetch();
@@ -31,40 +37,52 @@ async function validateOpenIDAuthResponse(route: any) {
   await route.continue();
 }
 
-// Authentication test suite
-test.describe('Authentication flows @regression', () => {
-  test.use({ storageState: unsignedStatePath });
+test.beforeEach(async ({ page }) => {
+  await page.goto('/');
+  await page.waitForLoadState('domcontentloaded');
+});
 
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('domcontentloaded');
-    const maskedEmail = process.env.USER_EMAIL ? '***' : '';
-    console.log(`Filling email address: ${maskedEmail}`);
-    await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.USER_EMAIL_1 ?? '');
-    await page.getByRole('button', { name: 'Next' }).click();
+test.describe.parallel('Authentication @regression', () => {
+  test.describe('Login flows', () => {
+    test.use({ storageState: unsignedStatePath });
 
-    const maskedPassword = process.env.USER_PASSWORD ? '***' : '';
-    console.log(`Filling password: ${maskedPassword}`);
-    await page.getByRole('textbox', { name: 'Password' }).pressSequentially(process.env.USER_PASSWORD_1 ?? '');
-    await page.getByRole('button', { name: 'Continue' }).click();
+    test('Should login successfully and validate OpenID token @smoke', async ({ page, browserName }) => {
+      console.log(`Running login test on ${browserName}`);
+
+      // Intercepta e valida token request
+      await page.route('**/openid-connect/token', validateOpenIDTokenRequest);
+
+      // Executa login
+      await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.USER_EMAIL_1 ?? '');
+      await page.getByRole('button', { name: 'Next' }).click();
+      await page.getByRole('textbox', { name: 'Password' }).fill(process.env.USER_PASSWORD_1 ?? '');
+      await page.getByRole('button', { name: 'Continue' }).click();
+
+      // Valida sucesso do login
+      await expect(page.locator('[data-test="header-logo"]')).toBeVisible();
+    });
   });
 
-  test('As a user, I log in to IDV validating OpenID token request and UI @smoke', async ({ page }) => {
-    await page.route('**/openid-connect/token', async (route, request) => {
-      await validateOpenIDTokenRequest(route, request);
+  test.describe('Logout flows', () => {
+    test.use(
+      (
+        { browserName }: { browserName: keyof typeof signedStatePath },
+        use: (options: { storageState: string }) => Promise<void>,
+      ) => {
+        use({ storageState: signedStatePath[browserName] });
+      },
+    );
+
+    test('Should logout successfully and validate OpenID response @smoke', async ({ page }) => {
+      // Intercepta e valida auth response
+      await page.route('**/auth/realms/idv/protocol/openid-connect/auth**', validateOpenIDAuthResponse);
+
+      // Executa logout
+      await page.locator('[data-test="user-name"]').click();
+      await page.getByText('Log out').click();
+
+      // Valida redirecionamento para página de login
+      await expect(page).toHaveURL(/.*login.*/);
     });
-
-    await expect(page.locator('[data-test="header-logo"]')).toBeVisible();
-  });
-
-  test('As a user, I log out from IDV validating OpenID response and UI @smoke', async ({ page }) => {
-    await page.route('**/auth/realms/idv/protocol/openid-connect/auth**', async (route) => {
-      await validateOpenIDAuthResponse(route);
-    });
-
-    await page.locator('[data-test="user-name"]').click();
-    await page.getByText('Log out').click();
-
-    await expect(page).toHaveURL(/.*login.*/);
   });
 });

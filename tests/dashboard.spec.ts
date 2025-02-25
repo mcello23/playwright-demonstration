@@ -46,6 +46,7 @@ test.describe('Dashboard validation flows @regression', () => {
     await filterByDateLocator.fill(formattedDateRange);
     await expect(filterByDateLocator).toHaveValue(formattedDateRange);
   });
+
   test('As a user, I want to click on the Dashboard buttons filters and validate API payload and UI', async ({
     page,
   }) => {

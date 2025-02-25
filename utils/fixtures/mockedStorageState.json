@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "AUTH_SESSION_ID",
-      "value": "dynamic_session_id_1740166589327",
+      "value": "dynamic_session_id_1740468259998",
       "domain": "idp.identity-platform.dev",
       "path": "/auth/realms/idv/",
       "expires": -1,
@@ -206,6 +206,206 @@
         {
           "name": "my_custom_local_storage_item",
           "value": "my_custom_local_storage_value_1740166589327"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740418708821"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740418749967"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740418750656"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740418751048"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740419625190"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740419625589"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740419626184"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740420026108"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740420100647"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740420151259"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740420531374"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740424300990"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740425818059"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740425841281"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740425960630"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740425985953"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740426010581"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740426060936"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740426149213"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740426260597"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740429815804"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740429838746"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740429973161"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740430577046"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740430577457"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740430578165"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740431120357"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740464097588"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740464143388"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740464161467"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740464195639"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740464214439"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740464698153"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740464806322"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740464889231"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740465849752"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740465850235"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740465850728"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740467949295"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740467957172"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740467963790"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740468056545"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740468057077"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740468066110"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740468153237"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740468153258"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740468153281"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740468259007"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740468259416"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740468259998"
         }
       ]
     },

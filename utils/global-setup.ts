@@ -1,4 +1,4 @@
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium, firefox, FullConfig, webkit } from '@playwright/test';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
@@ -9,37 +9,37 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const authDir = path.resolve(__dirname, '../auth');
-const unsignedStatePath = path.join(authDir, 'unsigned.json'); // Store unsigned state
-
-// Validate required environment variables
-const requiredEnvVars = ['USER_EMAIL', 'USER_PASSWORD'];
+const requiredEnvVars = ['USER_EMAIL', 'USER_PASSWORD', 'BASE_URL'];
 requiredEnvVars.forEach((varName) => {
   if (!process.env[varName]) {
     throw new Error(`❌ Missing environment variable: ${varName}`);
   }
 });
 
-// Ensure auth directory exists
+const authDir = path.resolve(__dirname, '../auth');
+const unsignedStatePath = path.join(authDir, 'unsigned.json');
+
+// Ensure the authentication directory exists
 if (!fs.existsSync(authDir)) {
   fs.mkdirSync(authDir, { recursive: true });
 }
 
-// Function to create unsigned state (logged-out state)
+// Function to create an unsigned state (logged-out state)
 async function createUnsignedState() {
-  console.log('⚙️ Creating unsigned state...');
+  if (fs.existsSync(unsignedStatePath)) {
+    console.log(`⚙️ Unsigned state already exists, skipping creation.`);
+    return;
+  }
 
+  console.log('⚙️ Creating unsigned state...');
   const browser = await chromium.launch();
   const context = await browser.newContext();
   const page = await context.newPage();
 
   try {
-    // Visit the base URL (ensuring no authentication is triggered)
-    await page.goto('https://idv-suite.identity-platform.dev');
-
-    // Save the unsigned state (empty session)
+    await page.goto(process.env.BASE_URL!);
     await context.storageState({ path: unsignedStatePath });
-    console.log(`✅ Unsigned state saved at: ${unsignedStatePath}`);
+    console.log(`✅ Unsigned state saved: ${unsignedStatePath}`);
   } catch (error) {
     console.error(`❌ Failed to create unsigned state:`, error);
   } finally {
@@ -47,21 +47,26 @@ async function createUnsignedState() {
   }
 }
 
-// Function to log in and save auth state
-async function loginAndSaveState(workerIndex: number, browser: any) {
-  const authFilePath = path.join(authDir, `worker-${workerIndex}.json`);
+// Function to log in and save authentication state
+async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit') {
+  const authFilePath = path.join(authDir, `auth-${browserType}.json`);
 
+  // If the auth state already exists, skip login
   if (fs.existsSync(authFilePath)) {
-    console.log(`✅ [Worker ${workerIndex}] Reusing existing authentication state.`);
+    console.log(`🔄 Authentication state already exists for ${browserType}, skipping login.`);
     return;
   }
 
-  console.log(`🔑 [Worker ${workerIndex}] Logging in...`);
+  console.log(`🔑 Logging in on ${browserType}...`);
+  const browserTypeMap = { chromium, firefox, webkit };
+  const browserLauncher = browserTypeMap[browserType];
+
+  const browser = await browserLauncher.launch();
   const context = await browser.newContext();
   const page = await context.newPage();
 
   try {
-    await page.goto('https://idv-suite.identity-platform.dev');
+    await page.goto(process.env.BASE_URL!);
     await page.waitForLoadState('networkidle');
 
     await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.USER_EMAIL!);
@@ -72,34 +77,26 @@ async function loginAndSaveState(workerIndex: number, browser: any) {
 
     await page.waitForSelector('[data-test="header-logo"]', { timeout: 15_000 });
 
-    console.log(`✅ [Worker ${workerIndex}] Login successful! Saving authentication state...`);
+    console.log(`✅ Login successful on ${browserType}, saving authentication state...`);
     await context.storageState({ path: authFilePath });
   } catch (error) {
-    console.error(`❌ [Worker ${workerIndex}] Login failed:`, error);
+    console.error(`❌ Failed to log in on ${browserType}:`, error);
   } finally {
-    await context.close();
+    await browser.close();
   }
 }
 
 // Global setup function
 async function globalSetup(config: FullConfig) {
   console.log(`[${new Date().toISOString()}] ⚙️ Running global setup...`);
-  const numberOfWorkers = config.workers;
 
-  // Create unsigned state first
+  // Create unsigned state
   await createUnsignedState();
 
-  // Use a single browser instance for efficiency
-  const browser = await chromium.launch({ headless: process.env.CI ? true : true });
+  // Perform login and save authentication state for each browser
+  await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox'), loginAndSaveState('webkit')]);
 
-  // Perform login for each worker
-  const loginPromises = [];
-  for (let i = 0; i < numberOfWorkers; i++) {
-    loginPromises.push(loginAndSaveState(i, browser));
-  }
-  await Promise.all(loginPromises);
-
-  await browser.close();
+  console.log('✅ Global setup completed!');
 }
 
 export default globalSetup;

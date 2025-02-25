@@ -22,4 +22,4 @@ allure-report
 .yarn/cache
 
 # Fixtures
-utils/fixtures/mockedStorageState.json
+utils/fixtures/
