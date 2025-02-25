@@ -52,7 +52,7 @@ jobs:
         run: mkdir -p auth
         shell: bash
 
-      - name: Run Playwright tests
+      - name: Run Playwright tests separeted by browser
         env:
           USER_EMAIL: ${{ secrets.USER_EMAIL }}
           USER_PASSWORD: ${{ secrets.USER_PASSWORD }}

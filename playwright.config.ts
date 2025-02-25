@@ -11,13 +11,6 @@ const __dirname = path.dirname(__filename);
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const requiredEnvVars = ['USER_EMAIL', 'USER_PASSWORD', 'BASE_URL'];
-requiredEnvVars.forEach((varName) => {
-  if (!process.env[varName]) {
-    throw new Error(`❌ Missing environment variable: ${varName}`);
-  }
-});
-
 const authDir = path.resolve(__dirname, 'auth');
 
 // Ensure auth directory exists
@@ -52,6 +45,25 @@ export default defineConfig({
           os_release: os.release(),
           os_version: os.version(),
           node_version: process.version,
+        },
+        categories: [
+          {
+            name: 'API failures',
+            messageRegex: '.*API request failed.*',
+            matchedStatuses: ['failed'],
+          },
+          {
+            name: 'UI failures',
+            traceRegex: '.*Element not found.*',
+            matchedStatuses: ['broken'],
+          },
+        ],
+        executor: {
+          name: 'playwright',
+          type: 'playwright',
+          url: process.env.CI_JOB_URL || 'local',
+          buildName: process.env.CI_JOB_ID || `Local run ${new Date().toISOString()}`,
+          reportName: 'Playwright Tests Execution',
         },
       },
     ],

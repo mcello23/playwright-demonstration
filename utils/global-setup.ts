@@ -114,16 +114,16 @@ async function globalSetup(config: FullConfig) {
         } else {
           browserType = 'webkit';
         }
-        console.log(`🔧 CI detectado, executando login apenas para ${browserType} (shard ${current}/${total})`);
+        console.log(`🔧 CI dected, executing login only for ${browserType} (shard ${current}/${total})`);
         await loginAndSaveState(browserType);
       } else {
         console.warn(
-          `⚠️ Número de shards (${total}) não é suportado para otimização de login. Executando login para todos os browsers.`,
+          `⚠️ Shard number (${total}) isn't support for shard optimization. Executing login for all browsers.`,
         );
         await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox'), loginAndSaveState('webkit')]);
       }
     } else {
-      console.warn(`⚠️ Sharding não configurado. Executando login para todos os browsers.`);
+      console.warn(`⚠️ Sharding not configured. Executing login for all browsers.`);
       await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox'), loginAndSaveState('webkit')]);
     }
   } else {
