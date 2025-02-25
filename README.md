@@ -1,5 +1,9 @@
 # Playwright E2E Testing
 
+<p align="center">
+ <a href="https://curly-spork-6ky5gr3.pages.github.io"><img src="https://img.shields.io/badge/E2E_Tests_Report-Allure-blue" alt="E2E Report Link"></a>
+</p>
+
 Testing IDV with PW (API / UI)
 
 - testing with global-setup determinated differently in Local and CI
