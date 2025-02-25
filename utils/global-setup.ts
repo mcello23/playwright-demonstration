@@ -69,13 +69,20 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
     await page.goto(process.env.BASE_URL!);
     await page.waitForLoadState('networkidle');
 
-    await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.USER_EMAIL!);
+    const emailInput = page.getByRole('textbox', { name: 'Email address' });
+    await emailInput.waitFor({ state: 'visible' });
+    await emailInput.fill(process.env.USER_EMAIL!, { timeout: 40000 });
+
     await page.getByRole('button', { name: 'Next' }).click();
     await page.waitForLoadState('networkidle');
-    await page.getByRole('textbox', { name: 'Password' }).fill(process.env.USER_PASSWORD!);
+
+    const passwordInput = page.getByRole('textbox', { name: 'Password' });
+    await passwordInput.waitFor({ state: 'visible' });
+    await passwordInput.fill(process.env.USER_PASSWORD!, { timeout: 40000 });
+
     await page.getByRole('button', { name: 'Continue' }).click();
 
-    await page.waitForSelector('[data-test="header-logo"]', { timeout: 15_000 });
+    await page.waitForSelector('[data-test="header-logo"]', { timeout: 20000 });
 
     console.log(`✅ Login successful on ${browserType}, saving authentication state...`);
     await context.storageState({ path: authFilePath });

@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "AUTH_SESSION_ID",
-      "value": "dynamic_session_id_1740468259998",
+      "value": "dynamic_session_id_1740474011947",
       "domain": "idp.identity-platform.dev",
       "path": "/auth/realms/idv/",
       "expires": -1,
@@ -406,6 +406,42 @@
         {
           "name": "my_custom_local_storage_item",
           "value": "my_custom_local_storage_value_1740468259998"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740473447957"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740473533919"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740473556098"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740473745535"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740473866143"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740473930002"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740473953040"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740473988932"
+        },
+        {
+          "name": "my_custom_local_storage_item",
+          "value": "my_custom_local_storage_value_1740474011947"
         }
       ]
     },
