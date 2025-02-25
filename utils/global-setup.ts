@@ -100,8 +100,36 @@ async function globalSetup(config: FullConfig) {
   // Create unsigned state
   await createUnsignedState();
 
-  // Perform login and save authentication state for each browser
-  await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox'), loginAndSaveState('webkit')]);
+  if (process.env.CI) {
+    const shard = config.shard;
+    if (shard) {
+      const { total, current } = shard;
+      let browserType: 'chromium' | 'firefox' | 'webkit';
+
+      if (total === 3) {
+        if (current === 1) {
+          browserType = 'chromium';
+        } else if (current === 2) {
+          browserType = 'firefox';
+        } else {
+          browserType = 'webkit';
+        }
+        console.log(`🔧 CI detectado, executando login apenas para ${browserType} (shard ${current}/${total})`);
+        await loginAndSaveState(browserType);
+      } else {
+        console.warn(
+          `⚠️ Número de shards (${total}) não é suportado para otimização de login. Executando login para todos os browsers.`,
+        );
+        await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox'), loginAndSaveState('webkit')]);
+      }
+    } else {
+      console.warn(`⚠️ Sharding não configurado. Executando login para todos os browsers.`);
+      await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox'), loginAndSaveState('webkit')]);
+    }
+  } else {
+    // Perform login and save authentication state for each browser
+    await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox'), loginAndSaveState('webkit')]);
+  }
 
   console.log('✅ Global setup completed!');
 }
