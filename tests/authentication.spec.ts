@@ -7,7 +7,6 @@ const __dirname = path.dirname(__filename);
 
 const unsignedStatePath = path.resolve(__dirname, '../auth/unsigned.json');
 
-// Função para validar requisição do token OpenID
 async function validateOpenIDTokenRequest(route: any, request: any) {
   expect(request.method()).toBe('POST');
   console.log('Request method:', request.method());
@@ -22,7 +21,6 @@ async function validateOpenIDTokenRequest(route: any, request: any) {
   await route.continue();
 }
 
-// Função para validar resposta de autenticação OpenID
 async function validateOpenIDAuthResponse(route: any) {
   console.log('Intercepted request:', route.request().url());
   const response = await route.fetch();
@@ -52,22 +50,17 @@ test.describe('Authentication @regression', () => {
   test('Should login successfully and validate OpenID token @smoke', async ({ page, browserName }) => {
     console.log(`Running login test on ${browserName}`);
 
-    // Intercepta e valida token request
     await page.route('**/openid-connect/token', validateOpenIDTokenRequest);
 
-    // Valida sucesso do login
     await expect(page.locator('[data-test="header-logo"]')).toBeVisible();
   });
 
   test('Should logout successfully and validate OpenID response @smoke', async ({ page }) => {
-    // Intercepta e valida auth response
     await page.route('**/auth/realms/idv/protocol/openid-connect/auth**', validateOpenIDAuthResponse);
 
-    // Executa logout
     await page.locator('[data-test="user-name"]').click();
     await page.getByText('Log out').click();
 
-    // Valida redirecionamento para página de login
     await expect(page).toHaveURL(/.*login.*/);
   });
 });

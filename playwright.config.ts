@@ -46,25 +46,6 @@ export default defineConfig({
           os_version: os.version(),
           node_version: process.version,
         },
-        categories: [
-          {
-            name: 'API failures',
-            messageRegex: '.*API request failed.*',
-            matchedStatuses: ['failed'],
-          },
-          {
-            name: 'UI failures',
-            traceRegex: '.*Element not found.*',
-            matchedStatuses: ['broken'],
-          },
-        ],
-        executor: {
-          name: 'playwright',
-          type: 'playwright',
-          url: process.env.CI_JOB_URL || 'local',
-          buildName: process.env.CI_JOB_ID || `Local run ${new Date().toISOString()}`,
-          reportName: 'Playwright Tests Execution',
-        },
       },
     ],
   ],
