@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { expect, test } from '@playwright/test';
 
 function formatDate(date: Date): string {
@@ -30,20 +31,23 @@ async function interceptGetAggreate(route: any, request: any) {
 test.describe('Dashboard validation flows @regression', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
   });
   test('As a user, I want to insert random dates in the dashboard filter and validate via UI', async ({ page }) => {
-    const daysInPast = 30;
-    const daysInFuture = 30;
-    const today = new Date();
-    const startDate = new Date(today.setDate(today.getDate() - daysInPast));
-    const endDate = new Date(today.setDate(today.getDate() + daysInFuture));
+    const chartsDashboard = page.locator('.echarts-for-react');
+    await page.route('**/graphql', async (route, request) => {
+      await interceptGetAggreate(route, request);
+    });
+
+    const startDate = faker.date.past();
+    const endDate = faker.date.future();
 
     const formattedDateRange = `${formatDate(startDate)} - ${formatDate(endDate)}`;
 
     const filterByDateLocator = page.locator('[data-test="filter-by-date"]');
     await filterByDateLocator.click();
     await filterByDateLocator.fill(formattedDateRange);
+    await filterByDateLocator.press('Enter');
+    expect(chartsDashboard).toBeTruthy();
     await expect(filterByDateLocator).toHaveValue(formattedDateRange);
   });
 

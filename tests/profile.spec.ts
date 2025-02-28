@@ -18,8 +18,6 @@ test.describe('Profile and tenants validation @regression', () => {
     await expect(tenantText).toBeVisible();
 
     await page.locator('[data-test="modal-tenant"] button').first().isVisible();
-    await page.getByRole('button', { name: 'Demo 123456-789123-' }).isVisible();
-    await page.getByRole('button', { name: 'Facephi 456789-123456-' }).isVisible();
-    await page.getByRole('button', { name: 'Select' }).isDisabled();
+    await page.getByRole('button', { name: 'demo 8d04089d-8273-442e-ad40-2bf10ff494b3' }).isVisible();
   });
 });

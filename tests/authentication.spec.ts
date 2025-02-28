@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test';
+import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const unsignedStatePath = path.resolve(__dirname, '../auth/unsigned.json');
 
 async function validateOpenIDTokenRequest(route: any, request: any) {
@@ -33,17 +35,36 @@ test.describe('Authentication @regression', () => {
   test.use({ storageState: unsignedStatePath });
 
   test.beforeEach(async ({ page }) => {
+    if (!process.env.USER_EMAIL || !process.env.USER_PASSWORD) {
+      throw new Error('Env variables USER_EMAIL e USER_PASSWORD aren\'t set');
+    }
+
     await page.goto('/');
+    
+    await page.waitForSelector('form', { state: 'visible' });
+    
     const emailInput = page.getByRole('textbox', { name: 'Email address' });
     await emailInput.waitFor({ state: 'visible' });
-    await emailInput.fill(process.env.USER_EMAIL!, { timeout: 40000 });
+    await emailInput.focus();
+    await emailInput.clear();
+    await emailInput.fill(process.env.USER_EMAIL);
 
-    await page.getByRole('button', { name: 'Next' }).click();
+    const emailValue = await emailInput.inputValue();
+    expect(emailValue).toBe(process.env.USER_EMAIL);
+  
+    const nextButton = page.getByRole('button', { name: 'Next' });
+    await nextButton.waitFor({ state: 'visible' });
+    await nextButton.click();
 
     const passwordInput = page.getByRole('textbox', { name: 'Password' });
     await passwordInput.waitFor({ state: 'visible' });
-    await passwordInput.fill(process.env.USER_PASSWORD!, { timeout: 40000 });
-
+    await passwordInput.focus();
+    await passwordInput.clear();
+    await passwordInput.fill(process.env.USER_PASSWORD);
+    
+    const passwordValue = await passwordInput.inputValue();
+    expect(passwordValue).toBeTruthy();
+  
     await page.getByRole('button', { name: 'Continue' }).click();
   });
 
