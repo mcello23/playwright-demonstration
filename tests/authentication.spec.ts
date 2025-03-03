@@ -1,7 +1,7 @@
-import { expect, test } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { expect, test } from '../utils/fixtures/e2e.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,8 +38,6 @@ test.describe('Authentication @regression', () => {
     if (!process.env.USER_EMAIL || !process.env.USER_PASSWORD) {
       throw new Error('Env variables USER_EMAIL e USER_PASSWORD aren\'t set');
     }
-
-    await page.goto('/');
     
     await page.waitForSelector('form', { state: 'visible' });
     

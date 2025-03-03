@@ -20,6 +20,3 @@ allure-report
 !.yarn/sdks
 !.yarn/versions
 .yarn/cache
-
-# Fixtures
-utils/fixtures/

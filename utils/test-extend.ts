@@ -1,3 +1,4 @@
+// Not used anymore, but it's a good example of how to extend Playwright test framework
 import { test as baseTest, expect, type Page } from '@playwright/test';
 import fs from 'fs';
 

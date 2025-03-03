@@ -1,8 +1,7 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../utils/fixtures/e2e.ts';
 
 test.describe('Profile and tenants validation @regression', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
   });
 

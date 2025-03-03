@@ -1,23 +1,11 @@
-import { faker } from '@faker-js/faker';
-import { expect, test } from '@playwright/test';
-
-function formatDate(date: Date): string {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-}
+import { expect, getFormattedDateRange, test, verifyDateRangeInput } from '../utils/fixtures/e2e.ts';
 
 async function interceptGetAggreate(route: any, request: any) {
   expect(request.method()).toBe('POST');
 
   const postData = request.postDataJSON();
   expect(postData.operationName).toBe('getAggregateStatistics');
-  // expect(postData.variables).toMatchObject({
-  //   timezone: 'Europe/Madrid',
-  //   from: expect.any(String),
-  //   to: expect.any(String),
-  // });
+  
   const response = await route.fetch();
   expect(response.status()).toBe(200);
 
@@ -29,26 +17,20 @@ async function interceptGetAggreate(route: any, request: any) {
 }
 
 test.describe('Dashboard validation flows @regression', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-  });
   test('As a user, I want to insert random dates in the dashboard filter and validate via UI', async ({ page }) => {
     const chartsDashboard = page.locator('.echarts-for-react');
     await page.route('**/graphql', async (route, request) => {
       await interceptGetAggreate(route, request);
     });
 
-    const startDate = faker.date.past();
-    const endDate = faker.date.future();
-
-    const formattedDateRange = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+    const formattedDate = getFormattedDateRange();
 
     const filterByDateLocator = page.locator('[data-test="filter-by-date"]');
     await filterByDateLocator.click();
-    await filterByDateLocator.fill(formattedDateRange);
+    await filterByDateLocator.fill(formattedDate);
     await filterByDateLocator.press('Enter');
     expect(chartsDashboard).toBeTruthy();
-    await expect(filterByDateLocator).toHaveValue(formattedDateRange);
+    await verifyDateRangeInput(filterByDateLocator, formattedDate);
   });
 
   test('As a user, I want to click on the Dashboard buttons filters and validate API payload and UI', async ({

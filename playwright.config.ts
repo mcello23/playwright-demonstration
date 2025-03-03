@@ -1,6 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
-import fs from 'fs';
 import * as os from 'node:os';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -8,15 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-const authDir = path.resolve(__dirname, 'auth');
-
-// Ensure auth directory exists
-if (!fs.existsSync(authDir)) {
-  fs.mkdirSync(authDir, { recursive: true });
-}
 
 export default defineConfig({
   timeout: process.env.CI ? 80_000 : 30_000,
@@ -49,12 +40,15 @@ export default defineConfig({
       },
     ],
   ],
+  metadata: {
+    gitcommit: 'generate'
+  },
   globalSetup: path.resolve(__dirname, 'utils/global-setup.ts'),
   use: {
     baseURL: 'https://idv-suite.identity-platform.dev',
     trace: 'on',
     screenshot: 'on',
-    video: 'retain-on-failure',
+    video: 'on-first-retry',
     viewport: { width: 1920, height: 1080 },
     ignoreHTTPSErrors: true,
   },
