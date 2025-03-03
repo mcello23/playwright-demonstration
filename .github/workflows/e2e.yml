@@ -19,6 +19,9 @@ jobs:
   playwright-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.50.1-noble
+      options: --ipc=host
     strategy:
       fail-fast: false
       matrix:
@@ -44,15 +47,11 @@ jobs:
         run: yarn install --immutable
         shell: bash
 
-      - name: Install Playwright browsers
-        run: yarn playwright install --with-deps
-        shell: bash
-
       - name: Create auth directory
         run: mkdir -p auth
         shell: bash
 
-      - name: Run Playwright tests separeted by browser
+      - name: Run Playwright tests separated by browser
         env:
           USER_EMAIL: ${{ secrets.USER_EMAIL }}
           USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
