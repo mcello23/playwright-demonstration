@@ -1,4 +1,4 @@
-import { expect, getFormattedDateRange, test, verifyDateRangeInput } from '../utils/fixtures/e2e.ts';
+import { expect, getFormattedDateRange, test, verifyDateRangeInput } from '../utils/fixtures/e2e';
 
 async function interceptGetAggreate(route: any, request: any) {
   expect(request.method()).toBe('POST');

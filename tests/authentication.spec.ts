@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { expect, test } from '../utils/fixtures/e2e.ts';
+import { expect, test } from '../utils/fixtures/e2e';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -1,3 +1,5 @@
+// TODO: This file is not being used, it is just a test file to test the custom commands
+
 // import { expect, Page } from '@playwright/test';
 
 // export class loginCommands {

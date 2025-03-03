@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { expect, getFormattedDateRange, test, verifyDateRangeInput } from '../utils/fixtures/e2e.ts';
+import { expect, getFormattedDateRange, test, verifyDateRangeInput } from '../utils/fixtures/e2e';
 
 test.describe('Operations page validation @regression', () => {
   test.beforeEach(async ({ page }) => {

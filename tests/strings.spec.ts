@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { dashboardTexts, operationsTexts } from '../utils/texts/strings.ts';
+import { dashboardTexts, operationsTexts } from '../utils/fixtures/strings';
 
 test.describe('Strings validations of each sub-page, every locale @smoke', () => {
   for (const [locale, data] of Object.entries(dashboardTexts)) {
