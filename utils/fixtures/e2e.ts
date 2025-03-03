@@ -58,6 +58,38 @@ export async function verifyDateRangeInput(
   expect(actualEndPart).toContain(expectedEndDatePrefix);
 }
 
+export async function loginUnsigned(page: Page): Promise<void> {
+  if (!process.env.USER_EMAIL || !process.env.USER_PASSWORD) {
+    throw new Error('Env variables USER_EMAIL e USER_PASSWORD aren\'t set');
+  }
+  
+  await page.waitForSelector('form', { state: 'visible' });
+  
+  const emailInput = page.getByRole('textbox', { name: 'Email address' });
+  await emailInput.waitFor({ state: 'visible' });
+  await emailInput.focus();
+  await emailInput.clear();
+  await emailInput.fill(process.env.USER_EMAIL);
+
+  const emailValue = await emailInput.inputValue();
+  expect(emailValue).toBe(process.env.USER_EMAIL);
+
+  const nextButton = page.getByRole('button', { name: 'Next' });
+  await nextButton.waitFor({ state: 'visible' });
+  await nextButton.click();
+
+  const passwordInput = page.getByRole('textbox', { name: 'Password' });
+  await passwordInput.waitFor({ state: 'visible' });
+  await passwordInput.focus();
+  await passwordInput.clear();
+  await passwordInput.fill(process.env.USER_PASSWORD);
+  
+  const passwordValue = await passwordInput.inputValue();
+  expect(passwordValue).toBeTruthy();
+
+  await page.getByRole('button', { name: 'Continue' }).click();
+}
+
 // Extend the base test fixture
 export const test = baseTest.extend({
   // Add your custom fixtures here
