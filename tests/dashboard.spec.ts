@@ -1,20 +1,4 @@
-import { expect, getFormattedDateRange, test, verifyDateRangeInput } from '../utils/fixtures/e2e';
-
-async function interceptGetAggreate(route: any, request: any) {
-  expect(request.method()).toBe('POST');
-
-  const postData = request.postDataJSON();
-  expect(postData.operationName).toBe('getAggregateStatistics');
-  
-  const response = await route.fetch();
-  expect(response.status()).toBe(200);
-
-  console.log('Request method:', request.method());
-  console.log('Response status:', response.status());
-  console.log('Request body:', postData.operationName);
-
-  await route.continue();
-}
+import { expect, getFormattedDateRange, interceptGetAggreate, test, verifyDateRangeInput } from '../utils/fixtures/e2e';
 
 test.describe('Dashboard validation flows @regression', () => {
   test('As a user, I want to insert random dates in the dashboard filter and validate via UI', async ({ page }) => {

@@ -1,31 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { test as baseTest, expect, Locator, Page, Request, Route } from '@playwright/test';
 
+// Date range helpers
 const dateRangeCache = {
   value: null as string | null,
   expiresAt: 0
 };
-
-export async function validateOpenIDTokenRequest(route: Route, request: Request) {
-  expect(request.method()).toBe('POST');
-  console.log('Request method:', request.method());
-
-  const body = new URLSearchParams(request.postData() || '');
-  expect(body.get('grant_type')).toBe('authorization_code');
-  expect(body.has('code')).toBe(true);
-  expect(body.has('code_verifier')).toBe(true);
-  expect(body.has('client_id')).toBe(true);
-
-  await route.continue();
-}
-
-export async function validateOpenIDAuthResponse(route: Route) {
-  console.log('Intercepted request:', route.request().url());
-  const response = await route.fetch();
-  console.log('Response status:', response.status());
-  expect(response.status()).toBe(200);
-  await route.continue();
-}
 
 function formatDateFast(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
@@ -79,6 +59,57 @@ export async function verifyDateRangeInput(
   expect(actualEndPart).toContain(expectedEndDatePrefix);
 }
 
+// API fixtures
+export async function validateOpenIDTokenRequest(route: Route, request: Request) {
+  expect(request.method()).toBe('POST');
+  console.log('Request method:', request.method());
+
+  const body = new URLSearchParams(request.postData() || '');
+  expect(body.get('grant_type')).toBe('authorization_code');
+  expect(body.has('code')).toBe(true);
+  expect(body.has('code_verifier')).toBe(true);
+  expect(body.has('client_id')).toBe(true);
+
+  await route.continue();
+}
+
+export async function validateOpenIDAuthResponse(route: Route) {
+  console.log('Intercepted request:', route.request().url());
+  const response = await route.fetch();
+  console.log('Response status:', response.status());
+  expect(response.status()).toBe(200);
+  await route.continue();
+}
+
+export async function interceptGetAggreate(route: Route, request: Request) {
+  expect(request.method()).toBe('POST');
+
+  const postData = request.postDataJSON();
+  expect(postData.operationName).toBe('getAggregateStatistics');
+  
+  const response = await route.fetch();
+  expect(response.status()).toBe(200);
+
+  console.log('Request method:', request.method());
+  console.log('Response status:', response.status());
+  console.log('Request body:', postData.operationName);
+
+  await route.continue();
+}
+
+export async function interceptTenantExchange (route: Route, request: Request){
+const expectedTenantId = "809b44ff-26af-4ffc-9bb8-5dd9b0e87c44";
+
+  expect(request.method()).toBe('POST');
+  console.log('Request method:', request.method());
+  const requestBody = request.postDataJSON();
+  expect(requestBody).toEqual({ tenantId: expectedTenantId });
+  console.log('TenantID:', expectedTenantId);
+
+  await route.continue();
+};
+
+//GUI fixtures
 export async function loginUnsigned(page: Page): Promise<void> {
   if (!process.env.USER_EMAIL || !process.env.USER_PASSWORD) {
     throw new Error('Env variables USER_EMAIL e USER_PASSWORD aren\'t set');

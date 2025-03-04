@@ -19,12 +19,10 @@ requiredEnvVars.forEach((varName) => {
 const authDir = path.resolve(__dirname, '../auth');
 const unsignedStatePath = path.join(authDir, 'unsigned.json');
 
-// Ensure the authentication directory exists
 if (!fs.existsSync(authDir)) {
   fs.mkdirSync(authDir, { recursive: true });
 }
 
-// Function to create an unsigned state (logged-out state)
 async function createUnsignedState() {
   if (fs.existsSync(unsignedStatePath)) {
     console.log(`⚙️ Unsigned state already exists, skipping creation.`);
@@ -47,11 +45,9 @@ async function createUnsignedState() {
   }
 }
 
-// Function to log in and save authentication state
 async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit') {
   const authFilePath = path.join(authDir, `auth-${browserType}.json`);
 
-  // If the auth state already exists, skip login
   if (fs.existsSync(authFilePath)) {
     console.log(`🔄 Authentication state already exists for ${browserType}, skipping login.`);
     return;
