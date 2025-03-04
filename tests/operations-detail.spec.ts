@@ -5,7 +5,7 @@ test.describe('Operations page validation @regression', () => {
     await page.locator('[data-test="Operations"]').click();
   });
 
-  test('I want to enter an operation and validate it\'s header elements @smoke', async ({ page }) => {
+  test('Enters an operation and validates it\'s header elements @smoke', async ({ page }) => {
     await page.locator('[data-test^="operationDetail-"]').first().click();
   
     // Upper Header buttons
@@ -66,7 +66,38 @@ test.describe('Operations page validation @regression', () => {
     await expect(operationStatus).toBeVisible();
   });
 
-  test('I want to enter a rejected operation and validate all items @smoke', async ({ page }) => {
+  test('Enters successfull operation and validates all items @smoke', async ({ page }) => {
+    const resultsPage = page.locator('#tableBody');
+    const successfullRow = resultsPage.locator('[data-test^="table-row-"]').filter({ 
+      hasText: /Successful|Exitoso|Conseguiu/
+    }).nth(1);
+    
+    const successOperation = successfullRow.locator('[data-test^="operationDetail-"]');
+    await successOperation.click();
+    await page.waitForRequest('https://idv-suite.identity-platform.dev/en/operations/**');
+
+    const successfullStepMessage = page.getByText('Successful step');
+    await expect(successfullStepMessage).toBeVisible();
+  
+    const successIcon = page.locator('div.facephi-ui-icon-wrapper[style*="--colors-success400"]').nth(0);
+    await expect(successIcon).toBeVisible();
+
+    const timelineHeader = page.locator('div.facephi-ui-card__header', { hasText: 'Timeline' });
+    await expect(timelineHeader).toBeVisible();
+
+    const expectedTimelineItems = ['Document', 'Face', 'Security Checks', 'Finish'];
+    
+    for (const item of expectedTimelineItems) {
+      const timelineItem = page.locator('div', { 
+        hasText: new RegExp(`^${item}$`)
+      }).first();
+      
+      await expect(timelineItem).toBeVisible();
+      console.log(`✅ "${item}" is visible in Timeline`);
+    }
+  });
+
+  test('Enters a rejected operation and validats all items @smoke', async ({ page }) => {
     const resultsPage = page.locator('#tableBody');
     const rejectedRow = resultsPage.locator('[data-test^="table-row-"]').filter({ 
       hasText: /Rejected|Rechazado|Rejeitado/

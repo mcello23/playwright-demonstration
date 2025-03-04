@@ -1,11 +1,12 @@
 import { expect, getFormattedDateRange, interceptGetAggreate, test, verifyDateRangeInput } from '../utils/fixtures/e2e';
 
 test.describe('Dashboard validation flows @regression', () => {
-  test('As a user, I want to insert random dates in the dashboard filter and validate via UI', async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/graphql', interceptGetAggreate);
+  });
+
+  test('Inserts random dates in the dashboard filter and validates via UI', async ({ page }) => {
     const chartsDashboard = page.locator('.echarts-for-react');
-    await page.route('**/graphql', async (route, request) => {
-      await interceptGetAggreate(route, request);
-    });
 
     const formattedDate = getFormattedDateRange();
 
@@ -17,13 +18,10 @@ test.describe('Dashboard validation flows @regression', () => {
     await verifyDateRangeInput(filterByDateLocator, formattedDate);
   });
 
-  test('As a user, I want to click on the Dashboard buttons filters and validate API payload and UI', async ({
+  test('Clicks on the Dashboard buttons filters and validates API payload and UI', async ({
     page,
   }) => {
     const chartsDashboard = page.locator('.echarts-for-react');
-    await page.route('**/graphql', async (route, request) => {
-      await interceptGetAggreate(route, request);
-    });
 
     await page.getByRole('checkbox', { name: 'hours' }).click();
     await expect(page.getByRole('checkbox', { name: 'hours' })).toHaveAttribute('aria-checked', 'true');
@@ -39,7 +37,32 @@ test.describe('Dashboard validation flows @regression', () => {
     await page.waitForEvent('requestfinished');
     expect(chartsDashboard).toHaveCount(3);
   });
-});
 
-//TODO: Add more tests
-// Create spec for Operations and validate Buttons and elements
+  test('Presses "X" on the date filter and sees the GraphQL call', async ({ page }) => {
+    await page.locator('[data-test="input-remove-value"]').click();
+    await page.waitForEvent('requestfinished');
+  });
+
+  test('Sees the calendar pop-up', async ({ page }) => {
+    await page.getByRole('button').nth(3).click();
+    
+    const calendar = page.locator('.facephi-ui-portal__container');
+    await expect(calendar).toBeVisible();
+
+    const prevButton = calendar.locator('button.rdp-button_previous');
+    expect(prevButton).toBeTruthy();
+    
+    const nextButton = calendar.locator('button.rdp-button_next');
+    expect(nextButton).toBeTruthy();
+    
+    const captionLabel = calendar.locator('span.rdp-caption_label');
+    expect(captionLabel).toBeTruthy();
+  
+    const weekdays = calendar.locator('span.rdp-weekday');
+    expect(weekdays).toBeTruthy();
+
+    const weeks = calendar.locator('tr.rdp-weeks');
+    expect(weeks).toBeTruthy();
+
+  });
+});

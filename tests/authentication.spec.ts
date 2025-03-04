@@ -9,13 +9,13 @@ test.describe('Authentication @regression', () => {
     await loginUnsigned(page);
   });
 
-  test('Should login successfully and validate OpenID token @smoke', async ({ page, browserName }) => {
+  test('Logs in successfully and validates the OpenID token @smoke', async ({ page, browserName }) => {
     console.log(`Running login test on ${browserName}`);
     await page.route('**/openid-connect/token', validateOpenIDTokenRequest);
     await expect(page.locator('[data-test="header-logo"]')).toBeVisible();
   });
 
-  test('Should logout successfully and validate OpenID response @smoke', async ({ page }) => {
+  test('Logs out successfully and validates OpenID response @smoke', async ({ page }) => {
     await page.route('**/auth/realms/idv/protocol/openid-connect/auth**', validateOpenIDAuthResponse);
 
     await page.locator('[data-test="user-name"]').click();

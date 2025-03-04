@@ -9,7 +9,7 @@ test.describe('Operations page validation @regression', () => {
     await operationsButton.click();
   });
   
-  test('I want to see all elements in Operations page @smoke', async ({ page }) => {
+  test('Sees all elements in Operations page @smoke', async ({ page }) => {
     // Static elements
     await expect(page.locator('[data-test="filter-by-date"]')).toBeVisible();
     await expect(page.locator('[data-test="filter-by-date"]')).toBeEnabled();
@@ -54,7 +54,7 @@ test.describe('Operations page validation @regression', () => {
     await expect(steps).toBeVisible();
   });
 
-  test('I want to validate that a denied operation has a warning', async ({ page }) => {
+  test('Validates there is a warning SVG element after a denied operation', async ({ page }) => {
     const resultsPage = page.locator('#tableBody');
     
     const rejectedRow = resultsPage.locator('[data-test^="table-row-"]').filter({ 
@@ -74,7 +74,7 @@ test.describe('Operations page validation @regression', () => {
     await expect(rejectedOperationElement).toBeEnabled();
   });
 
-  test('I want to see that assets appear inside the listing', async ({ page }) => {
+  test('Sees the assets appear inside a listing', async ({ page }) => {
     const filesButton = page.getByRole('button', { name: /Files \(\d+\)/ }).first();
     await expect(filesButton).toBeVisible();
     await expect(filesButton).toBeEnabled();
@@ -96,7 +96,7 @@ test.describe('Operations page validation @regression', () => {
     console.log(`Found ${count} option menu items`);
   });
 
-  test('I want to open a modal and validate all buttons @smoke', async ({ page }) => {
+  test('Opens the document modal and validates all buttons @smoke', async ({ page }) => {
     const resultsPage = page.locator('#tableBody');
     
     const statusRow = resultsPage.locator('[data-test^="table-row-"]').filter({ 
@@ -145,7 +145,7 @@ test.describe('Operations page validation @regression', () => {
     await expect(fwdBttn).toBeEnabled();
   });
 
-  test('I want to open and close the modal', async ({ page }) => {
+  test('Opens and closes the document modal', async ({ page }) => {
     const resultsPage = page.locator('#tableBody');
     
     const statusRow = resultsPage.locator('[data-test^="table-row-"]').filter({ 
@@ -174,7 +174,7 @@ test.describe('Operations page validation @regression', () => {
     await expect(modalWindow).not.toBeVisible();
   });
 
-  test('I want to validate the asset download functionality inside the modal', async ({ page }) => {
+  test('Validates the download functionality inside the modal', async ({ page }) => {
     const resultsPage = page.locator('#tableBody');
     
     const statusRow = resultsPage.locator('[data-test^="table-row-"]').filter({ 
@@ -212,7 +212,7 @@ test.describe('Operations page validation @regression', () => {
     expect(path).toBeTruthy();
   });
   
-  test('I want to validate the print functionality inside the modal', async ({ page }) => {
+  test('Validates the print functionality inside the modal', async ({ page }) => {
     const printPromise = new Promise<void>((resolve) => {
       page.exposeFunction('notifyPrintCalled', () => {
         resolve();
