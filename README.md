@@ -6,13 +6,7 @@
 
 Testing IDV with PW (API / UI)
 
-- testing with global-setup determinated differently in Local and CI
-
-- sharding = containers (browser allocation)
-
-- workers = each browser used
-
-- fullyParallel should be off due to Cognito OIDC + Keycloack IDP cookies issues
+- fullyParallel should be off due to Cognito OIDC + Keycloack IDP cookie + multiple browsers issues
 
 ## 🚀 Setup
 

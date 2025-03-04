@@ -38,12 +38,6 @@ export function getFormattedDateRange(): string {
   return result;
 }
 
-export function getFormattedSingleDate(): string {
-  const date = faker.date.past();
-  date.setHours(0, 0, 0, 0);
-  return formatDateFast(date);
-}
-
 export async function verifyDateRangeInput(
   locator: Locator, 
   expectedDateRange: string

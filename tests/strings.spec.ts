@@ -3,7 +3,7 @@ import { dashboardTexts, operationsTexts } from '../utils/fixtures/strings';
 
 test.describe('Strings validations of each sub-page, every locale @smoke', () => {
   for (const [locale, data] of Object.entries(dashboardTexts)) {
-    test(`As a user, I want to validate all the texts in the ${locale} Dashboard page`, async ({ page }) => {
+    test(`Validates all texts in the ${locale} Dashboard page`, async ({ page }) => {
       await page.goto(`/${locale}`);
 
       const assertions = [
@@ -61,7 +61,7 @@ test.describe('Strings validations of each sub-page, every locale @smoke', () =>
   }
 
   for (const [locale, data] of Object.entries(operationsTexts)) {
-    test(`As a user, I want to validate all the texts in the ${locale} Operations page`, async ({ page }) => {
+    test(`Validates all texts in the ${locale} Operations page`, async ({ page }) => {
       await page.goto(`/${locale}`);
       await page.locator('[data-test="Operations"]').click();
 
