@@ -1,10 +1,31 @@
 import { faker } from '@faker-js/faker';
-import { test as baseTest, expect, Locator, Page } from '@playwright/test';
+import { test as baseTest, expect, Locator, Page, Request, Route } from '@playwright/test';
 
 const dateRangeCache = {
   value: null as string | null,
   expiresAt: 0
 };
+
+export async function validateOpenIDTokenRequest(route: Route, request: Request) {
+  expect(request.method()).toBe('POST');
+  console.log('Request method:', request.method());
+
+  const body = new URLSearchParams(request.postData() || '');
+  expect(body.get('grant_type')).toBe('authorization_code');
+  expect(body.has('code')).toBe(true);
+  expect(body.has('code_verifier')).toBe(true);
+  expect(body.has('client_id')).toBe(true);
+
+  await route.continue();
+}
+
+export async function validateOpenIDAuthResponse(route: Route) {
+  console.log('Intercepted request:', route.request().url());
+  const response = await route.fetch();
+  console.log('Response status:', response.status());
+  expect(response.status()).toBe(200);
+  await route.continue();
+}
 
 function formatDateFast(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
