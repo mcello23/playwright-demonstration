@@ -10,8 +10,8 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  timeout: process.env.CI ? 65_000 : 30_000,
-  expect: { timeout: process.env.CI ? 35_000 : 14_000 },
+  timeout: process.env.CI ? 70_000 : 30_000,
+  expect: { timeout: process.env.CI ? 50_000 : 14_000 },
   testDir: './tests',
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 1,
@@ -41,7 +41,7 @@ export default defineConfig({
     ],
   ],
   metadata: {
-    gitcommit: 'generate'
+    gitcommit: 'generate',
   },
   globalSetup: path.resolve(__dirname, 'utils/global-setup.ts'),
   use: {

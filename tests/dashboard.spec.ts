@@ -1,4 +1,10 @@
-import { expect, getFormattedDateRange, interceptGetAggreate, test, verifyDateRangeInput } from '../utils/fixtures/e2e';
+import {
+  expect,
+  getFormattedDateRange,
+  interceptGetAggreate,
+  test,
+  verifyDateRangeInput,
+} from '../utils/fixtures/e2e';
 
 test.describe('Dashboard validation flows @regression', () => {
   test.beforeEach(async ({ page }) => {
@@ -24,16 +30,25 @@ test.describe('Dashboard validation flows @regression', () => {
     const chartsDashboard = page.locator('.echarts-for-react');
 
     await page.getByRole('checkbox', { name: 'hours' }).click();
-    await expect(page.getByRole('checkbox', { name: 'hours' })).toHaveAttribute('aria-checked', 'true');
+    await expect(page.getByRole('checkbox', { name: 'hours' })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    );
     expect(chartsDashboard).toHaveCount(2);
 
     await page.getByRole('checkbox', { name: '7 days' }).click();
-    await expect(page.getByRole('checkbox', { name: '7 days' })).toHaveAttribute('aria-checked', 'true');
+    await expect(page.getByRole('checkbox', { name: '7 days' })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    );
     await page.waitForEvent('requestfinished');
     expect(chartsDashboard).toHaveCount(3);
 
     await page.getByRole('checkbox', { name: '30 days' }).click();
-    await expect(page.getByRole('checkbox', { name: '30 days' })).toHaveAttribute('aria-checked', 'true');
+    await expect(page.getByRole('checkbox', { name: '30 days' })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    );
     await page.waitForEvent('requestfinished');
     expect(chartsDashboard).toHaveCount(3);
   });
@@ -45,24 +60,23 @@ test.describe('Dashboard validation flows @regression', () => {
 
   test('Sees the calendar pop-up', async ({ page }) => {
     await page.getByRole('button').nth(3).click();
-    
+
     const calendar = page.locator('.facephi-ui-portal__container');
     await expect(calendar).toBeVisible();
 
     const prevButton = calendar.locator('button.rdp-button_previous');
     expect(prevButton).toBeEnabled();
-    
+
     const nextButton = calendar.locator('button.rdp-button_next');
     expect(nextButton).toBeEnabled();
-    
+
     const captionLabel = calendar.locator('span.rdp-caption_label');
     expect(captionLabel).toBeEnabled();
-  
+
     const weekdays = calendar.locator('span.rdp-weekday');
     expect(weekdays).toBeTruthy();
 
     const weeks = calendar.locator('tr.rdp-weeks');
     expect(weeks).toBeTruthy();
-
   });
 });

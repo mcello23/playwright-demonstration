@@ -4,7 +4,7 @@ import { test as baseTest, expect, Locator, Page, Request, Route } from '@playwr
 // Date range helpers
 const dateRangeCache = {
   value: null as string | null,
-  expiresAt: 0
+  expiresAt: 0,
 };
 
 function formatDateFast(date: Date): string {
@@ -17,10 +17,10 @@ function formatDateFast(date: Date): string {
 export function getRandomFormattedDateRange(): string {
   const startDate = faker.date.past();
   startDate.setHours(0, 0, 0, 0);
-  
+
   const endDate = faker.date.future();
   endDate.setHours(0, 0, 0, 0);
-  
+
   return `${formatDateFast(startDate)} - ${formatDateFast(endDate)}`;
 }
 
@@ -29,26 +29,26 @@ export function getFormattedDateRange(): string {
   if (dateRangeCache.value && dateRangeCache.expiresAt > now) {
     return dateRangeCache.value;
   }
-  
+
   const result = getRandomFormattedDateRange();
-  
+
   dateRangeCache.value = result;
   dateRangeCache.expiresAt = now + 5000;
-  
+
   return result;
 }
 
 export async function verifyDateRangeInput(
-  locator: Locator, 
+  locator: Locator,
   expectedDateRange: string
 ): Promise<void> {
   const actualValue = await locator.inputValue();
-  
+
   const [expectedStartDate, expectedEndDate] = expectedDateRange.split(' - ');
   const [actualStartDate, actualEndPart] = actualValue.split(' - ');
-  
+
   expect(actualStartDate).toBe(expectedStartDate);
-  
+
   const expectedEndDatePrefix = expectedEndDate.substring(0, 8);
   expect(actualEndPart).toContain(expectedEndDatePrefix);
 }
@@ -80,7 +80,7 @@ export async function interceptGetAggreate(route: Route, request: Request) {
 
   const postData = request.postDataJSON();
   expect(postData.operationName).toBe('getAggregateStatistics');
-  
+
   const response = await route.fetch();
   expect(response.status()).toBe(200);
 
@@ -91,8 +91,8 @@ export async function interceptGetAggreate(route: Route, request: Request) {
   await route.continue();
 }
 
-export async function interceptTenantExchange (route: Route, request: Request){
-const expectedTenantId = "809b44ff-26af-4ffc-9bb8-5dd9b0e87c44";
+export async function interceptTenantExchange(route: Route, request: Request) {
+  const expectedTenantId = '809b44ff-26af-4ffc-9bb8-5dd9b0e87c44';
 
   expect(request.method()).toBe('POST');
   console.log('Request method:', request.method());
@@ -101,16 +101,16 @@ const expectedTenantId = "809b44ff-26af-4ffc-9bb8-5dd9b0e87c44";
   console.log('TenantID:', expectedTenantId);
 
   await route.continue();
-};
+}
 
 //GUI fixtures
 export async function loginUnsigned(page: Page): Promise<void> {
   if (!process.env.USER_EMAIL || !process.env.USER_PASSWORD) {
-    throw new Error('Env variables USER_EMAIL e USER_PASSWORD aren\'t set');
+    throw new Error("Env variables USER_EMAIL e USER_PASSWORD aren't set");
   }
-  
+
   await page.waitForSelector('form', { state: 'visible' });
-  
+
   const emailInput = page.getByRole('textbox', { name: 'Email address' });
   await emailInput.waitFor({ state: 'visible' });
   await emailInput.focus();
@@ -129,7 +129,7 @@ export async function loginUnsigned(page: Page): Promise<void> {
   await passwordInput.focus();
   await passwordInput.clear();
   await passwordInput.fill(process.env.USER_PASSWORD);
-  
+
   const passwordValue = await passwordInput.inputValue();
   expect(passwordValue).toBeTruthy();
 
@@ -142,12 +142,12 @@ export const test = baseTest.extend({
   page: async ({ page }: { page: Page }, use: (page: Page) => Promise<void>) => {
     // This runs before each test that uses the page fixture
     await page.goto('/');
-    
+
     // Execute any other beforeEach logic
-    
+
     // Use the fixture
     await use(page);
-    
+
     // This runs after each test that uses the page fixture
     // afterEach cleanup logic here
   },
