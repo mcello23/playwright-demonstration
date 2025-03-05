@@ -104,7 +104,7 @@ export async function interceptTenantExchange(route: Route, request: Request) {
 
 //GUI fixtures
 export async function loginUnsigned(page: Page): Promise<void> {
-  if (!process.env.USER_EMAIL || !process.env.USER_PASSWORD) {
+  if (!process.env.USER_EMAIL_1 || !process.env.USER_PASSWORD_1) {
     throw new Error("Env variables USER_EMAIL e USER_PASSWORD aren't set");
   }
 
@@ -114,20 +114,21 @@ export async function loginUnsigned(page: Page): Promise<void> {
   await emailInput.waitFor({ state: 'visible' });
   await emailInput.focus();
   await emailInput.clear();
-  await emailInput.fill(process.env.USER_EMAIL);
+  await emailInput.fill(process.env.USER_EMAIL_1);
 
   const emailValue = await emailInput.inputValue();
-  expect(emailValue).toBe(process.env.USER_EMAIL);
+  expect(emailValue).toBe(process.env.USER_EMAIL_1);
 
   const nextButton = page.getByRole('button', { name: 'Next' });
   await nextButton.waitFor({ state: 'visible' });
   await nextButton.click();
+  await page.waitForLoadState('networkidle');
 
   const passwordInput = page.getByRole('textbox', { name: 'Password' });
   await passwordInput.waitFor({ state: 'visible' });
   await passwordInput.focus();
   await passwordInput.clear();
-  await passwordInput.fill(process.env.USER_PASSWORD);
+  await passwordInput.fill(process.env.USER_PASSWORD_1);
 
   const passwordValue = await passwordInput.inputValue();
   expect(passwordValue).toBeTruthy();
