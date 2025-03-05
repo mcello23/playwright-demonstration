@@ -38,7 +38,9 @@ test.describe('Operations page validation @regression', () => {
     // Test Filter button
     await page.locator('[data-test="filter-button"]').click();
     await page.getByLabel('Onboarding').click();
-    await expect(page.locator('[data-test="chip-ONBOARDING"]')).toBeVisible();
+    const buttonChecked = page.locator('[data-test="filter-option-ONBOARDING"] label').first();
+    await expect(buttonChecked).toHaveAttribute('aria-checked', 'true');
+    await page.mouse.click(10, 10);
 
     // Date and time format
     const dateRegex = /^\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/;

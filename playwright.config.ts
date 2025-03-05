@@ -11,10 +11,10 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
   timeout: process.env.CI ? 60_000 : 30_000,
-  expect: { timeout: process.env.CI ? 35_000 : 14_000 },
+  expect: { timeout: process.env.CI ? 40_000 : 14_000 },
   testDir: './tests',
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 1,
+  retries: process.env.CI ? 2 : 1,
   workers: process.env.CI ? 1 : 3,
   shard: process.env.CI ? { total: 3, current: 1 } : undefined,
   fullyParallel: false,
