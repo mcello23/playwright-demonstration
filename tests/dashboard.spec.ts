@@ -50,13 +50,13 @@ test.describe('Dashboard validation flows @regression', () => {
     await expect(calendar).toBeVisible();
 
     const prevButton = calendar.locator('button.rdp-button_previous');
-    expect(prevButton).toBeTruthy();
+    expect(prevButton).toBeEnabled();
     
     const nextButton = calendar.locator('button.rdp-button_next');
-    expect(nextButton).toBeTruthy();
+    expect(nextButton).toBeEnabled();
     
     const captionLabel = calendar.locator('span.rdp-caption_label');
-    expect(captionLabel).toBeTruthy();
+    expect(captionLabel).toBeEnabled();
   
     const weekdays = calendar.locator('span.rdp-weekday');
     expect(weekdays).toBeTruthy();

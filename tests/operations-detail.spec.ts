@@ -5,7 +5,7 @@ test.describe('Operations page validation @regression', () => {
     await page.locator('[data-test="Operations"]').click();
   });
 
-  test('Enters an operation and validates it\'s header elements @smoke', async ({ page }) => {
+  test('Enters any operation and validates it\'s header elements @smoke', async ({ page }) => {
     await page.locator('[data-test^="operationDetail-"]').first().click();
   
     // Upper Header buttons
@@ -66,7 +66,7 @@ test.describe('Operations page validation @regression', () => {
     await expect(operationStatus).toBeVisible();
   });
 
-  test('Enters successfull operation and validates all items @smoke', async ({ page }) => {
+  test('Enters a successfull operation and validates all green/successfull elements @smoke', async ({ page }) => {
     const resultsPage = page.locator('#tableBody');
     const successfullRow = resultsPage.locator('[data-test^="table-row-"]').filter({ 
       hasText: /Successful|Exitoso|Conseguiu/
@@ -97,22 +97,26 @@ test.describe('Operations page validation @regression', () => {
     }
   });
 
-  test('Enters a rejected operation and validats all items @smoke', async ({ page }) => {
+  test('Enters a rejected operation and validates all red/unsuccessfull elements @smoke', async ({ page }) => {
     const resultsPage = page.locator('#tableBody');
     const rejectedRow = resultsPage.locator('[data-test^="table-row-"]').filter({ 
       hasText: /Rejected|Rechazado|Rejeitado/
     }).first();
+
     const errorStatusElement = rejectedRow.locator('span.facephi-ui-status[style*="--colors-error400"]');
     await expect(errorStatusElement).toBeVisible();
     
     const rejectedOperationElement = rejectedRow.locator('[data-test^="operationDetail-"]').nth(0);
     await rejectedOperationElement.click();
 
+    const errorDiv = page.locator('div.facephi-ui-flex[style*="--colors-error500"]');
+    await expect(errorDiv).toBeVisible();
+    expect(errorDiv).toBeTruthy();
+    
     const errorMessage = page.locator('div', { hasText: /^Failed step/ }).nth(0);
     await expect(errorMessage).toBeVisible();
   
     const errorIcon = page.locator('div.facephi-ui-icon-wrapper[style*="--colors-error400"]').nth(0);
     await expect(errorIcon).toBeVisible();
   });
-  
 });
