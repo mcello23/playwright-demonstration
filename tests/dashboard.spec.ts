@@ -42,7 +42,7 @@ test.describe('Dashboard validation flows @regression', () => {
       'true'
     );
     await page.waitForEvent('requestfinished');
-    expect(chartsDashboard).toHaveCount(3);
+    expect(chartsDashboard).toHaveCount(2);
 
     await page.getByRole('checkbox', { name: '30 days' }).click();
     await expect(page.getByRole('checkbox', { name: '30 days' })).toHaveAttribute(

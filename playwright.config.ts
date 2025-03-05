@@ -10,8 +10,8 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  timeout: process.env.CI ? 70_000 : 30_000,
-  expect: { timeout: process.env.CI ? 50_000 : 14_000 },
+  timeout: process.env.CI ? 60_000 : 30_000,
+  expect: { timeout: process.env.CI ? 35_000 : 14_000 },
   testDir: './tests',
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 1,
@@ -28,9 +28,6 @@ export default defineConfig({
         suiteTitle: true,
         attachments: true,
         labels: true,
-        links: true,
-        video: true,
-        screenshots: true,
         environmentInfo: {
           os_platform: os.platform(),
           os_release: os.release(),
@@ -48,7 +45,7 @@ export default defineConfig({
     baseURL: 'https://idv-suite.identity-platform.dev',
     trace: 'on',
     screenshot: 'on',
-    video: 'retain-on-failure',
+    video: 'on',
     viewport: { width: 1920, height: 1080 },
     ignoreHTTPSErrors: true,
   },

@@ -46,6 +46,5 @@ test.describe('Profile and tenants validation @regression', async () => {
       .isVisible();
     const tenantButton = page.getByRole('button', { name: 'idv-prueba' });
     await tenantButton.isVisible();
-    await tenantButton.isEnabled();
   });
 });
