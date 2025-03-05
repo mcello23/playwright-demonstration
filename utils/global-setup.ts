@@ -63,22 +63,36 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
 
   try {
     await page.goto(process.env.BASE_URL!);
-    await page.waitForLoadState('networkidle');
 
     const emailInput = page.getByRole('textbox', { name: 'Email address' });
     await emailInput.waitFor({ state: 'visible' });
-    await emailInput.fill(process.env.USER_EMAIL!, { timeout: 40000 });
-
+    await emailInput.fill(process.env.USER_EMAIL!, { timeout: 2000 });
     await page.getByRole('button', { name: 'Next' }).click();
-    await page.waitForLoadState('networkidle');
 
     const passwordInput = page.getByRole('textbox', { name: 'Password' });
     await passwordInput.waitFor({ state: 'visible' });
-    await passwordInput.fill(process.env.USER_PASSWORD!, { timeout: 40000 });
-
+    await passwordInput.fill(process.env.USER_PASSWORD!, { timeout: 2000 });
     await page.getByRole('button', { name: 'Continue' }).click();
 
-    await page.waitForSelector('[data-test="header-logo"]', { timeout: 20000 });
+    await page.waitForSelector('[data-test="header-logo"]', { state: 'visible' });
+    await page.reload();
+
+    // FAILSAFE: ends login if server error is seen
+    const imageError = page.getByRole('img', { name: 'Error image' }).isVisible({ timeout: 1000 });
+    const errorHeader = page
+      .getByText('Sorry, aliens have stolen our server')
+      .isVisible({ timeout: 1000 });
+
+    const isErrorImageVisible = await imageError.catch(() => false);
+    const isErrorHeaderVisible = await errorHeader.catch(() => false);
+
+    if (isErrorImageVisible || isErrorHeaderVisible) {
+      console.error(
+        `⛔ Oh no(${browserType}): Aliens have stolen the server! 👽Canceling login...`
+      );
+      await page.screenshot({ path: path.join(authDir, `error-${browserType}.png`) });
+      throw new Error('IDV shows "Sorry, aliens have stolen our server" message');
+    }
 
     console.log(`✅ Login successful on ${browserType}, saving authentication state...`);
     await context.storageState({ path: authFilePath });

@@ -13,6 +13,14 @@ test.describe('Authentication @regression', () => {
 
   test.beforeEach(async ({ page }) => {
     await loginUnsigned(page);
+    await page.waitForLoadState('networkidle');
+    await page.reload();
+
+    // Failsafe
+    await expect(page.getByRole('img', { name: 'Error image' })).not.toBeVisible({ timeout: 1000 });
+    await expect(page.getByText('Sorry, aliens have stolen our server')).not.toBeVisible({
+      timeout: 1000,
+    });
   });
 
   test('Logs in successfully and validates the OpenID token @smoke', async ({
@@ -21,7 +29,8 @@ test.describe('Authentication @regression', () => {
   }) => {
     console.log(`Running login test on ${browserName}`);
     await page.route('**/openid-connect/token', validateOpenIDTokenRequest);
-    await expect(page.locator('[data-test="header-logo"]')).toBeVisible();
+
+    await expect(page.locator('[data-test="filter-by-date"]')).toBeVisible();
   });
 
   test('Logs out successfully and validates OpenID response @smoke', async ({ page }) => {
