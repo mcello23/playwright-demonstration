@@ -36,7 +36,7 @@ jobs:
 
       - uses: actions/setup-node@v4.2.0
         with:
-          node-version: .nvmrc
+          node-version: '.nvmrc'
           cache: "yarn"
       
       - name: Install Correct Yarn Version
@@ -83,7 +83,7 @@ jobs:
 
       - uses: actions/setup-node@v4.2.0
         with:
-          node-version: .nvmrc
+          node-version: '.nvmrc'
           cache: "yarn"
       
       - name: Install Correct Yarn Version
