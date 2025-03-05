@@ -33,11 +33,6 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
         shell: bash
-
-      - uses: actions/setup-node@v4.2.0
-        with:
-          node-version: '.nvmrc'
-          cache: "yarn"
       
       - name: Install Correct Yarn Version
         run: yarn set version 4.6.0
@@ -80,11 +75,6 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
         shell: bash
-
-      - uses: actions/setup-node@v4.2.0
-        with:
-          node-version: '.nvmrc'
-          cache: "yarn"
       
       - name: Install Correct Yarn Version
         run: yarn set version 4.6.0
