@@ -13,7 +13,6 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx}'],
     ignores: [
       'node_modules/**',
-      'dist/**',
       'test-results/**',
       'playwright-report/**',
       'allure-results/**',
@@ -39,25 +38,31 @@ export default tseslint.config(
       'playwright/no-force-option': 'error',
       'playwright/no-conditional-in-test': 'warn',
       'playwright/valid-expect': ['error', { assertFunctionNames: ['expect', 'expectLoaded'] }],
-      
+
       // TypeScript rules
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_' 
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-floating-promises': 'error',
-      
+
       // Formatting
-      'quotes': ['error', 'single', { 'avoidEscape': true }],
-      'prettier/prettier': ['error', {
-        'singleQuote': true,
-        'printWidth': 100,
-        'semi': true,
-        'trailingComma': 'es5',
-        'tabWidth': 2
-      }]
+      quotes: ['error', 'single', { avoidEscape: true }],
+      'prettier/prettier': [
+        'error',
+        {
+          singleQuote: true,
+          printWidth: 100,
+          semi: true,
+          trailingComma: 'es5',
+          tabWidth: 2,
+        },
+      ],
     },
   },
   // Test specific rules
@@ -66,6 +71,6 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       'playwright/expect-expect': 'error',
-    }
+    },
   }
 );

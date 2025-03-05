@@ -36,7 +36,7 @@ jobs:
 
       - uses: actions/setup-node@v4.2.0
         with:
-          node-version: "20.17.0"
+          node-version: .nvmrc
           cache: "yarn"
       
       - name: Install Correct Yarn Version
@@ -75,7 +75,7 @@ jobs:
     needs: [playwright-tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
       - name: Enable Corepack
         run: corepack enable
@@ -83,7 +83,7 @@ jobs:
 
       - uses: actions/setup-node@v4.2.0
         with:
-          node-version: "20.17.0"
+          node-version: .nvmrc
           cache: "yarn"
       
       - name: Install Correct Yarn Version
@@ -95,7 +95,7 @@ jobs:
         shell: bash
 
       - name: Download all test results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.9
         with:
           pattern: allure-results-*
           path: allure-results
