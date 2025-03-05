@@ -68,7 +68,6 @@ export async function validateOpenIDTokenRequest(route: Route, request: Request)
 }
 
 export async function validateOpenIDAuthResponse(route: Route) {
-  console.log('Intercepted request:', route.request().url());
   const response = await route.fetch();
   console.log('Response status:', response.status());
   expect(response.status()).toBe(200);

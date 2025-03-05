@@ -45,7 +45,6 @@ export default defineConfig({
     baseURL: 'https://idv-suite.identity-platform.dev',
     trace: 'on',
     screenshot: 'on',
-    video: 'on',
     viewport: { width: 1920, height: 1080 },
     ignoreHTTPSErrors: true,
   },
@@ -55,6 +54,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         storageState: path.resolve(__dirname, 'auth/auth-chromium.json'),
+        video: 'retain-on-failure',
       },
     },
     {
@@ -62,6 +62,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Firefox'],
         storageState: path.resolve(__dirname, 'auth/auth-firefox.json'),
+        video: 'retain-on-failure',
       },
     },
     {
@@ -69,6 +70,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
         storageState: path.resolve(__dirname, 'auth/auth-webkit.json'),
+        video: 'retain-on-failure',
       },
     },
   ],
