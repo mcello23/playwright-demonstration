@@ -5,6 +5,7 @@ test.describe('Strings validations of each sub-page, every locale @smoke', () =>
   for (const [locale, data] of Object.entries(dashboardTexts)) {
     test(`Validates all texts in the ${locale} Dashboard page`, async ({ page }) => {
       await page.goto(`/${locale}`);
+      await page.locator('[data-test="header-logo"]').click();
 
       const assertions = [
         // Upper section
@@ -64,6 +65,7 @@ test.describe('Strings validations of each sub-page, every locale @smoke', () =>
     test(`Validates all texts in the ${locale} Operations page`, async ({ page }) => {
       await page.goto(`/${locale}`);
       await page.locator('[data-test="Operations"]').click();
+      await page.locator('[data-test="header"]').focus();
 
       // Static elements
       const assertions = [

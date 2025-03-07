@@ -20,13 +20,12 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.50.1-noble
+      image: mcr.microsoft.com/playwright:v1.51.0-noble
       options: --ipc=host
     strategy:
       fail-fast: false
       matrix:
         shardIndex: [1, 2, 3]
-        shardTotal: [3]
     steps:
       - uses: actions/checkout@v4.2.2
 
@@ -54,7 +53,7 @@ jobs:
           USER_PASSWORD_1: ${{ secrets.USER_PASSWORD_1 }}
           BASE_URL: ${{ vars.BASE_URL || 'https://idv-suite.identity-platform.dev' }}
           HOME: /root
-        run: yarn playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: yarn playwright test --shard=${{ matrix.shardIndex }}/3
         continue-on-error: true
 
       - name: Upload test results

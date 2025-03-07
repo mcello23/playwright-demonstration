@@ -78,26 +78,9 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
 
     await page.getByRole('button', { name: 'Continue' }).click();
 
-    await page.waitForSelector('[data-test="header-logo"]', { timeout: 20000 });
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.locator('[data-test="header-logo"]').click();
+    await page.waitForLoadState('networkidle');
 
-    // 1. ESPERA ADICIONAL PARA ESTABILIZAR COOKIES
-    // await page.waitForTimeout(2000); // 2 segundos para estabilizar cookies
-
-    // 2. VERIFICA SE O TOKEN FOI CONFIGURADO CORRETAMENTE
-    const cookies = await context.cookies();
-    const tokenCookie = cookies.find((c) => c.name === 'token');
-
-    if (!tokenCookie || !tokenCookie.value) {
-      console.warn(`⚠️ Token not found...`);
-      // 3. Recovery
-      await page.reload({ waitUntil: 'networkidle' });
-      await page.waitForTimeout(1000);
-    } else {
-      console.log(`✅ Token cookie found and configured`);
-    }
-
-    // Verifies if the error message is visible
     const imageError = page.getByRole('img', { name: 'Error image' });
     const errorHeader = page.getByText('Sorry, aliens have stolen our server');
 
@@ -119,43 +102,26 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
   }
 }
 
-// Global setup function
-async function globalSetup(config: FullConfig) {
-  console.log(`[${new Date().toISOString()}] ⚙️ Running global setup...`);
+async function handleBrowsersBasedOnSharding(config: FullConfig) {
+  const shard = config.shard;
+  if (shard) {
+    const { total, current } = shard;
+    let browserType: 'chromium' | 'firefox' | 'webkit';
 
-  // Create unsigned state
-  await createUnsignedState();
-
-  if (process.env.CI) {
-    const shard = config.shard;
-    if (shard) {
-      const { total, current } = shard;
-      let browserType: 'chromium' | 'firefox' | 'webkit';
-
-      if (total === 3) {
-        if (current === 1) {
-          browserType = 'chromium';
-        } else if (current === 2) {
-          browserType = 'firefox';
-        } else {
-          browserType = 'webkit';
-        }
-        console.log(
-          `🔧 CI detected, executing login only for ${browserType} (shard ${current}/${total})`
-        );
-        await loginAndSaveState(browserType);
+    if (total === 3) {
+      if (current === 1) {
+        browserType = 'chromium';
+      } else if (current === 2) {
+        browserType = 'firefox';
       } else {
-        console.warn(
-          `⚠️ Shard number (${total}) isn't support for shard optimization. Executing login for all browsers.`
-        );
-        await Promise.all([
-          loginAndSaveState('chromium'),
-          loginAndSaveState('firefox'),
-          loginAndSaveState('webkit'),
-        ]);
+        browserType = 'webkit';
       }
+      console.log(`🔧 Executing login only for ${browserType} (shard ${current}/${total})`);
+      await loginAndSaveState(browserType);
     } else {
-      console.warn(`⚠️ Sharding not configured. Executing login for all browsers.`);
+      console.warn(
+        `⚠️ Shard number (${total}) isn't supported for shard optimization. Executing login for all browsers.`
+      );
       await Promise.all([
         loginAndSaveState('chromium'),
         loginAndSaveState('firefox'),
@@ -163,13 +129,24 @@ async function globalSetup(config: FullConfig) {
       ]);
     }
   } else {
-    // Perform login and save authentication state for each browser
+    console.log(`⚙️ No sharding configured. Executing login for all browsers.`);
     await Promise.all([
       loginAndSaveState('chromium'),
       loginAndSaveState('firefox'),
       loginAndSaveState('webkit'),
     ]);
   }
+}
+
+// Global setup function
+async function globalSetup(config: FullConfig) {
+  console.log(`[${new Date().toISOString()}] ⚙️ Running global setup...`);
+
+  // Create unsigned state
+  await createUnsignedState();
+
+  // Usar a função para gerenciar browsers com base no sharding
+  await handleBrowsersBasedOnSharding(config);
 
   console.log('✅ Global setup completed!');
 }

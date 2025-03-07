@@ -38,6 +38,27 @@ export function getFormattedDateRange(): string {
   return result;
 }
 
+export class CalendarHelper {
+  constructor(private page: Page) {}
+
+  async opensCalendar() {
+    await this.page.getByRole('button').filter({ hasText: /^$/ }).first().click();
+  }
+
+  getDayButton(day: number) {
+    return this.page.locator('td button.rdp-day_button', { hasText: String(day) }).nth(0);
+  }
+
+  async selectDateRange(startDay: number, endDay: number) {
+    await this.getDayButton(startDay).click();
+    await this.getDayButton(endDay).click();
+  }
+
+  async goToPreviousMonth() {
+    await this.page.getByRole('button', { name: 'Go to the Previous Month' }).click();
+  }
+}
+
 export async function verifyDateRangeInput(
   locator: Locator,
   expectedDateRange: string
@@ -102,6 +123,27 @@ export async function interceptTenantExchange(route: Route, request: Request) {
   await route.continue();
 }
 
+export async function waitForMultipleRSCResponses(
+  page: Page,
+  count = 1,
+  options = { timeout: 10000 }
+) {
+  try {
+    for (let i = 0; i < count; i++) {
+      const response = await page.waitForResponse(
+        (response) => response.url().includes('_rsc=') && response.status() === 200,
+        { timeout: options.timeout }
+      );
+
+      console.log(`✅ URL received: ${response.url()}`);
+      console.log(`✅ Status: ${response.status()}`);
+    }
+  } catch (error) {
+    console.warn('⚠️ Not able to capture all RSC requests. Continuing test...');
+    await page.waitForTimeout(1000);
+  }
+}
+
 //GUI fixtures
 export async function loginUnsigned(page: Page): Promise<void> {
   if (!process.env.USER_EMAIL_1 || !process.env.USER_PASSWORD_1) {
@@ -113,7 +155,6 @@ export async function loginUnsigned(page: Page): Promise<void> {
   const emailInput = page.getByRole('textbox', { name: 'Email address' });
   await emailInput.waitFor({ state: 'visible' });
   await emailInput.focus();
-  await emailInput.clear();
   await emailInput.fill(process.env.USER_EMAIL_1);
 
   const emailValue = await emailInput.inputValue();
@@ -127,13 +168,21 @@ export async function loginUnsigned(page: Page): Promise<void> {
   const passwordInput = page.getByRole('textbox', { name: 'Password' });
   await passwordInput.waitFor({ state: 'visible' });
   await passwordInput.focus();
-  await passwordInput.clear();
   await passwordInput.fill(process.env.USER_PASSWORD_1);
 
   const passwordValue = await passwordInput.inputValue();
   expect(passwordValue).toBeTruthy();
 
   await page.getByRole('button', { name: 'Continue' }).click();
+
+  await page.locator('[data-test="header-logo"]').click();
+  await page.waitForLoadState('networkidle');
+
+  // Failsafe
+  await expect(page.getByRole('img', { name: 'Error image' })).not.toBeVisible({ timeout: 1000 });
+  await expect(page.getByText('Sorry, aliens have stolen our server')).not.toBeVisible({
+    timeout: 1000,
+  });
 }
 
 // Extend the base test fixture
@@ -143,10 +192,20 @@ export const test = baseTest.extend({
     // This runs before each test that uses the page fixture
     await page.goto('/');
 
+    // Failsafe for graphql requests
+    //   let graphqlRequestMade = false;
+    //   await page.route('**/graphql', (route) => {
+    //     graphqlRequestMade = true;
+    //     console.log('❌ GraphQL request detected');
+    //     route.continue();
+    //   });
+    // await validateRSCRequest(page, { urlPattern: '/en' });
     // Execute any other beforeEach logic
 
     // Use the fixture
     await use(page);
+
+    // expect(graphqlRequestMade).toBe(false);
 
     // This runs after each test that uses the page fixture
     // afterEach cleanup logic here

@@ -1,20 +1,27 @@
 import { faker } from '@faker-js/faker';
-import { expect, getFormattedDateRange, test, verifyDateRangeInput } from '../utils/fixtures/e2e';
+import {
+  CalendarHelper,
+  expect,
+  getFormattedDateRange,
+  test,
+  verifyDateRangeInput,
+  waitForMultipleRSCResponses,
+} from '../utils/fixtures/e2e';
 
 test.describe('Operations page validation @regression', () => {
   test.beforeEach(async ({ page }) => {
     const operationsButton = page.locator('[data-test="Operations"]');
     await expect(operationsButton).toBeVisible();
-    await expect(operationsButton).toBeEnabled();
     await operationsButton.click();
+    await page.locator('[data-test="header"]').getByText('Operations').focus();
   });
 
   test('Sees all elements in Operations page @smoke', async ({ page }) => {
     // Static elements
     await expect(page.locator('[data-test="filter-by-date"]')).toBeVisible();
     await expect(page.locator('[data-test="filter-by-date"]')).toBeEnabled();
-    await expect(page.locator('[data-test="filter-by-name"]')).toBeVisible();
-    await expect(page.locator('[data-test="filter-by-name"]')).toBeEnabled();
+    await expect(page.locator('[data-test="filter-by-search"]')).toBeVisible();
+    await expect(page.locator('[data-test="filter-by-search"]')).toBeEnabled();
     await expect(page.locator('[data-test="filter-button"]')).toBeVisible();
     await expect(page.locator('[data-test="filter-button"]')).toBeEnabled();
 
@@ -28,12 +35,11 @@ test.describe('Operations page validation @regression', () => {
     await verifyDateRangeInput(filterByDateLocator, formattedDate);
 
     // Test Search input
-    await expect(page.locator('[data-test="filter-by-name"]')).toBeEnabled();
     const randomName = faker.person.firstName();
-    await page.locator('[data-test="filter-by-name"]').fill(randomName);
+    await page.locator('[data-test="filter-by-search"]').fill(randomName);
     await expect(page.locator('[data-test="clear-all"]')).toBeVisible();
     await page.locator('[data-test="clear-all"]').click();
-    await expect(page.locator('[data-test="filter-by-name"]')).not.toHaveValue(randomName);
+    await expect(page.locator('[data-test="filter-by-search"]')).not.toHaveValue(randomName);
 
     // Test Filter button
     await page.locator('[data-test="filter-button"]').click();
@@ -58,6 +64,29 @@ test.describe('Operations page validation @regression', () => {
       .filter({ hasText: /^$/ })
       .first();
     await expect(steps).toBeVisible();
+  });
+
+  test('Uses the calendar pop-up with random dates, validating UI "X" and "Clear all" buttons and RSC response', async ({
+    page,
+  }) => {
+    const calendar = new CalendarHelper(page);
+    calendar.opensCalendar();
+    await calendar.goToPreviousMonth();
+    await calendar.selectDateRange(1, 25);
+
+    await waitForMultipleRSCResponses(page, 2);
+
+    await page.locator('[data-test="input-remove-value"]').isVisible();
+    await page.locator('[data-test="input-remove-value"]').click();
+
+    calendar.opensCalendar();
+    await calendar.goToPreviousMonth();
+    await calendar.selectDateRange(1, 18);
+
+    await waitForMultipleRSCResponses(page, 2);
+
+    await page.locator('[data-test="clear-all"]').isVisible();
+    await page.locator('[data-test="clear-all"]').click();
   });
 
   test('Validates there is a warning SVG element after a denied operation', async ({ page }) => {

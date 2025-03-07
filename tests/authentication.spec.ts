@@ -13,14 +13,6 @@ test.describe('Authentication @regression', () => {
 
   test.beforeEach(async ({ page }) => {
     await loginUnsigned(page);
-    await page.waitForLoadState('networkidle');
-    await page.reload();
-
-    // Failsafe
-    await expect(page.getByRole('img', { name: 'Error image' })).not.toBeVisible({ timeout: 1000 });
-    await expect(page.getByText('Sorry, aliens have stolen our server')).not.toBeVisible({
-      timeout: 1000,
-    });
   });
 
   test('Logs in successfully and validates the OpenID token @smoke', async ({
@@ -38,7 +30,6 @@ test.describe('Authentication @regression', () => {
       '**/auth/realms/idv/protocol/openid-connect/auth**',
       validateOpenIDAuthResponse
     );
-
     await page.locator('[data-test="user-name"]').click();
     await page.getByText('Log out').click();
 

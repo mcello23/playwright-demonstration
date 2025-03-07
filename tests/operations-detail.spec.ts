@@ -73,7 +73,7 @@ test.describe('Operations page validation @regression', () => {
       .nth(0);
     await expect(operationName).toBeVisible();
 
-    // TODO: add other locales / fix eng translation
+    // TODO: add other locales
     const operationStatus = page.locator('p.facephi-ui-label', {
       hasText: /Started|Successful|Rejected/,
     });
