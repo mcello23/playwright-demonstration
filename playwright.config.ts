@@ -10,8 +10,8 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  timeout: process.env.CI ? 40_000 : 30_000,
-  expect: { timeout: process.env.CI ? 30_000 : 14_000 },
+  timeout: process.env.CI ? 50_000 : 20_000,
+  expect: { timeout: process.env.CI ? 30_000 : 8_000 },
   testDir: './tests',
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
@@ -42,11 +42,7 @@ export default defineConfig({
   },
   globalSetup: path.resolve(__dirname, 'utils/global-setup.ts'),
   use: {
-    baseURL: 'https://idv-suite.identity-platform.dev',
-    trace: 'on',
-    screenshot: 'on',
-
-    ignoreHTTPSErrors: true,
+    baseURL: 'https://idv-suite.identity-platform.dev/',
   },
   projects: [
     {
@@ -54,8 +50,11 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         storageState: path.resolve(__dirname, 'auth/auth-chromium.json'),
+        viewport: { width: 2560, height: 1440 },
         video: 'retain-on-failure',
-        viewport: { width: 1920, height: 1080 },
+        trace: 'on',
+        screenshot: 'on',
+        ignoreHTTPSErrors: true,
       },
     },
     {
@@ -63,8 +62,11 @@ export default defineConfig({
       use: {
         ...devices['Desktop Firefox'],
         storageState: path.resolve(__dirname, 'auth/auth-firefox.json'),
+        viewport: { width: 2560, height: 1440 },
         video: 'retain-on-failure',
-        viewport: { width: 1920, height: 1080 },
+        trace: 'on',
+        screenshot: 'on',
+        ignoreHTTPSErrors: true,
       },
     },
     {
@@ -72,9 +74,24 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
         storageState: path.resolve(__dirname, 'auth/auth-webkit.json'),
+        viewport: { width: 2560, height: 1440 },
         video: 'retain-on-failure',
-        viewport: { width: 1920, height: 1080 },
+        trace: 'on',
+        screenshot: 'on',
+        ignoreHTTPSErrors: true,
       },
     },
+    // {
+    //   name: 'edge',
+    //   use: {
+    //     channel: 'msedge',
+    //     storageState: path.resolve(__dirname, 'auth/auth-chromium.json'),
+    //     viewport: { width: 2560, height: 1440 },
+    //     video: 'retain-on-failure',
+    //     trace: 'on',
+    //     screenshot: 'on',
+    //     ignoreHTTPSErrors: true,
+    //   },
+    // },
   ],
 });

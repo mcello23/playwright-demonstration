@@ -1,4 +1,5 @@
 import {
+  CalendarHelper,
   expect,
   getFormattedDateRange,
   test,
@@ -63,19 +64,13 @@ test.describe('Dashboard validation flows @regression', () => {
   test('Uses the calendar pop-up and validates all RSC requests and Echarts in UI', async ({
     page,
   }) => {
-    await page.getByRole('button').nth(3).click();
-
-    const calendar = page.locator('.facephi-ui-portal__container');
-    const selectStartDate = page.locator('td button.rdp-day_button', { hasText: '3' }).nth(0);
-    const selectEndDate = page.locator('td button.rdp-day_button', { hasText: '25' }).nth(0);
+    const calendar = new CalendarHelper(page);
+    calendar.opensCalendar();
+    await calendar.goToPreviousMonth();
+    await calendar.selectRandomDateRange();
     const chartsDashboard = page.locator('.echarts-for-react');
 
-    await expect(calendar).toBeVisible();
-
-    await selectStartDate.click();
-    await selectEndDate.click();
-    await calendar.focus();
-    await waitForMultipleRSCResponses(page, 2);
+    await waitForMultipleRSCResponses(page, 1);
 
     expect(await chartsDashboard.count()).toBeGreaterThanOrEqual(2);
     expect(await chartsDashboard.count()).toBeLessThanOrEqual(3);

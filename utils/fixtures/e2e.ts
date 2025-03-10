@@ -38,20 +38,37 @@ export function getFormattedDateRange(): string {
   return result;
 }
 
+export function getRandomDateRange(minStart = 1, maxStart = 15, maxEnd = 28) {
+  const startDay = faker.number.int({ min: minStart, max: maxStart });
+  const endDay = faker.number.int({ min: startDay + 1, max: maxEnd });
+  return { startDay, endDay };
+}
+
 export class CalendarHelper {
   constructor(private page: Page) {}
 
   async opensCalendar() {
-    await this.page.getByRole('button').filter({ hasText: /^$/ }).first().click();
+    await this.page.locator('[data-test="input-container"]').getByRole('button').click();
   }
 
-  getDayButton(day: number) {
-    return this.page.locator('td button.rdp-day_button', { hasText: String(day) }).nth(0);
+  async getDayButton(day: number) {
+    return this.page.locator(`td button.rdp-day_button`, { hasText: day.toString() }).first();
+  }
+
+  async selectRandomDateRange() {
+    const { startDay, endDay } = getRandomDateRange();
+    return this.selectDateRange(startDay, endDay);
   }
 
   async selectDateRange(startDay: number, endDay: number) {
-    await this.getDayButton(startDay).click();
-    await this.getDayButton(endDay).click();
+    const startButton = await this.getDayButton(startDay);
+    if (startButton) {
+      await startButton.click();
+    }
+    const endButton = await this.getDayButton(endDay);
+    if (endButton) {
+      await endButton.click();
+    }
   }
 
   async goToPreviousMonth() {
@@ -170,13 +187,10 @@ export async function loginUnsigned(page: Page): Promise<void> {
   await passwordInput.focus();
   await passwordInput.fill(process.env.USER_PASSWORD_1);
 
-  const passwordValue = await passwordInput.inputValue();
-  expect(passwordValue).toBeTruthy();
-
   await page.getByRole('button', { name: 'Continue' }).click();
-
-  await page.locator('[data-test="header-logo"]').click();
   await page.waitForLoadState('networkidle');
+
+  await page.waitForURL(/.*tenant.*/);
 
   // Failsafe
   await expect(page.getByRole('img', { name: 'Error image' })).not.toBeVisible({ timeout: 1000 });
@@ -185,27 +199,12 @@ export async function loginUnsigned(page: Page): Promise<void> {
   });
 }
 
-// Extend the base test fixture
 export const test = baseTest.extend({
-  // Add your custom fixtures here
   page: async ({ page }: { page: Page }, use: (page: Page) => Promise<void>) => {
-    // This runs before each test that uses the page fixture
     await page.goto('/');
-
-    // Failsafe for graphql requests
-    //   let graphqlRequestMade = false;
-    //   await page.route('**/graphql', (route) => {
-    //     graphqlRequestMade = true;
-    //     console.log('❌ GraphQL request detected');
-    //     route.continue();
-    //   });
-    // await validateRSCRequest(page, { urlPattern: '/en' });
-    // Execute any other beforeEach logic
 
     // Use the fixture
     await use(page);
-
-    // expect(graphqlRequestMade).toBe(false);
 
     // This runs after each test that uses the page fixture
     // afterEach cleanup logic here

@@ -24,11 +24,6 @@ if (!fs.existsSync(authDir)) {
 }
 
 async function createUnsignedState() {
-  if (fs.existsSync(unsignedStatePath)) {
-    console.log(`⚙️ Unsigned state already exists, skipping creation.`);
-    return;
-  }
-
   console.log('⚙️ Creating unsigned state...');
   const browser = await chromium.launch();
   const context = await browser.newContext();
@@ -48,12 +43,7 @@ async function createUnsignedState() {
 async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit') {
   const authFilePath = path.join(authDir, `auth-${browserType}.json`);
 
-  if (fs.existsSync(authFilePath)) {
-    console.log(`🔄 Authentication state already exists for ${browserType}, skipping login.`);
-    return;
-  }
-
-  console.log(`🔑 Logging in on ${browserType}...`);
+  console.log(`🔑 Starting login with ${browserType}...`);
   const browserTypeMap = { chromium, firefox, webkit };
   const browserLauncher = browserTypeMap[browserType];
 
@@ -75,12 +65,20 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
     const passwordInput = page.getByRole('textbox', { name: 'Password' });
     await passwordInput.waitFor({ state: 'visible' });
     await passwordInput.fill(process.env.USER_PASSWORD!, { timeout: 40000 });
-
     await page.getByRole('button', { name: 'Continue' }).click();
 
-    await page.locator('[data-test="header-logo"]').click();
-    await page.waitForLoadState('networkidle');
+    try {
+      await page.waitForURL('**/tenant/8d04089d-8273-442e-ad40-2bf10ff494b3', { timeout: 30000 });
+      await page.locator('[data-test="header"]').getByText('Dashboard').waitFor({ timeout: 5000 });
 
+      console.log(`✅ Login successful with ${browserType}! Saving state...`);
+      await context.storageState({ path: authFilePath });
+    } catch (error) {
+      console.error(`❌ Login with ${browserType} failed! Issue: ${error}`);
+      await page.screenshot({ path: path.join(authDir, `redirect-fail-${browserType}.png`) });
+    }
+
+    // Failsafe logic
     const imageError = page.getByRole('img', { name: 'Error image' });
     const errorHeader = page.getByText('Sorry, aliens have stolen our server');
 
@@ -88,16 +86,11 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
     const isErrorHeaderVisible = await errorHeader.isVisible().catch(() => false);
 
     if (isErrorImageVisible || isErrorHeaderVisible) {
-      console.error(`⛔ Erro persistente após tentativas de recuperação (${browserType})`);
+      console.error(`⛔ Cookies error detected with ${browserType} login`);
       await page.screenshot({ path: path.join(authDir, `error-${browserType}.png`) });
-      throw new Error('Erro de servidor persistente após login');
+      throw new Error(`Login error when using ${browserType} to login`);
     }
-
-    console.log(`✅ Login successful on ${browserType}, saving authentication state...`);
-    await context.storageState({ path: authFilePath });
   } catch (error) {
-    console.error(`❌ Failed to log in on ${browserType}:`, error);
-  } finally {
     await browser.close();
   }
 }

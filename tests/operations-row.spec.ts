@@ -72,7 +72,7 @@ test.describe('Operations page validation @regression', () => {
     const calendar = new CalendarHelper(page);
     calendar.opensCalendar();
     await calendar.goToPreviousMonth();
-    await calendar.selectDateRange(1, 25);
+    await calendar.selectRandomDateRange();
 
     await waitForMultipleRSCResponses(page, 2);
 
@@ -81,7 +81,7 @@ test.describe('Operations page validation @regression', () => {
 
     calendar.opensCalendar();
     await calendar.goToPreviousMonth();
-    await calendar.selectDateRange(1, 18);
+    await calendar.selectRandomDateRange();
 
     await waitForMultipleRSCResponses(page, 2);
 
@@ -275,6 +275,7 @@ test.describe('Operations page validation @regression', () => {
 
     const fileExtension = fileName.split('.').pop()?.toLowerCase();
     expect('jpeg').toContain(fileExtension);
+    console.log(`Downloaded file: ${fileName}`);
 
     const path = await download.path();
     expect(path).toBeTruthy();
@@ -326,5 +327,36 @@ test.describe('Operations page validation @regression', () => {
     await Promise.all([printPromise, page.locator('div:nth-child(3) > button').first().click()]);
 
     console.log('Print function was successfully called');
+  });
+
+  test("Validates that the column selector doesn't shows unselected toggles", async ({ page }) => {
+    const availableColumns = ['Date', 'User ID', 'Type', 'Steps', 'Assets', 'Status', 'Actions'];
+    const numColumnsToToggle = Math.floor(Math.random() * availableColumns.length) + 1;
+
+    // Select random columns to toggle
+    const columnsToToggle = [];
+    const availableIndices = [...Array(availableColumns.length).keys()];
+    for (let i = 0; i < numColumnsToToggle; i++) {
+      const randomIndex = Math.floor(Math.random() * availableIndices.length);
+      const selectedIndex = availableIndices.splice(randomIndex, 1)[0];
+      columnsToToggle.push(availableColumns[selectedIndex]);
+    }
+
+    await page.getByRole('button').filter({ hasText: /^$/ }).nth(2).click();
+    const viewSelector = page.locator('[data-test="option-menu"]');
+    await expect(viewSelector).toBeVisible();
+
+    for (const columnLabel of columnsToToggle) {
+      console.log(`Removing column: ${columnLabel}`);
+      await viewSelector.getByLabel(columnLabel).click();
+    }
+
+    await page.mouse.click(0, 0);
+
+    for (const columnLabel of columnsToToggle) {
+      const columnHeader = page.locator(`th:has-text("${columnLabel}")`);
+      await expect(columnHeader).not.toBeVisible();
+      console.log(`✅ Column "${columnLabel}" is not visilbe`);
+    }
   });
 });

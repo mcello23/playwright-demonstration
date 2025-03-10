@@ -80,7 +80,7 @@ test.describe('Operations page validation @regression', () => {
     await expect(operationStatus).toBeVisible();
   });
 
-  test('Enters a successfull operation and validates all green/successfull elements @smoke', async ({
+  test('Enters a successful operation and validates all green/successful elements @smoke', async ({
     page,
   }) => {
     const resultsPage = page.locator('#tableBody');
@@ -93,7 +93,7 @@ test.describe('Operations page validation @regression', () => {
 
     const successOperation = successfullRow.locator('[data-test^="operationDetail-"]');
     await successOperation.click();
-    await page.waitForRequest('https://idv-suite.identity-platform.dev/en/operations/**');
+    await page.waitForRequest('**/operations/**');
 
     const successfullStepMessage = page.getByText('Successful step');
     await expect(successfullStepMessage).toBeVisible();
@@ -120,7 +120,7 @@ test.describe('Operations page validation @regression', () => {
     }
   });
 
-  test('Enters a rejected operation and validates all red/unsuccessfull elements @smoke', async ({
+  test('Enters a rejected operation and validates all red/unsuccessful elements @smoke', async ({
     page,
   }) => {
     const resultsPage = page.locator('#tableBody');
@@ -138,6 +138,7 @@ test.describe('Operations page validation @regression', () => {
 
     const rejectedOperationElement = rejectedRow.locator('[data-test^="operationDetail-"]').nth(0);
     await rejectedOperationElement.click();
+    await page.waitForRequest('**/operations/**');
 
     const errorDiv = page.locator('div.facephi-ui-flex[style*="--colors-error500"]');
     await expect(errorDiv).toBeVisible();
