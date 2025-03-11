@@ -151,5 +151,7 @@ test.describe('Operations page validation @regression', () => {
       .locator('div.facephi-ui-icon-wrapper[style*="--colors-error400"]')
       .nth(0);
     await expect(errorIcon).toBeVisible();
+    //TODO: add image verification from both sides, if failed, should add ID verfication images
+    //TODO: add test for OCR in tobrthruthy in various fields
   });
 });
