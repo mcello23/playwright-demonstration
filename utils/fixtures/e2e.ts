@@ -1,13 +1,5 @@
 import { faker } from '@faker-js/faker';
-import {
-  test as baseTest,
-  BrowserContext,
-  expect,
-  Locator,
-  Page,
-  Request,
-  Route,
-} from '@playwright/test';
+import { test as baseTest, expect, Locator, Page, Request, Route } from '@playwright/test';
 
 // Date range helpers
 const dateRangeCache = {
@@ -169,113 +161,7 @@ export async function waitForMultipleRSCResponses(
   }
 }
 
-async function handleAuthTimeoutErrors(page: Page, maxRetries = 3): Promise<boolean> {
-  let retryCount = 0;
-  let isRetrying = false;
-
-  const authErrorPatterns = [
-    '/login-actions/authenticate',
-    '/auth/realms/idv/protocol/openid-connect/auth',
-    '/auth/realms/idv/login-actions/post-broker-login',
-    '/login-actions/registration',
-    '/auth/realms/idv/broker/after-post-broker-login',
-    'amazoncognito.com/oauth2/authorize',
-    'auth.eu-west-2.amazoncognito.com',
-  ];
-
-  // Listener for server isues
-  page.on('response', async (response) => {
-    const status = response.status();
-
-    if (status >= 500 && status < 600 && !isRetrying) {
-      console.log(`⚠️ Server error ${status} detected at ${response.url()}`);
-      isRetrying = true;
-
-      if (retryCount < maxRetries) {
-        retryCount++;
-        console.log(`Attempt ${retryCount}/${maxRetries}: Recovering after ${status}...`);
-
-        try {
-          if (!page.isClosed()) {
-            await page.waitForTimeout(2000);
-            await page.goto('/', { timeout: 30000 }).catch((e) => {
-              console.log(`⚠️ Nav error: ${e.message}`);
-            });
-
-            try {
-              await loginUnsigned(page);
-              console.log('✅ Re-login successful after server error');
-            } catch (loginError: any) {
-              console.error('⚠️ Re-login issues:', loginError.message);
-            }
-          }
-        } catch (error: any) {
-          console.error('❌ Tentative of re-login error:', error.message);
-        } finally {
-          isRetrying = false;
-        }
-      } else {
-        console.error(`❌ Maximum retry attempts (${maxRetries}) reached for server errors.`);
-        isRetrying = false;
-      }
-    }
-  });
-
-  // Listener for navigation errors
-  page.on('framenavigated', async (frame) => {
-    const isAuthErrorUrl = authErrorPatterns.some((pattern) => frame.url().includes(pattern));
-
-    const hasStateParam =
-      frame.url().includes('state=') &&
-      frame.url().includes('code=') &&
-      frame.url().includes('session_state=');
-
-    if (isAuthErrorUrl && !isRetrying) {
-      isRetrying = true;
-
-      if (retryCount < maxRetries) {
-        retryCount++;
-
-        try {
-          if (page.isClosed()) {
-            isRetrying = false;
-            return;
-          }
-          await page.waitForTimeout(1000);
-          await page.goto('/', { timeout: 30000 });
-
-          try {
-            await loginUnsigned(page);
-          } catch (loginError: any) {}
-        } catch (error: any) {
-        } finally {
-          isRetrying = false;
-        }
-      } else {
-        isRetrying = false;
-      }
-    } else if (
-      hasStateParam &&
-      !isRetrying &&
-      frame.url().includes('idv-suite.identity-platform.dev')
-    ) {
-      try {
-        const isAppReady = await page
-          .locator('[data-test="header-logo"]')
-          .isVisible()
-          .catch(() => false);
-
-        if (!isAppReady) {
-          await page.waitForTimeout(2000);
-        }
-      } catch (error) {}
-    }
-  });
-
-  return true;
-}
-
-// GUI fixtures
+//GUI fixtures
 export async function loginUnsigned(page: Page): Promise<void> {
   if (!process.env.USER_EMAIL_1 || !process.env.USER_PASSWORD_1) {
     throw new Error("Env variables USER_EMAIL e USER_PASSWORD aren't set");
@@ -304,22 +190,7 @@ export async function loginUnsigned(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.waitForLoadState('networkidle');
 
-  // Check for timeout error page
-  const errorPage = await page.locator('h1:has-text("We are sorry...")').isVisible();
-  if (errorPage) {
-    console.log('⚠️ Detected login timeout error. Refreshing and trying again...');
-    await page.goto('/');
-    return loginUnsigned(page);
-  }
-
-  await page.waitForURL(/.*tenant.*/, { timeout: 30000 }).catch(async () => {
-    const isErrorPage = await page.locator('text=Your login attempt timed out').isVisible();
-    if (isErrorPage) {
-      console.log('⚠️ Login timeout detected. Refreshing page...');
-      await page.goto('/');
-      return loginUnsigned(page);
-    }
-  });
+  await page.waitForURL(/.*tenant.*/);
 
   // Failsafe
   await expect(page.getByRole('img', { name: 'Error image' })).not.toBeVisible({ timeout: 1000 });
@@ -328,34 +199,13 @@ export async function loginUnsigned(page: Page): Promise<void> {
   });
 }
 
-export const test = baseTest.extend<{
-  context: BrowserContext;
-  page: Page;
-}>({
-  context: async ({ browser }, use) => {
-    const context = await browser.newContext({
-      userAgent:
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-      viewport: { width: 1280, height: 720 },
-    });
-
-    await use(context);
-    await context.close();
-  },
-  page: async ({ context }, use) => {
-    const page = await context.newPage();
-
-    await handleAuthTimeoutErrors(page);
-
+export const test = baseTest.extend({
+  page: async ({ page }: { page: Page }, use: (page: Page) => Promise<void>) => {
     await page.goto('/');
 
-    // try {
-    // await loginUnsigned(page); only if needed!
-    // } catch (error) {
-    //   console.error('Initial page setup failed:', error);
-    // }
-
     await use(page);
+
+    // afterEach cleanup logic here
   },
 });
 
