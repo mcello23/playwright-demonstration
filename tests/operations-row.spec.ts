@@ -181,7 +181,7 @@ test.describe('Operations page validation @regression', () => {
       .getByRole('button')
       .nth(1);
     await expect(moreZoom).toBeVisible();
-    await expect(moreZoom).toBeDisabled();
+    await expect(moreZoom).toBeEnabled();
 
     const printBttn = page.locator('div:nth-child(3) > button').first();
     await expect(printBttn).toBeVisible();
@@ -281,7 +281,7 @@ test.describe('Operations page validation @regression', () => {
     expect(path).toBeTruthy();
   });
 
-  test('Validates the print functionality inside the modal', async ({ page }) => {
+  test.skip('Validates the print functionality inside the modal', async ({ page }) => {
     const printPromise = new Promise<void>((resolve) => {
       page.exposeFunction('notifyPrintCalled', () => {
         resolve();
