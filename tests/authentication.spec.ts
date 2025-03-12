@@ -1,19 +1,18 @@
 import {
   expect,
-  loginUnsigned,
   test,
   validateOpenIDAuthResponse,
   validateOpenIDTokenRequest,
 } from '../utils/fixtures/e2e';
 
-const unsignedStatePath = 'auth/unsigned.json';
+// const unsignedStatePath = 'auth/unsigned.json';
 
 test.describe('Authentication @regression', () => {
-  test.use({ storageState: unsignedStatePath });
+  // test.use({ storageState: unsignedStatePath });
 
-  test.beforeEach(async ({ page }) => {
-    await loginUnsigned(page);
-  });
+  // test.beforeEach(async ({ page }) => {
+  //   await loginUnsigned(page);
+  // });
 
   test('Logs in successfully and validates the OpenID token @smoke', async ({
     page,
