@@ -1,6 +1,5 @@
 import {
   expect,
-  loginUnsigned,
   test,
   validateOpenIDAuthResponse,
   validateOpenIDTokenRequest,
@@ -24,8 +23,8 @@ test.describe('Authentication @regression', () => {
   });
 
   test('Logs out successfully and validates OpenID response @smoke', async ({ page }) => {
-    test.use({ storageState: unsignedStatePath });
-    await loginUnsigned(page);
+    // test.use({ storageState: unsignedStatePath });
+    // await loginUnsigned(page);
     await page.route(
       '**/auth/realms/idv/protocol/openid-connect/auth**',
       validateOpenIDAuthResponse

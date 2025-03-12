@@ -260,9 +260,6 @@ async function handleAuthTimeoutErrors(page: Page, maxRetries = 3): Promise<bool
       frame.url().includes('idv-suite.identity-platform.dev')
     ) {
       try {
-        await page.waitForLoadState('networkidle', { timeout: 15000 });
-        await page.waitForTimeout(1000);
-
         const isAppReady = await page
           .locator('[data-test="header-logo"]')
           .isVisible()
