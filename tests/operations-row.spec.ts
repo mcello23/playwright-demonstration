@@ -281,7 +281,7 @@ test.describe('Operations page validation @regression', () => {
     expect(path).toBeTruthy();
   });
 
-  test.skip('Validates the print functionality inside the modal', async ({ page }) => {
+  test('Validates the print functionality inside the modal', async ({ page }) => {
     const printPromise = new Promise<void>((resolve) => {
       page.exposeFunction('notifyPrintCalled', () => {
         resolve();
