@@ -34,7 +34,7 @@ jobs:
         shell: bash
       
       - name: Install Correct Yarn Version
-        run: yarn set version 4.6.0
+        run: yarn set version 4.7.0
         shell: bash
 
       - name: Install dependencies
