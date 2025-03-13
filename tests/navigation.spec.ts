@@ -170,3 +170,40 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
     });
   });
 });
+
+test.describe('Negative tests', async () => {
+  test('Goes to a wrong URL and validates the 404 page has the correct format', async ({
+    page,
+  }) => {
+    await page.waitForSelector('[data-test="header"]');
+    await page.goto(`${process.env.BASE_URL}/wrong-url`);
+
+    const topLogo = page.getByRole('img').first();
+    await expect(topLogo).toBeVisible();
+
+    const errorImage = page.getByRole('img', { name: 'Error image' });
+    await expect(errorImage).toBeVisible();
+
+    const firstErrorText = page.getByText('Houstoooon, something went wrong!');
+    await expect(firstErrorText).toBeVisible();
+
+    const secondErrorText = page.getByText('Click below to land in IDV Suite');
+    await expect(secondErrorText).toBeVisible();
+
+    const homeButton = page.locator('[data-test="error-button"]').getByText('Land here');
+    await expect(homeButton).toBeVisible();
+    await expect(homeButton).toBeEnabled();
+  });
+
+  test('Goes to 404, clicks on the return button and is redirected to home', async ({ page }) => {
+    await page.waitForSelector('[data-test="header"]');
+    await page.goto(`${process.env.BASE_URL}/wrong-url`);
+    const errorImage = page.getByRole('img', { name: 'Error image' });
+    await expect(errorImage).toBeVisible();
+
+    await page.locator('[data-test="error-button"]').click();
+    await page.waitForURL(/.*tenant.*/);
+    const homeLocator = page.locator('[data-test="header"]').getByText('Dashboard');
+    await expect(homeLocator).toBeVisible();
+  });
+});
