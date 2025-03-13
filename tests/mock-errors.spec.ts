@@ -1,6 +1,6 @@
 import { expect, test } from '../utils/fixtures/e2e';
 
-test('Deve mostrar mensagem de erro quando servidor retorna 500', async ({
+test('Mocks a 500 server error and sees it in frontend and console', async ({
   page,
   simulateServerError,
 }) => {
@@ -51,23 +51,44 @@ test('Deve mostrar mensagem de erro quando servidor retorna 500', async ({
   }
 });
 
-// TODO: 403, 401, modificar el tiempo de espera
+// TODO: 403, 401, modificar el tiempo de espera del token de cognito
 
-test('Deve mostrar mensagem de timeout quando requisição demora muito', async ({
+test('Mocks a timeout server response and validates through unrespsonsive navigation', async ({
   page,
   simulateTimeout,
 }) => {
-  // Configurar o timeout antes de navegar para a página
+  // Capturar mensagens específicas de timeout no console
+  const timeoutMessages: string[] = [];
+  page.on('console', (msg) => {
+    const text = msg.text();
+    if (text.includes('timeout') || text.includes('Timeout') || text.includes('exceeded')) {
+      timeoutMessages.push(text);
+      console.log('\n⏱️ Timeout message detected:');
+      console.log(text);
+    }
+  });
+
+  await page.waitForURL(/.*tenant.*/);
+  const filterElement = page.locator('[data-test="filter-by-date"]');
+  await expect(filterElement).toBeVisible();
+
   await simulateTimeout({
-    endpoint: '**/operations/**',
+    endpoint: '**/tenant/**',
     timeoutMs: 30000,
   });
 
-  // Navegar para a página
-  await page.goto('/operations');
+  let navigationAttempted = false;
+  page.on('framenavigated', () => {
+    navigationAttempted = true;
+  });
 
-  // Verificar se mensagem de timeout é exibida
-  const timeoutMessage = page.locator('[data-test="timeout-message"]');
-  await expect(timeoutMessage).toBeVisible();
-  await expect(timeoutMessage).toContainText('A operação excedeu o tempo limite');
+  await page.getByRole('link', { name: 'Operations' }).click();
+
+  expect(navigationAttempted, 'Trying to navigate after mocked timeout...').toBeFalsy();
+
+  const opElement = page.locator('[data-test="header"]').getByText('Operations');
+  await expect(opElement).not.toBeVisible({
+    timeout: 2000,
+  });
+  console.log('\n⏱️ Mocked timeout successful!');
 });

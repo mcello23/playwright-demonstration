@@ -48,3 +48,4 @@ test.describe('Profile and tenants validation @regression', async () => {
     await tenantButton.isVisible();
   });
 });
+// TODO: Test for accesing 2nd tenant directly if not checked

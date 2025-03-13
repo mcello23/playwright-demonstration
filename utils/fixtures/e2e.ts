@@ -224,7 +224,7 @@ export const test = baseTest.extend<CustomFixtures>({
           contentType: 'application/json',
           body: JSON.stringify({
             error: true,
-            message: `Simulando erro ${options.statusCode ?? 500}`,
+            message: `Simulating error ${options.statusCode ?? 500}`,
           }),
         });
       });
@@ -239,7 +239,7 @@ export const test = baseTest.extend<CustomFixtures>({
         await new Promise((resolve) => setTimeout(resolve, options.timeoutMs ?? 60000));
         route.fulfill({
           status: 200,
-          body: 'Timeout simulado',
+          body: 'Simulating timeout',
         });
       });
     };
