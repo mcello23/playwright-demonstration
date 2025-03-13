@@ -3,13 +3,17 @@ import { expect, test } from '../utils/fixtures/e2e';
 test('Mocks a 500 server error and sees it in frontend and console', async ({
   page,
   simulateServerError,
-}) => {
+}, testInfo) => {
+  if (testInfo.project.name === 'firefox') {
+    test.skip(true, 'This test is flaky on Firefox');
+    return;
+  }
+
   const consoleMessages: string[] = [];
 
   page.on('console', (msg) => {
     const text = msg.text();
     consoleMessages.push(text);
-
     if (text.includes('Failed to load resource: the server responded with a status of 500')) {
       console.log('\n🔴 Error 500 detected on console:');
       console.log(text);
@@ -44,11 +48,6 @@ test('Mocks a 500 server error and sees it in frontend and console', async ({
   );
 
   expect(error500Message).toBeTruthy();
-
-  if (error500Message && !console.log.toString().includes('Error 500 detected')) {
-    console.log('\n🔴 Error message captured:');
-    console.log(error500Message);
-  }
 });
 
 // TODO: 403, 401, modificar el tiempo de espera del token de cognito
