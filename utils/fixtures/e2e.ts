@@ -199,13 +199,52 @@ export async function loginUnsigned(page: Page): Promise<void> {
   });
 }
 
-export const test = baseTest.extend({
+interface ErrorFixtureOptions {
+  statusCode?: number;
+  endpoint: string;
+}
+
+interface CustomFixtures {
+  simulateServerError: (options: ErrorFixtureOptions) => Promise<void>;
+  simulateTimeout: (options: { endpoint: string; timeoutMs?: number }) => Promise<void>;
+}
+
+export const test = baseTest.extend<CustomFixtures>({
   page: async ({ page }: { page: Page }, use: (page: Page) => Promise<void>) => {
     await page.goto('/');
-
     await use(page);
-
     // afterEach cleanup logic here
+  },
+
+  simulateServerError: async ({ page }, use) => {
+    const simulateError = async (options: ErrorFixtureOptions) => {
+      await page.route(options.endpoint, (route) => {
+        route.fulfill({
+          status: options.statusCode ?? 500,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            error: true,
+            message: `Simulando erro ${options.statusCode ?? 500}`,
+          }),
+        });
+      });
+    };
+
+    await use(simulateError);
+  },
+
+  simulateTimeout: async ({ page }, use) => {
+    const simulateTimeout = async (options: { endpoint: string; timeoutMs?: number }) => {
+      await page.route(options.endpoint, async (route) => {
+        await new Promise((resolve) => setTimeout(resolve, options.timeoutMs ?? 60000));
+        route.fulfill({
+          status: 200,
+          body: 'Timeout simulado',
+        });
+      });
+    };
+
+    await use(simulateTimeout);
   },
 });
 

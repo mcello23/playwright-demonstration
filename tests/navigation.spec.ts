@@ -176,7 +176,7 @@ test.describe('Negative tests', async () => {
     page,
   }) => {
     await page.waitForSelector('[data-test="header"]');
-    await page.goto(`${process.env.BASE_URL}/wrong-url`);
+    await page.goto('/wrong-url');
 
     const topLogo = page.getByRole('img').first();
     await expect(topLogo).toBeVisible();
@@ -197,7 +197,7 @@ test.describe('Negative tests', async () => {
 
   test('Goes to 404, clicks on the return button and is redirected to home', async ({ page }) => {
     await page.waitForSelector('[data-test="header"]');
-    await page.goto(`${process.env.BASE_URL}/wrong-url`);
+    await page.goto('/wrong-url');
     const errorImage = page.getByRole('img', { name: 'Error image' });
     await expect(errorImage).toBeVisible();
 
