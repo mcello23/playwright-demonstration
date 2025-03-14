@@ -199,14 +199,44 @@ export async function loginUnsigned(page: Page): Promise<void> {
   });
 }
 
+// Navigation helpers
+export async function expectNoResponse(
+  page: Page,
+  urlPattern: string | RegExp,
+  options = { timeout: 1000 }
+) {
+  let responseReceived = false;
+
+  const responsePromise = page
+    .waitForResponse(urlPattern, { timeout: options.timeout })
+    .then(() => {
+      responseReceived = true;
+    })
+    .catch(() => {
+      // Nothing, tmeout expected
+    });
+
+  await page.waitForTimeout(options.timeout);
+  await responsePromise;
+
+  expect(responseReceived).toBeFalsy();
+}
+
+// Mock fixtures helpers
 interface ErrorFixtureOptions {
   statusCode?: number;
   endpoint: string;
 }
+interface SimulateTimeoutOptions {
+  endpoint: string;
+  timeoutMs?: number;
+}
 
 interface CustomFixtures {
   simulateServerError: (options: ErrorFixtureOptions) => Promise<void>;
-  simulateTimeout: (options: { endpoint: string; timeoutMs?: number }) => Promise<void>;
+  simulateTimeout: (options: SimulateTimeoutOptions) => Promise<void>;
+  simulateForbidden: (options: ErrorFixtureOptions) => Promise<void>;
+  simulateUnauthorized: (options: ErrorFixtureOptions) => Promise<void>;
 }
 
 export const test = baseTest.extend<CustomFixtures>({
@@ -216,15 +246,18 @@ export const test = baseTest.extend<CustomFixtures>({
     // afterEach cleanup logic here
   },
 
-  simulateServerError: async ({ page }, use) => {
+  simulateServerError: async (
+    { page }: { page: Page },
+    use: (simulateError: (options: ErrorFixtureOptions) => Promise<void>) => Promise<void>
+  ) => {
     const simulateError = async (options: ErrorFixtureOptions) => {
-      await page.route(options.endpoint, (route) => {
+      await page.route(options.endpoint, (route: Route) => {
         route.fulfill({
-          status: options.statusCode ?? 500,
+          status: 500,
           contentType: 'application/json',
           body: JSON.stringify({
             error: true,
-            message: `Simulating error ${options.statusCode ?? 500}`,
+            message: 'Simulating error 500',
           }),
         });
       });
@@ -233,9 +266,12 @@ export const test = baseTest.extend<CustomFixtures>({
     await use(simulateError);
   },
 
-  simulateTimeout: async ({ page }, use) => {
-    const simulateTimeout = async (options: { endpoint: string; timeoutMs?: number }) => {
-      await page.route(options.endpoint, async (route) => {
+  simulateTimeout: async (
+    { page }: { page: Page },
+    use: (simulateTimeout: (options: SimulateTimeoutOptions) => Promise<void>) => Promise<void>
+  ) => {
+    const simulateTimeout = async (options: SimulateTimeoutOptions) => {
+      await page.route(options.endpoint, async (route: Route) => {
         await new Promise((resolve) => setTimeout(resolve, options.timeoutMs ?? 60000));
         route.fulfill({
           status: 200,
@@ -245,6 +281,46 @@ export const test = baseTest.extend<CustomFixtures>({
     };
 
     await use(simulateTimeout);
+  },
+
+  simulateForbidden: async (
+    { page }: { page: Page },
+    use: (simulateForbidden: (options: ErrorFixtureOptions) => Promise<void>) => Promise<void>
+  ) => {
+    const simulateForbidden = async (options: ErrorFixtureOptions) => {
+      await page.route(options.endpoint, (route: Route) => {
+        route.fulfill({
+          status: 403,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            error: true,
+            message: 'Simulating forbidden',
+          }),
+        });
+      });
+    };
+
+    await use(simulateForbidden);
+  },
+
+  simulateUnauthorized: async (
+    { page }: { page: Page },
+    use: (simulateUnauthorized: (options: ErrorFixtureOptions) => Promise<void>) => Promise<void>
+  ) => {
+    const simulateUnauthorized = async (options: ErrorFixtureOptions) => {
+      await page.route(options.endpoint, (route: Route) => {
+        route.fulfill({
+          status: 401,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            error: true,
+            message: 'Simulating unauthorized',
+          }),
+        });
+      });
+    };
+
+    await use(simulateUnauthorized);
   },
 });
 
