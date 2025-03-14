@@ -95,7 +95,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     await expect(filterElement).toBeVisible();
 
     await simulateUnauthorized({
-      endpoint: '**/tenant/**',
+      endpoint: '**/operations/**',
       statusCode: 401,
     });
 
@@ -108,7 +108,6 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
         : consoleMessages.find(
             (msg) => msg.includes('Failed to load resource') && msg.includes('401')
           );
-
     expect(error401Message).toBeTruthy();
   });
 
@@ -117,28 +116,17 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     simulateForbidden,
   }, testInfo) => {
     const consoleMessages: string[] = [];
-    let errorPrinted = false;
-
-    page.on('console', (msg) => {
-      const text = msg.text();
-      consoleMessages.push(text);
-
-      if (testInfo.project.name === 'firefox') {
-        if (text === 'Error' && !errorPrinted) {
-          console.log('\n🔴 Error "403" detected on console (Firefox):'); // Firefox has cookie issues therefore doesn't show the 403 error message
-          console.log(text);
-          errorPrinted = true;
-        }
-      } else {
+    let errorPromise = new Promise<void>((resolve) => {
+      page.on('console', (msg) => {
+        const text = msg.text();
+        consoleMessages.push(text);
         if (
-          text.includes(
-            'Failed to load resource: the server responded with a status of 403 (Forbidden)'
-          )
+          (testInfo.project.name === 'firefox' && text === 'Error') ||
+          (text.includes('403') && text.includes('Failed to load resource'))
         ) {
-          console.log('\n🔴 Error 403 detected on console:');
-          console.log(text);
+          resolve();
         }
-      }
+      });
     });
 
     await page.waitForURL(/.*tenant.*/);
@@ -146,11 +134,27 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     await expect(filterElement).toBeVisible();
 
     await simulateForbidden({
-      endpoint: '**/tenant/**',
+      endpoint: '**/operations/**',
       statusCode: 403,
     });
 
     await page.getByRole('link', { name: 'Operations' }).click();
+
+    const firstErrorText = page.getByText('Something went wrong');
+    await expect(firstErrorText).toBeVisible();
+
+    try {
+      await Promise.race([
+        errorPromise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout waiting for 403 on console')), 2000)
+        ),
+      ]);
+    } catch (error) {
+      console.log('❌ 403 error not found in console. Messages seen:');
+      consoleMessages.forEach((msg) => console.log(`- ${msg}`));
+    }
+
     await expect(filterElement).not.toBeVisible();
 
     const error403Message =
