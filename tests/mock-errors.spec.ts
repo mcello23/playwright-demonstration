@@ -61,7 +61,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
 
   // TODO: modificar el tiempo de espera del token de cognito
 
-  test('Mocks a 401 (Unauthorized) and sees it in frontend', async ({
+  test('Mocks a 401 (Unauthorized) and sees it in frontend and console', async ({
     page,
     simulateUnauthorized,
   }, testInfo) => {
@@ -112,7 +112,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     expect(error401Message).toBeTruthy();
   });
 
-  test('Mocks a 403 (Forbidden) response and validates console message and UI', async ({
+  test('Mocks a 403 (Forbidden) response and validates console message and frontend', async ({
     page,
     simulateForbidden,
   }, testInfo) => {

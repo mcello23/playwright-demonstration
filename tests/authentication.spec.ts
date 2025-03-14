@@ -6,10 +6,8 @@ import {
   validateOpenIDTokenRequest,
 } from '../utils/fixtures/e2e';
 
-const unsignedStatePath = 'auth/unsigned.json';
-
 test.describe('Authentication @regression', () => {
-  test.use({ storageState: unsignedStatePath });
+  test.use({ storageState: 'auth/unsigned.json' });
 
   test.beforeEach(async ({ page }) => {
     await loginUnsigned(page);
