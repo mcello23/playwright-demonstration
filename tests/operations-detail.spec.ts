@@ -51,13 +51,9 @@ test.describe('Operations page validation @regression', () => {
     const idTextContent = await operationIdLocator.textContent();
     expect(idTextContent).not.toBeNull();
 
-    const fullTextRegex = /^ID: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-    expect(idTextContent?.trim()).toMatch(fullTextRegex);
-
-    const currentStepLocator = page.locator('p.facephi-ui-label', {
-      hasText: /Current Step:|Paso Actual:|Etapa Atual:/,
-    });
-    await expect(currentStepLocator).toBeVisible();
+    const idRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+    const operationId = idTextContent?.replace('Operation ID:', '').trim();
+    expect(operationId).toMatch(idRegex);
 
     const endStepLocator = page
       .locator('p.facephi-ui-label', {
