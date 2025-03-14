@@ -3,7 +3,6 @@ import { expect, test } from '../utils/fixtures/e2e';
 test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar', () => {
   test.describe('Dashboard and Operations pages tests', () => {
     test.beforeEach(async ({ page }) => {
-      await page.waitForLoadState('networkidle');
       await page.locator('[data-test="header-logo"]').isEnabled();
       await page.locator('[data-test="header-logo"]').isVisible();
     });
@@ -135,7 +134,8 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
         '.facephi-ui-icon-wrapper[style*="background-color: var(--colors-blue400)"]'
       );
       await expect(iconWrapper).toBeVisible();
-      const identitiesLocator = page.locator('[data-test="Identities"] > a');
+
+      const identitiesLocator = page.locator('[data-test="List"] > a');
       await identitiesLocator.isVisible();
       await identitiesLocator.isEnabled();
 
