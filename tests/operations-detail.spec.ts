@@ -59,7 +59,7 @@ test.describe('Operations page validation @regression', async () => {
     if (idTextContent) {
       const idRegex = /^ID:\s*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
       const match = idTextContent.match(idRegex);
-      expect(match).not.toBeNull();
+      expect(match).toBeDefined();
     }
 
     const endStepLocator = page

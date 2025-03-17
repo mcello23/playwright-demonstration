@@ -13,34 +13,28 @@ test.describe('Happy path: Profile and tenants validation @regression', async ()
 
   test('Clicks on the Tenant button and sees all elements available @smoke', async ({ page }) => {
     await page.getByRole('button', { name: 'Demo' }).click();
-    const tenantText = page.getByText('Select a tenant');
+    const tenantText = page.getByText('Switch tenant');
     await expect(tenantText).toBeVisible();
 
     await page.locator('[data-test="modal-tenant"] button').first().isVisible();
-    await page
-      .getByRole('button', { name: 'demo 8d04089d-8273-442e-ad40-2bf10ff494b3' })
-      .isVisible();
-    await page
-      .getByRole('button', { name: 'demo 8d04089d-8273-442e-ad40-2bf10ff494b3' })
-      .isEnabled();
-    await page
-      .getByRole('button', { name: 'idv-prueba 809b44ff-26af-4ffc-9bb8-5dd9b0e87c44' })
-      .isVisible();
-    await page
-      .getByRole('button', { name: 'idv-prueba 809b44ff-26af-4ffc-9bb8-5dd9b0e87c44' })
-      .isEnabled();
+    await page.getByRole('button', { name: 'demo idv-demo' }).isVisible();
+    await page.getByRole('button', { name: 'demo idv-demo' }).isEnabled();
+    await page.getByRole('button', { name: 'idv-prueba idv-prueba' }).isVisible();
+    await page.getByRole('button', { name: 'idv-prueba idv-prueba' }).isEnabled();
+
+    await page.getByRole('button', { name: 'Apply' }).isVisible();
+    await page.getByRole('button', { name: 'Apply' }).isDisabled();
   });
 
-  test('Changes the Tenant of a user and validates through API/UI @smoke', async ({ page }) => {
+  test('Changes the Tenant of a user and validates through UI @smoke', async ({ page }) => {
     await page.route('**/realms/idv/tenant-exchange', interceptTenantExchange);
 
     await page.getByRole('button', { name: 'Demo' }).click();
-    const tenantText = page.getByText('Select a tenant');
+    const tenantText = page.getByText('Switch tenant');
     await expect(tenantText).toBeVisible();
 
     await page.getByRole('button', { name: 'idv-prueba 809b44ff-26af-4ffc' }).click();
-    await page.getByRole('button', { name: 'Select' }).click();
-    await page.waitForResponse('**/realms/idv/tenant-exchange');
+    await page.getByRole('button', { name: 'Apply' }).click();
     await page
       .locator('[data-test="update-tenant"]', { hasText: 'Successfully changed tenant' })
       .isVisible();
@@ -52,7 +46,7 @@ test.describe('Happy path: Profile and tenants validation @regression', async ()
     page,
   }) => {
     await page.waitForURL(/.*tenant.*/);
-    await page.goto('/en/tenant/809b44ff-26af-4ffc-9bb8-5dd9b0e87c44/operations');
+    await page.goto('/en/tenant/idv-prueba/operations');
     const operationsHeader = page
       .locator('[data-test="header"] div')
       .filter({ hasText: 'Operations' });
@@ -72,7 +66,7 @@ test.describe('Negative path: Profile and tenants validation @regression', () =>
     page,
   }) => {
     await page.waitForURL(/.*tenant.*/);
-    await page.goto('/en/tenant/809b44ff-26af-4ffc-9bb8-5dd9b0e87c44/operations');
+    await page.goto('/en/tenant/idv-prueba/operations');
     await page.waitForLoadState('networkidle');
 
     const topLogo = page.getByRole('img').first();
@@ -96,7 +90,7 @@ test.describe('Negative path: Profile and tenants validation @regression', () =>
     page,
   }) => {
     await page.waitForURL(/.*tenant.*/);
-    await page.goto('/en/tenant/809b44ff-26af-4ffc-9bb8-5dd9b0e87c44/operations');
+    await page.goto('/en/tenant/idv-prueba/operations');
     await page.waitForLoadState('networkidle');
 
     const firstErrorText = page.getByText('Houstoooon, something went wrong!');

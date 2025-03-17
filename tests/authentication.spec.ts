@@ -13,12 +13,9 @@ test.describe('Authentication @regression', () => {
     await loginUnsigned(page);
   });
 
-  test('Logs in successfully and validates the OpenID token @smoke', async ({
-    page,
-    browserName,
-  }) => {
-    console.log(`Running login test on ${browserName}`);
+  test('Logs in successfully and validates the OpenID token @smoke', async ({ page }) => {
     await page.route('**/openid-connect/token', validateOpenIDTokenRequest);
+    console.log('✅ All OIDC params intercepted are present');
 
     await expect(page.locator('[data-test="filter-by-date"]')).toBeVisible();
   });

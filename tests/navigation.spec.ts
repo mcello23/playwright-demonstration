@@ -21,7 +21,7 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
       await dashboardLocator.isEnabled();
 
       const hrefValueDash = await dashboardLocator.getAttribute('href');
-      const expectedHrefDash = '/en/tenant/8d04089d-8273-442e-ad40-2bf10ff494b3';
+      const expectedHrefDash = '/en/tenant/idv-demo';
       expect(hrefValueDash).toBe(expectedHrefDash);
     });
 
@@ -31,7 +31,7 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
       await operationsLocator.isEnabled();
 
       const hrefValueOperations = await operationsLocator.getAttribute('href');
-      const expectedHrefOperations = '/en/tenant/8d04089d-8273-442e-ad40-2bf10ff494b3/operations';
+      const expectedHrefOperations = '/en/tenant/idv-demo/operations';
       expect(hrefValueOperations).toBe(expectedHrefOperations);
 
       await page.locator('[data-test="Operations"]').click();
@@ -61,7 +61,7 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
       await rejectedLocator.isEnabled();
 
       const rejectedHref = await rejectedLocator.getAttribute('href');
-      const expectedRejectedHref = '/en/tenant/8d04089d-8273-442e-ad40-2bf10ff494b3/antifraud';
+      const expectedRejectedHref = '/en/tenant/idv-demo/antifraud';
       expect(rejectedHref).toBe(expectedRejectedHref);
     });
 
@@ -71,7 +71,7 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
       await rulesLocator.isEnabled();
 
       const rulesHref = await rulesLocator.getAttribute('href');
-      const expectedRulesdHref = '/en/tenant/8d04089d-8273-442e-ad40-2bf10ff494b3/antifraud/rules';
+      const expectedRulesdHref = '/en/tenant/idv-demo/antifraud/rules';
       expect(rulesHref).toBe(expectedRulesdHref);
 
       await page.locator('[data-test="Rules"]').click();
@@ -100,7 +100,7 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
       await flowsLocator.isEnabled();
 
       const flowsHref = await flowsLocator.getAttribute('href');
-      const expectedFlowsHref = '/en/tenant/8d04089d-8273-442e-ad40-2bf10ff494b3/flows';
+      const expectedFlowsHref = '/en/tenant/idv-demo/flows';
       expect(flowsHref).toBe(expectedFlowsHref);
     });
 
@@ -110,8 +110,7 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
       await integrationsLocator.isEnabled();
 
       const integrationsHref = await integrationsLocator.getAttribute('href');
-      const expectedIntegrationsHref =
-        '/en/tenant/8d04089d-8273-442e-ad40-2bf10ff494b3/integrations';
+      const expectedIntegrationsHref = '/en/tenant/idv-demo/integrations';
       expect(integrationsHref).toBe(expectedIntegrationsHref);
 
       await page.locator('[data-test="Integrations"]').click();
@@ -140,7 +139,7 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
       await identitiesLocator.isEnabled();
 
       const identitiesHref = await identitiesLocator.getAttribute('href');
-      const expectedIDHref = '/en/tenant/8d04089d-8273-442e-ad40-2bf10ff494b3/identities';
+      const expectedIDHref = '/en/tenant/idv-demo/identities';
       expect(identitiesHref).toBe(expectedIDHref);
     });
   });
@@ -165,7 +164,7 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
       await identitiesLocator.isEnabled();
 
       const identitiesHref = await identitiesLocator.getAttribute('href');
-      const expectedIDHref = '/en/tenant/8d04089d-8273-442e-ad40-2bf10ff494b3/user-management';
+      const expectedIDHref = '/en/tenant/idv-demo/user-management';
       expect(identitiesHref).toBe(expectedIDHref);
     });
   });

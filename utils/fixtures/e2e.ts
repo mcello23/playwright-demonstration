@@ -93,16 +93,28 @@ export async function verifyDateRangeInput(
 
 // API fixtures
 export async function validateOpenIDTokenRequest(route: Route, request: Request) {
-  expect(request.method()).toBe('POST');
-  console.log('Request method:', request.method());
+  try {
+    const url = request.url();
+    const urlParts = url.split('/');
+    const lastPart = urlParts[urlParts.length - 1];
 
-  const body = new URLSearchParams(request.postData() || '');
-  expect(body.get('grant_type')).toBe('authorization_code');
-  expect(body.has('code')).toBe(true);
-  expect(body.has('code_verifier')).toBe(true);
-  expect(body.has('client_id')).toBe(true);
+    expect(lastPart).toBe('token');
+    console.log('✅ Endpoint "token" found');
 
-  await route.continue();
+    expect(request.method()).toBe('POST');
+
+    const body = new URLSearchParams(request.postData() || '');
+    expect(body.get('grant_type')).toBe('authorization_code');
+    expect(body.has('code')).toBe(true);
+    expect(body.has('code_verifier')).toBe(true);
+    expect(body.has('client_id')).toBe(true);
+
+    await route.continue();
+  } catch (error) {
+    console.error('❌ Error on OIDC interceptation:', error);
+    await route.continue();
+    throw error;
+  }
 }
 
 export async function validateOpenIDAuthResponse(route: Route) {
