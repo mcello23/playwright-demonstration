@@ -1,7 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
+import { Status } from 'allure-js-commons';
 import dotenv from 'dotenv';
+import { createRequire } from 'module';
+import * as os from 'node:os';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+const require = createRequire(import.meta.url);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,14 +30,75 @@ export default defineConfig({
   fullyParallel: false,
   reporter: [
     ['list'],
+    ['html'],
     [
       'allure-playwright',
       {
-        outputFolder: 'allure-results',
+        resultsDir: 'allure-results',
         detail: true,
         suiteTitle: true,
         attachments: true,
-        labels: true,
+        outputFolder: 'allure-report',
+        reportName: 'IDV Suite Test Report',
+        historyDir: 'allure-history',
+        addAllureIdLabel: true,
+        links: {
+          issue: {
+            pattern: 'https://jira.seudominio.com/browse/{}',
+            nameTemplate: 'Issue #%s',
+          },
+          tms: {
+            pattern: 'https://testmanagement.seudominio.com/tests/{}',
+            nameTemplate: 'TMS #%s',
+          },
+        },
+        categories: [
+          {
+            name: 'Flaky tests',
+            messageRegex: '.*',
+            matchedStatuses: [Status.FAILED, Status.BROKEN],
+            flaky: true,
+          },
+          {
+            name: 'Tests with issues',
+            messageRegex: '.*',
+            matchedStatuses: [Status.BROKEN],
+          },
+          {
+            name: 'Broken tests',
+            messageRegex: '.*',
+            matchedStatuses: [Status.FAILED],
+          },
+          {
+            name: 'Skipped tests',
+            matchedStatuses: [Status.SKIPPED],
+          },
+        ],
+        environmentInfo: {
+          os_platform: os.platform(),
+          os_release: os.release(),
+          os_version: os.version(),
+          node_version: process.version,
+          playwright_version: require('@playwright/test/package.json').version,
+          environment: process.env.NODE_ENV || 'development',
+          test_branch: process.env.GITHUB_REF_NAME || 'local',
+          test_run_timestamp: new Date().toISOString(),
+        },
+        labels: [
+          {
+            name: 'epic',
+            pattern: /\@epic:(.*)/,
+          },
+          {
+            name: 'feature',
+            pattern: /\@feature:(.*)/,
+          },
+          {
+            name: 'story',
+            pattern: /\@story:(.*)/,
+          },
+        ],
+        plugins: ['screen-diff', 'behaviors'],
       },
     ],
   ],
@@ -46,6 +112,7 @@ export default defineConfig({
     trace: 'on',
     screenshot: 'on',
     ignoreHTTPSErrors: true,
+    actionTimeout: 10000,
   },
   projects: [
     {
