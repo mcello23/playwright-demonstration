@@ -74,7 +74,11 @@ test.describe('Strings validations of each sub-page, every locale @smoke', () =>
           isEnabled: false,
         },
         {
-          locator: page.getByText(data.date),
+          locator: page.getByText(data.startDate),
+          isEnabled: false,
+        },
+        {
+          locator: page.getByText(data.endDate),
           isEnabled: false,
         },
         {

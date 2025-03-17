@@ -330,7 +330,16 @@ test.describe('Operations page validation @regression', () => {
   });
 
   test("Validates that the column selector doesn't shows unselected toggles", async ({ page }) => {
-    const availableColumns = ['Date', 'User ID', 'Type', 'Steps', 'Assets', 'Status', 'Actions'];
+    const availableColumns = [
+      'Start Date',
+      'End Date',
+      'User ID',
+      'Type',
+      'Steps',
+      'Assets',
+      'Status',
+      'Actions',
+    ];
     const numColumnsToToggle = Math.floor(Math.random() * availableColumns.length) + 1;
 
     // Select random columns to toggle

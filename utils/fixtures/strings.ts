@@ -62,7 +62,8 @@ export const operationsTexts = {
   en: {
     lang: 'en',
     title: 'Operations',
-    date: 'Date',
+    startDate: 'Start Date',
+    endDate: 'End Date',
     userID: 'User ID',
     type: 'Type',
     steps: 'Steps',
@@ -76,7 +77,8 @@ export const operationsTexts = {
   es: {
     lang: 'es',
     title: 'Operaciones',
-    date: 'Fecha',
+    startDate: 'Fecha de inicio',
+    endDate: 'Fecha de finalización',
     userID: 'ID de usuario',
     type: 'Tipo',
     steps: 'Pasos',
@@ -90,7 +92,8 @@ export const operationsTexts = {
   pt: {
     lang: 'pt',
     title: 'Operações',
-    date: 'Data',
+    startDate: 'Data de Início',
+    endDate: 'Data de Término',
     userID: 'ID do usuário',
     type: 'Tipo',
     steps: 'Passos',
