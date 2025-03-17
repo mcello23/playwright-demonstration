@@ -16,6 +16,7 @@ test.describe('Authentication @regression', () => {
   test('Logs in successfully and validates the OpenID token @smoke', async ({ page }) => {
     await page.route('**/openid-connect/token', validateOpenIDTokenRequest);
     console.log('✅ All OIDC params intercepted are present');
+    await page.waitForURL(/.*tenant.*/);
 
     await expect(page.locator('[data-test="filter-by-date"]')).toBeVisible();
   });
@@ -25,6 +26,7 @@ test.describe('Authentication @regression', () => {
       '**/auth/realms/idv/protocol/openid-connect/auth**',
       validateOpenIDAuthResponse
     );
+    await page.waitForURL(/.*tenant.*/);
     await page.locator('[data-test="user-name"]').click();
     await page.getByText('Log out').click();
 

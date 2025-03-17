@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
         shell: bash
-      
+
       - name: Install Correct Yarn Version
         run: yarn set version 4.7.0
         shell: bash
@@ -80,6 +80,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check and Create gh-pages branch
+        run: |
+          git fetch origin gh-pages --quiet || git checkout --orphan gh-pages
+          git reset --hard
+        shell: bash
+
       - name: Generate and Publish Allure Report
         uses: Valiantsin2021/allure-shard-results-publish@1.0.6
         with:
@@ -94,3 +100,5 @@ jobs:
           publish-to-pages: 'true'
           fail-on-empty-results: 'false'
           add-env: 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
