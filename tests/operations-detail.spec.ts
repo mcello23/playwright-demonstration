@@ -1,6 +1,11 @@
-import { expect, test } from '../utils/fixtures/e2e';
+import {
+  clicksOperationRejected,
+  clicksOperationSuccessful,
+  expect,
+  test,
+} from '../utils/fixtures/e2e';
 
-test.describe('Operations page validation @regression', () => {
+test.describe('Operations page validation @regression', async () => {
   test.beforeEach(async ({ page }) => {
     await page.locator('[data-test="Operations"]').click();
   });
@@ -9,9 +14,9 @@ test.describe('Operations page validation @regression', () => {
     await page.locator('[data-test^="operationDetail-"]').first().click();
 
     // Upper Header buttons
-    const dataButon = page.getByRole('button', { name: 'Data' });
-    await expect(dataButon).toBeEnabled();
-    await expect(dataButon).toBeVisible();
+    const dataButton = page.getByRole('button', { name: 'Data' });
+    await expect(dataButton).toBeEnabled();
+    await expect(dataButton).toBeVisible();
     const securityButton = page.getByRole('button', { name: 'Security' });
     await expect(securityButton).toBeEnabled();
     await expect(securityButton).toBeVisible();
@@ -21,11 +26,11 @@ test.describe('Operations page validation @regression', () => {
     const timelineButton = page.getByRole('button', { name: 'Timeline' });
     await expect(timelineButton).toBeEnabled();
     await expect(timelineButton).toBeVisible();
-    const advancedtrackingButton = page.getByRole('button', { name: 'Advanced tracking' });
-    await expect(advancedtrackingButton).toBeEnabled();
-    await expect(advancedtrackingButton).toBeVisible();
+    const advancedTrackingButton = page.getByRole('button', { name: 'Advanced tracking' });
+    await expect(advancedTrackingButton).toBeEnabled();
+    await expect(advancedTrackingButton).toBeVisible();
 
-    // Upper Header statues
+    // Upper Header status
     // Date format validation
     const dateLocator = page.locator('p.facephi-ui-label', { hasText: /Date:|Fecha:|Data:/ });
     await expect(dateLocator).toBeVisible();
@@ -51,9 +56,11 @@ test.describe('Operations page validation @regression', () => {
     const idTextContent = await operationIdLocator.textContent();
     expect(idTextContent).not.toBeNull();
 
-    const idRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-    const operationId = idTextContent?.replace('Operation ID:', '').trim();
-    expect(operationId).toMatch(idRegex);
+    if (idTextContent) {
+      const idRegex = /^ID:\s*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
+      const match = idTextContent.match(idRegex);
+      expect(match).not.toBeNull();
+    }
 
     const endStepLocator = page
       .locator('p.facephi-ui-label', {
@@ -80,20 +87,10 @@ test.describe('Operations page validation @regression', () => {
   test('Enters a successful operation and validates all green/successful elements @smoke', async ({
     page,
   }) => {
-    const resultsPage = page.locator('#tableBody');
-    const successfullRow = resultsPage
-      .locator('[data-test^="table-row-"]')
-      .filter({
-        hasText: /Successful|Exitoso|Conseguiu/,
-      })
-      .nth(1);
+    await clicksOperationSuccessful(page);
 
-    const successOperation = successfullRow.locator('[data-test^="operationDetail-"]');
-    await successOperation.click();
-    await page.waitForRequest('**/operations/**');
-
-    const successfullStepMessage = page.getByText('Successful step');
-    await expect(successfullStepMessage).toBeVisible();
+    const successfulStepMessage = page.getByText('Successful step');
+    await expect(successfulStepMessage).toBeVisible();
 
     const successIcon = page
       .locator('div.facephi-ui-icon-wrapper[style*="--colors-success400"]')
@@ -120,22 +117,7 @@ test.describe('Operations page validation @regression', () => {
   test('Enters a rejected operation and validates all red/unsuccessful elements @smoke', async ({
     page,
   }) => {
-    const resultsPage = page.locator('#tableBody');
-    const rejectedRow = resultsPage
-      .locator('[data-test^="table-row-"]')
-      .filter({
-        hasText: /Rejected|Rechazado|Rejeitado/,
-      })
-      .first();
-
-    const errorStatusElement = rejectedRow.locator(
-      'span.facephi-ui-status[style*="--colors-error400"]'
-    );
-    await expect(errorStatusElement).toBeVisible();
-
-    const rejectedOperationElement = rejectedRow.locator('[data-test^="operationDetail-"]').nth(0);
-    await rejectedOperationElement.click();
-    await page.waitForRequest('**/operations/**');
+    await clicksOperationRejected(page);
 
     const errorDiv = page.locator('div.facephi-ui-flex[style*="--colors-error500"]');
     await expect(errorDiv).toBeVisible();
@@ -148,7 +130,59 @@ test.describe('Operations page validation @regression', () => {
       .locator('div.facephi-ui-icon-wrapper[style*="--colors-error400"]')
       .nth(0);
     await expect(errorIcon).toBeVisible();
-    //TODO: add image verification from both sides, if failed, should add ID verfication images
-    //TODO: add test for OCR in tobrthruthy in various fields
+  });
+
+  test('Validates that the requirements details of a successful operation are seen in UI', async ({
+    page,
+  }) => {
+    await clicksOperationSuccessful(page);
+
+    const sessionPassedMessage = page.getByText(/This session has passed the following tests:/);
+    await expect(sessionPassedMessage).toBeVisible();
+
+    const selfieImage = page.getByRole('figure').filter({ hasText: 'Selfie' }).getByRole('img');
+    await expect(selfieImage).toBeVisible();
+
+    const selfieDocumentContainer = page
+      .locator('figure', { hasText: 'Document image' })
+      .getByRole('img');
+    await expect(selfieDocumentContainer).toBeVisible();
+
+    const firstText = page.getByText('The person in the document and selfie match');
+    await expect(firstText).toBeVisible();
+
+    const belowText = page.getByText('Passive liveness');
+    await expect(belowText).toBeVisible();
+
+    const nationalityText = page.getByText('Nationality and geolocation match');
+    await expect(nationalityText).toBeVisible();
+
+    const scoreText = page.getByText(/Score:\s*\d+\.\d+%/);
+    await expect(scoreText).toBeVisible();
+
+    const idVerificationSection = page.getByText('ID Verification').first();
+    await expect(idVerificationSection).toBeVisible();
+
+    const idImages = page
+      .locator('img')
+      .filter({
+        has: page.getByText('ID Verification'),
+      })
+      .or(page.locator('div:near(:text("ID Verification")) img'));
+
+    const count = await idImages.count();
+    expect(count).toBeGreaterThanOrEqual(2);
+    expect(count).toBeLessThanOrEqual(4);
+
+    await page.locator('[data-test="collapsable-button"]').first().click();
+    const collapsable = page.locator('button.facephi-ui-option-menu__item');
+    const countCollapsable = await collapsable.count();
+    expect(countCollapsable).toBeGreaterThanOrEqual(1);
+    expect(countCollapsable).toBeLessThanOrEqual(6);
+
+    await page.locator('[data-test="collapsable-button"]').last().click();
+    const collapsableSelphi = page.getByRole('listitem').filter({ hasText: 'Selfie' });
+    expect(collapsableSelphi).toBeVisible();
+    expect(collapsableSelphi).toBeEnabled();
   });
 });

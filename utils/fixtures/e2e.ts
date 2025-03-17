@@ -199,6 +199,39 @@ export async function loginUnsigned(page: Page): Promise<void> {
   });
 }
 
+export async function clicksOperationSuccessful(page: Page): Promise<void> {
+  const resultsPage = page.locator('#tableBody');
+  const successfullRow = resultsPage
+    .locator('[data-test^="table-row-"]')
+    .filter({
+      hasText: /Successful|Exitoso|Conseguiu/,
+    })
+    .nth(1);
+
+  const successOperation = successfullRow.locator('[data-test^="operationDetail-"]');
+  await successOperation.click();
+  await page.waitForRequest('**/operations/**');
+}
+
+export async function clicksOperationRejected(page: Page): Promise<void> {
+  const resultsPage = page.locator('#tableBody');
+  const rejectedRow = resultsPage
+    .locator('[data-test^="table-row-"]')
+    .filter({
+      hasText: /Rejected|Rechazado|Rejeitado/,
+    })
+    .first();
+
+  const errorStatusElement = rejectedRow.locator(
+    'span.facephi-ui-status[style*="--colors-error400"]'
+  );
+  await expect(errorStatusElement).toBeVisible();
+
+  const rejectedOperationElement = rejectedRow.locator('[data-test^="operationDetail-"]').nth(0);
+  await rejectedOperationElement.click();
+  await page.waitForRequest('**/operations/**');
+}
+
 // Navigation helpers
 export async function expectNoResponse(
   page: Page,

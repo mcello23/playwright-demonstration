@@ -64,54 +64,24 @@ jobs:
           path: allure-results
           retention-days: 30
 
-  merge-reports:
+  publish-report:
     if: always()
     needs: [playwright-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - name: Enable Corepack
-        run: corepack enable
-        shell: bash
-      
-      - name: Install Correct Yarn Version
-        run: yarn set version 4.6.0
-        shell: bash
-
-      - name: Install dependencies
-        run: yarn install --immutable
-        shell: bash
-
-      - name: Download all test results
-        uses: actions/download-artifact@v4.1.9
+      - name: Generate and Publish Allure Report
+        uses: Valiantsin2021/allure-shard-results-publish@1.0.6
         with:
-          pattern: allure-results-*
-          path: allure-results
-          merge-multiple: true
-
-      - name: Generate Allure Report
-        run: |
-          yarn dlx allure-commandline generate allure-results --clean -o allure-report
-        shell: bash
-
-      - name: Setup Pages
-        if: always()
-        uses: actions/configure-pages@v5
-
-      - name: Upload Allure Report to GitHub Pages
-        uses: actions/upload-pages-artifact@v3.0.1
-        with:
-          path: "allure-report"
-
-  deploy:
-    if: always()
-    needs: merge-reports
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4.0.5
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          results-pattern: 'allure-results-*'
+          results-directory: 'combined-allure-results'
+          report-directory: 'allure-report'
+          history-directory: 'allure-history'
+          gh-pages: 'gh-pages'
+          gh-pages-branch: 'gh-pages'
+          retention-days: '30'
+          publish-to-pages: 'true'
+          fail-on-empty-results: 'false'
+          add-env: 'true'

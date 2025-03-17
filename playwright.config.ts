@@ -1,6 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
-import * as os from 'node:os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -17,6 +16,7 @@ export default defineConfig({
   },
   snapshotDir: 'tests/visual-tests',
   updateSnapshots: 'changed',
+  updateSourceMethod: 'patch',
   testDir: './tests',
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
@@ -33,12 +33,6 @@ export default defineConfig({
         suiteTitle: true,
         attachments: true,
         labels: true,
-        environmentInfo: {
-          os_platform: os.platform(),
-          os_release: os.release(),
-          os_version: os.version(),
-          node_version: process.version,
-        },
       },
     ],
   ],

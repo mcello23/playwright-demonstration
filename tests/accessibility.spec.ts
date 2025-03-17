@@ -1,4 +1,6 @@
 import { expect, test } from 'utils/fixtures/e2e';
+// This is an example that will be built upon
+// It still doesn't test UX (focus, keyboard navigation, etc.)
 
 test.describe('Accessibility and visual testing of UX in IDV', () => {
   test('Dashboard validation', async ({ page, browserName }) => {
