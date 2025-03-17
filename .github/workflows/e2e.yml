@@ -10,6 +10,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  actions: read
 
 concurrency:
   group: ${{ github.ref }}
@@ -70,6 +71,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
+
+      - name: Wait for other workflow runs
+        uses: softprops/turnstyle@v2
+        with:
+          poll-interval-seconds: 10
+          same-branch-only: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate and Publish Allure Report
         uses: Valiantsin2021/allure-shard-results-publish@1.0.6
