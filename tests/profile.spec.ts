@@ -60,6 +60,8 @@ test.describe('Happy path: Profile and tenants validation @regression', async ()
   });
 });
 
+//TODO: add different logedin auth state for this test
+
 test.describe('Negative path: Profile and tenants validation @regression', () => {
   test.use({ storageState: 'auth/unsigned.json' });
   test.beforeEach(async ({ page }) => {
@@ -107,5 +109,3 @@ test.describe('Negative path: Profile and tenants validation @regression', () =>
     await expect(page.locator('[data-test="filter-by-date"]')).toBeVisible();
   });
 });
-
-//TODO: add different logedin auth state for this test

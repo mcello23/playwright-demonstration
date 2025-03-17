@@ -10,8 +10,13 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  timeout: process.env.CI ? 35_000 : 30_000,
-  expect: { timeout: process.env.CI ? 30_000 : 15_000 },
+  timeout: process.env.CI ? 35_000 : 25_000,
+  expect: {
+    timeout: process.env.CI ? 30_000 : 15_000,
+    toHaveScreenshot: { pathTemplate: 'tests/visual-tests/{arg}{ext}' },
+  },
+  snapshotDir: 'tests/visual-tests',
+  updateSnapshots: 'changed',
   testDir: './tests',
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
@@ -44,6 +49,9 @@ export default defineConfig({
   use: {
     baseURL: 'https://idv-suite.identity-platform.dev/',
     viewport: { width: 1280, height: 720 },
+    trace: 'on',
+    screenshot: 'on',
+    ignoreHTTPSErrors: true,
   },
   projects: [
     {
@@ -52,9 +60,6 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: path.resolve(__dirname, 'auth/auth-chromium.json'),
         video: 'retain-on-failure',
-        trace: 'on',
-        screenshot: 'on',
-        ignoreHTTPSErrors: true,
       },
     },
     {
@@ -63,9 +68,6 @@ export default defineConfig({
         ...devices['Desktop Firefox'],
         storageState: path.resolve(__dirname, 'auth/auth-firefox.json'),
         video: 'retain-on-failure',
-        trace: 'on',
-        screenshot: 'on',
-        ignoreHTTPSErrors: true,
       },
     },
     {
@@ -74,22 +76,7 @@ export default defineConfig({
         ...devices['Desktop Safari'],
         storageState: path.resolve(__dirname, 'auth/auth-webkit.json'),
         video: 'retain-on-failure',
-        trace: 'on',
-        screenshot: 'on',
-        ignoreHTTPSErrors: true,
       },
     },
-    // {
-    //   name: 'edge',
-    //   use: {
-    //     channel: 'msedge',
-    //     storageState: path.resolve(__dirname, 'auth/auth-chromium.json'),
-    //     viewport: { width: 2560, height: 1440 },
-    //     video: 'retain-on-failure',
-    //     trace: 'on',
-    //     screenshot: 'on',
-    //     ignoreHTTPSErrors: true,
-    //   },
-    // },
   ],
 });

@@ -95,60 +95,60 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
   }
 }
 
-async function loginAndSaveStateUser2(browserType: 'chromium' | 'firefox' | 'webkit') {
-  const authFilePath = path.join(authDir, `auth2-${browserType}.json`);
+// async function loginAndSaveStateUser2(browserType: 'chromium' | 'firefox' | 'webkit') {
+//   const authFilePath = path.join(authDir, `auth2-${browserType}.json`);
 
-  console.log(`🔑 Starting login for user2 with ${browserType}...`);
-  const browserTypeMap = { chromium, firefox, webkit };
-  const browserLauncher = browserTypeMap[browserType];
+//   console.log(`🔑 Starting login for user2 with ${browserType}...`);
+//   const browserTypeMap = { chromium, firefox, webkit };
+//   const browserLauncher = browserTypeMap[browserType];
 
-  const browser = await browserLauncher.launch();
-  const context = await browser.newContext();
-  const page = await context.newPage();
+//   const browser = await browserLauncher.launch();
+//   const context = await browser.newContext();
+//   const page = await context.newPage();
 
-  try {
-    await page.goto(process.env.BASE_URL!);
-    await page.waitForLoadState('networkidle');
+//   try {
+//     await page.goto(process.env.BASE_URL!);
+//     await page.waitForLoadState('networkidle');
 
-    const emailInput = page.getByRole('textbox', { name: 'Email address' });
-    await emailInput.waitFor({ state: 'visible' });
-    await emailInput.fill(process.env.USER_TEST_EMAIL!, { timeout: 40000 });
+//     const emailInput = page.getByRole('textbox', { name: 'Email address' });
+//     await emailInput.waitFor({ state: 'visible' });
+//     await emailInput.fill(process.env.USER_TEST_EMAIL!, { timeout: 40000 });
 
-    await page.getByRole('button', { name: 'Next' }).click();
-    await page.waitForLoadState('networkidle');
+//     await page.getByRole('button', { name: 'Next' }).click();
+//     await page.waitForLoadState('networkidle');
 
-    const passwordInput = page.getByRole('textbox', { name: 'Password' });
-    await passwordInput.waitFor({ state: 'visible' });
-    await passwordInput.fill(process.env.USER_TEST_PASSWORD!, { timeout: 40000 });
-    await page.getByRole('button', { name: 'Continue' }).click();
+//     const passwordInput = page.getByRole('textbox', { name: 'Password' });
+//     await passwordInput.waitFor({ state: 'visible' });
+//     await passwordInput.fill(process.env.USER_TEST_PASSWORD!, { timeout: 40000 });
+//     await page.getByRole('button', { name: 'Continue' }).click();
 
-    try {
-      await page.waitForURL('**/tenant/**', { timeout: 30000 });
-      await page.locator('[data-test="header"]').getByText('Dashboard').waitFor({ timeout: 5000 });
+//     try {
+//       await page.waitForURL('**/tenant/**', { timeout: 30000 });
+//       await page.locator('[data-test="header"]').getByText('Dashboard').waitFor({ timeout: 5000 });
 
-      console.log(`✅ Login successful for user2 with ${browserType}! Saving state...`);
-      await context.storageState({ path: authFilePath });
-    } catch (error) {
-      console.error(`❌ Login for user2 with ${browserType} failed! Issue: ${error}`);
-      await page.screenshot({ path: path.join(authDir, `redirect-fail-user2-${browserType}.png`) });
-    }
+//       console.log(`✅ Login successful for user2 with ${browserType}! Saving state...`);
+//       await context.storageState({ path: authFilePath });
+//     } catch (error) {
+//       console.error(`❌ Login for user2 with ${browserType} failed! Issue: ${error}`);
+//       await page.screenshot({ path: path.join(authDir, `redirect-fail-user2-${browserType}.png`) });
+//     }
 
-    // Failsafe logic
-    const imageError = page.getByRole('img', { name: 'Error image' });
-    const errorHeader = page.getByText('Sorry, aliens have stolen our server');
+//     // Failsafe logic
+//     const imageError = page.getByRole('img', { name: 'Error image' });
+//     const errorHeader = page.getByText('Sorry, aliens have stolen our server');
 
-    const isErrorImageVisible = await imageError.isVisible().catch(() => false);
-    const isErrorHeaderVisible = await errorHeader.isVisible().catch(() => false);
+//     const isErrorImageVisible = await imageError.isVisible().catch(() => false);
+//     const isErrorHeaderVisible = await errorHeader.isVisible().catch(() => false);
 
-    if (isErrorImageVisible || isErrorHeaderVisible) {
-      console.error(`⛔ Cookies error detected for user2 with ${browserType} login`);
-      await page.screenshot({ path: path.join(authDir, `error-user2-${browserType}.png`) });
-      throw new Error(`Login error for user2 when using ${browserType} to login`);
-    }
-  } catch (error) {
-    await browser.close();
-  }
-}
+//     if (isErrorImageVisible || isErrorHeaderVisible) {
+//       console.error(`⛔ Cookies error detected for user2 with ${browserType} login`);
+//       await page.screenshot({ path: path.join(authDir, `error-user2-${browserType}.png`) });
+//       throw new Error(`Login error for user2 when using ${browserType} to login`);
+//     }
+//   } catch (error) {
+//     await browser.close();
+//   }
+// }
 
 async function handleBrowsersBasedOnSharding(config: FullConfig) {
   const shard = config.shard;
