@@ -112,7 +112,6 @@ export default defineConfig({
     trace: 'on',
     screenshot: 'on',
     ignoreHTTPSErrors: true,
-    actionTimeout: 10000,
   },
   projects: [
     {
