@@ -1,12 +1,18 @@
-import { expect, test } from 'utils/fixtures/e2e';
+import { description, expect, tags, test } from 'utils/fixtures/e2e';
 // This is an example that will be built upon
 // It still doesn't test UX (focus, keyboard navigation, etc.)
 
 test.describe('Accessibility and visual testing of UX in IDV', () => {
   test('Dashboard validation', async ({ page, browserName }) => {
-    await page.waitForURL('**/tenant/**');
+    tags('Accessibility', 'Visual Testing');
+    description('This test verifies the Aria content and compares it to UI screenshots.');
 
-    await expect(page.locator('[data-test="header"]')).toMatchAriaSnapshot(`
+    await test.step('Loads IDV main page', async () => {
+      await page.waitForURL(/.*tenant.*/);
+    });
+
+    await test.step('Validates the Dashboard header and main Aria Snapshot content', async () => {
+      await expect(page.locator('[data-test="header"]')).toMatchAriaSnapshot(`
       - paragraph: Dashboard
       - button "demo":
         - paragraph: demo
@@ -17,7 +23,7 @@ test.describe('Accessibility and visual testing of UX in IDV', () => {
         - img
     `);
 
-    await expect(page.getByRole('main')).toMatchAriaSnapshot(`
+      await expect(page.getByRole('main')).toMatchAriaSnapshot(`
       - main:
         - paragraph: Dashboard
         - button "demo":
@@ -37,10 +43,10 @@ test.describe('Accessibility and visual testing of UX in IDV', () => {
         - paragraph: /\\d+/
         - paragraph: New onboardings
         - img
-        - paragraph: "0"
+        - paragraph: /\\d+/
         - paragraph: Authentications
         - img
-        - paragraph: "5"
+        - paragraph: /\\d+/
         - paragraph: Onboardings
         - paragraph: All operations (%)
         - paragraph: Succesful
@@ -56,7 +62,7 @@ test.describe('Accessibility and visual testing of UX in IDV', () => {
         - paragraph
     `);
 
-    await expect(page.locator('body')).toMatchAriaSnapshot(`
+      await expect(page.locator('body')).toMatchAriaSnapshot(`
       - alert
       - link:
         - img
@@ -94,10 +100,10 @@ test.describe('Accessibility and visual testing of UX in IDV', () => {
         - paragraph: /\\d+/
         - paragraph: New onboardings
         - img
-        - paragraph: "0"
+        - paragraph: /\\d+/
         - paragraph: Authentications
         - img
-        - paragraph: "5"
+        - paragraph: /\\d+/
         - paragraph: Onboardings
         - paragraph: All operations (%)
         - paragraph: Succesful
@@ -113,11 +119,16 @@ test.describe('Accessibility and visual testing of UX in IDV', () => {
         - paragraph
       - region "Notifications alt+T"
     `);
+    });
 
-    await expect(page.getByRole('main')).toHaveScreenshot(
-      `dashboard-main-content-${browserName}.png`
-    );
+    await test.step('Validates the Dashboard main content screenshot', async () => {
+      await expect(page.getByRole('main')).toHaveScreenshot(
+        `dashboard-main-content-${browserName}.png`
+      );
+    });
 
-    await expect(page.locator('body')).toHaveScreenshot(`dashboard-sidebar-${browserName}.png`);
+    await test.step('Validates the Dashboard sidebar content screenshot', async () => {
+      await expect(page.locator('body')).toHaveScreenshot(`dashboard-sidebar-${browserName}.png`);
+    });
   });
 });

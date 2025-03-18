@@ -1,5 +1,13 @@
 import { expect, test } from '../utils/fixtures/e2e';
 
+test.beforeEach(async ({ page }) => {
+  page.on('console', (msg) => {
+    if (msg.text().includes('MISSING TRANSLATION')) {
+      console.log(`Missing translation found: ${msg.text()}`);
+    }
+  });
+});
+
 test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar', () => {
   test.describe('Dashboard and Operations pages tests', () => {
     test.beforeEach(async ({ page }) => {

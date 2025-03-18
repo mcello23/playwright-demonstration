@@ -1,4 +1,5 @@
 import {
+  clicksAnyOperation,
   clicksOperationRejected,
   clicksOperationSuccessful,
   expect,
@@ -184,5 +185,27 @@ test.describe('Operations page validation @regression', async () => {
     const collapsableSelphi = page.getByRole('listitem').filter({ hasText: 'Selfie' });
     expect(collapsableSelphi).toBeVisible();
     expect(collapsableSelphi).toBeEnabled();
+  });
+
+  test('Valida textos OCR', async ({ page }) => {
+    await clicksAnyOperation(page);
+    await page.getByRole('button', { name: 'OCR' }).click();
+
+    const expectedMainTexts = ['Front side', 'Back side', 'Scoring', 'Checks'];
+
+    for (const text of expectedMainTexts) {
+      const textElement = page.locator('p', { hasText: text });
+      await expect(textElement).toBeVisible();
+    }
+    await page.locator('[data-test="collapsable-button"]').first().click();
+
+    const expandedElements = page.locator(
+      'div.facephi-ui-card-collapsable__collapsable-wrapper.facephi-ui-card-collapsable__collapsable-wrapper--isOpen_true'
+    );
+
+    await expect(expandedElements.first()).toBeVisible();
+
+    const frontSide = expandedElements.locator('ul.facephi-ui-flex');
+    await expect(frontSide).toHaveCount(8);
   });
 });

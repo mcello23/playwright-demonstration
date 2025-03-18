@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { test as baseTest, expect, Locator, Page, Request, Route } from '@playwright/test';
+import { description, tag, tags } from 'allure-js-commons';
 
 // Date range helpers
 const dateRangeCache = {
@@ -211,6 +212,15 @@ export async function loginUnsigned(page: Page): Promise<void> {
   });
 }
 
+export async function clicksAnyOperation(page: Page): Promise<void> {
+  const resultsPage = page.locator('#tableBody');
+  const successfullRow = resultsPage.locator('[data-test^="table-row-"]').nth(1);
+
+  const successOperation = successfullRow.locator('[data-test^="operationDetail-"]');
+  await successOperation.click();
+  await page.waitForRequest('**/operations/**');
+}
+
 export async function clicksOperationSuccessful(page: Page): Promise<void> {
   const resultsPage = page.locator('#tableBody');
   const successfullRow = resultsPage
@@ -286,8 +296,10 @@ interface CustomFixtures {
 
 export const test = baseTest.extend<CustomFixtures>({
   page: async ({ page }: { page: Page }, use: (page: Page) => Promise<void>) => {
-    await page.goto('/');
-    await use(page);
+    test.step('Goes to baseURL', async () => {
+      await page.goto('/');
+      await use(page);
+    });
     // afterEach cleanup logic here
   },
 
@@ -369,4 +381,4 @@ export const test = baseTest.extend<CustomFixtures>({
   },
 });
 
-export { expect };
+export { description, expect, tag, tags };

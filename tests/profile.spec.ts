@@ -2,7 +2,7 @@ import { expect, interceptTenantExchange, loginUnsigned, test } from '../utils/f
 
 test.describe('Happy path: Profile and tenants validation @regression', async () => {
   test.beforeEach(async ({ page }) => {
-    await page.waitForLoadState('domcontentloaded');
+    await page.waitForURL(/.*tenant.*/);
   });
 
   test('Clicks on "Profile" and sees all options @smoke', async ({ page }) => {
@@ -24,6 +24,23 @@ test.describe('Happy path: Profile and tenants validation @regression', async ()
 
     await page.getByRole('button', { name: 'Apply' }).isVisible();
     await page.getByRole('button', { name: 'Apply' }).isDisabled();
+  });
+
+  test('Copies a Tenant and sees the toast message in UI', async ({ page }) => {
+    await page.getByRole('button', { name: 'Demo' }).click();
+    await page.addStyleTag({
+      content: `* { animation: none !important; transition: none !important; }`,
+    });
+    const copyButton = page.locator(
+      '[data-test="button-copy-809b44ff-26af-4ffc-9bb8-5dd9b0e87c44"]'
+    );
+    await expect(copyButton).toBeAttached();
+    await copyButton.click();
+
+    const toastMessage = page.locator('[data-test="copied-value"]', {
+      hasText: 'Copied to clipboard',
+    });
+    await expect(toastMessage).toBeVisible();
   });
 
   test('Changes the Tenant of a user and validates through UI @smoke', async ({ page }) => {
@@ -54,14 +71,12 @@ test.describe('Happy path: Profile and tenants validation @regression', async ()
   });
 });
 
-//TODO: add different logedin auth state for this test
-
 test.describe('Negative path: Profile and tenants validation @regression', () => {
   test.use({ storageState: 'auth/unsigned.json' });
   test.beforeEach(async ({ page }) => {
     loginUnsigned(page);
   });
-
+  //TODO: add different logedin auth state for this test
   test('Access a IDV URL with a tenant not associated to my user and sees the 404 page', async ({
     page,
   }) => {

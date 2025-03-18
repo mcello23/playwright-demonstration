@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { dashboardTexts, operationsTexts } from '../utils/fixtures/strings';
 
-test.describe('Strings validations of each sub-page, every locale @smoke', () => {
+test.describe('Strings validations for Dashboard and Operations @smoke', () => {
   for (const [locale, data] of Object.entries(dashboardTexts)) {
     test(`Validates all texts in the ${locale} Dashboard page`, async ({ page }) => {
       await page.goto(`/${locale}`);
@@ -62,9 +62,10 @@ test.describe('Strings validations of each sub-page, every locale @smoke', () =>
   }
 
   for (const [locale, data] of Object.entries(operationsTexts)) {
-    test(`Validates all texts in the ${locale} Operations page`, async ({ page }) => {
+    test(`Validates all texts in the ${locale} Operations main page`, async ({ page }) => {
       await page.goto(`/${locale}`);
       await page.locator('[data-test="Operations"]').click();
+      await page.pause();
       await page.locator('[data-test="header"]').focus();
 
       // Static elements

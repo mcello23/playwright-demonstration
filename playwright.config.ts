@@ -30,7 +30,6 @@ export default defineConfig({
   fullyParallel: false,
   reporter: [
     ['list'],
-    ['html'],
     [
       'allure-playwright',
       {
@@ -44,11 +43,11 @@ export default defineConfig({
         addAllureIdLabel: true,
         links: {
           issue: {
-            pattern: 'https://jira.seudominio.com/browse/{}',
+            pattern: 'https://facephicorporative.atlassian.net/jira/software/projects/IDVS/{}',
             nameTemplate: 'Issue #%s',
           },
           tms: {
-            pattern: 'https://testmanagement.seudominio.com/tests/{}',
+            pattern: 'https://facephicorporative.atlassian.net/jira/software/projects/IDVS/{}',
             nameTemplate: 'TMS #%s',
           },
         },
@@ -60,12 +59,12 @@ export default defineConfig({
             flaky: true,
           },
           {
-            name: 'Tests with issues',
+            name: 'Broken tests',
             messageRegex: '.*',
             matchedStatuses: [Status.BROKEN],
           },
           {
-            name: 'Broken tests',
+            name: 'Failed tests',
             messageRegex: '.*',
             matchedStatuses: [Status.FAILED],
           },
@@ -120,6 +119,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: path.resolve(__dirname, 'auth/auth-chromium.json'),
         video: 'retain-on-failure',
+        permissions: ['clipboard-read', 'clipboard-write'],
       },
     },
     {
