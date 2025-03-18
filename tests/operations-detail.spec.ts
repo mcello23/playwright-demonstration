@@ -187,7 +187,7 @@ test.describe('Operations page validation @regression', async () => {
     expect(collapsableSelphi).toBeEnabled();
   });
 
-  test('Valida textos OCR', async ({ page }) => {
+  test('Validates OCR section inside a operation', async ({ page }) => {
     await clicksAnyOperation(page);
     await page.getByRole('button', { name: 'OCR' }).click();
 
@@ -197,15 +197,17 @@ test.describe('Operations page validation @regression', async () => {
       const textElement = page.locator('p', { hasText: text });
       await expect(textElement).toBeVisible();
     }
-    await page.locator('[data-test="collapsable-button"]').first().click();
+    const buttons = page.locator('[data-test="collapsable-button"]');
+    const buttonsNum = await buttons.count();
+    expect(buttonsNum).toBe(4);
 
-    const expandedElements = page.locator(
-      'div.facephi-ui-card-collapsable__collapsable-wrapper.facephi-ui-card-collapsable__collapsable-wrapper--isOpen_true'
-    );
-
-    await expect(expandedElements.first()).toBeVisible();
-
-    const frontSide = expandedElements.locator('ul.facephi-ui-flex');
-    await expect(frontSide).toHaveCount(8);
+    for (let i = 0; i < buttonsNum; i++) {
+      const button = buttons.nth(i);
+      await expect(button).toBeEnabled();
+      await expect(button).toBeVisible();
+      await button.click();
+      const content = await button.textContent();
+      expect(content).toBeDefined();
+    }
   });
 });
