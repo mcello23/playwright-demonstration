@@ -17,191 +17,232 @@ test.describe('Operations page validation @regression', () => {
   });
 
   test('Sees all elements in Operations page @smoke', async ({ page }) => {
-    // Static elements
-    await expect(page.locator('[data-test="filter-by-date"]')).toBeVisible();
-    await expect(page.locator('[data-test="filter-by-date"]')).toBeEnabled();
-    await expect(page.locator('[data-test="filter-by-search"]')).toBeVisible();
-    await expect(page.locator('[data-test="filter-by-search"]')).toBeEnabled();
-    await expect(page.locator('[data-test="filter-button"]')).toBeVisible();
-    await expect(page.locator('[data-test="filter-button"]')).toBeEnabled();
+    await test.step('Validate static elements visibility and interactivity', async () => {
+      // Static elements
+      await expect(page.locator('[data-test="filter-by-date"]')).toBeVisible();
+      await expect(page.locator('[data-test="filter-by-date"]')).toBeEnabled();
+      await expect(page.locator('[data-test="filter-by-search"]')).toBeVisible();
+      await expect(page.locator('[data-test="filter-by-search"]')).toBeEnabled();
+      await expect(page.locator('[data-test="filter-button"]')).toBeVisible();
+      await expect(page.locator('[data-test="filter-button"]')).toBeEnabled();
+    });
 
-    const formattedDate = getFormattedDateRange();
+    await test.step('Test date filter functionality', async () => {
+      const formattedDate = getFormattedDateRange();
 
-    const filterByDateLocator = page.locator('[data-test="filter-by-date"]');
-    await filterByDateLocator.click();
-    await filterByDateLocator.fill(formattedDate);
-    await filterByDateLocator.press('Enter');
-    await filterByDateLocator.focus();
-    await verifyDateRangeInput(filterByDateLocator, formattedDate);
+      const filterByDateLocator = page.locator('[data-test="filter-by-date"]');
+      await filterByDateLocator.click();
+      await filterByDateLocator.fill(formattedDate);
+      await filterByDateLocator.press('Enter');
+      await filterByDateLocator.focus();
+      await verifyDateRangeInput(filterByDateLocator, formattedDate);
+    });
 
-    // Test Search input
-    const randomName = faker.person.firstName();
-    await page.locator('[data-test="filter-by-search"]').fill(randomName);
-    await expect(page.locator('[data-test="clear-all"]')).toBeVisible();
-    await page.locator('[data-test="clear-all"]').click();
-    await expect(page.locator('[data-test="filter-by-search"]')).not.toHaveValue(randomName);
+    await test.step('Test search input and clear functionality', async () => {
+      const randomName = faker.person.firstName();
+      await page.locator('[data-test="filter-by-search"]').fill(randomName);
+      await expect(page.locator('[data-test="clear-all"]')).toBeVisible();
+      await page.locator('[data-test="clear-all"]').click();
+      await expect(page.locator('[data-test="filter-by-search"]')).not.toHaveValue(randomName);
+    });
 
-    // Test Filter button
-    await page.locator('[data-test="filter-button"]').click();
-    await page.getByLabel('Onboarding').click();
-    const buttonChecked = page.locator('[data-test="filter-option-ONBOARDING"] label').first();
-    await expect(buttonChecked).toHaveAttribute('aria-checked', 'true');
-    await page.mouse.click(10, 10);
+    await test.step('Test filter button functionality', async () => {
+      await page.locator('[data-test="filter-button"]').click();
+      await page.getByLabel('Onboarding').click();
+      const buttonChecked = page.locator('[data-test="filter-option-ONBOARDING"] label').first();
+      await expect(buttonChecked).toHaveAttribute('aria-checked', 'true');
+      await page.mouse.click(10, 10);
+    });
 
-    // Date and time format
-    const dateRegex = /^\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/;
-    await expect(page.getByText(dateRegex).nth(0)).toBeVisible();
-    // Operation ID format
-    const operationIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-    await expect(page.getByText(operationIdRegex).nth(0)).toBeVisible();
-    // Type format
-    const typeOnboarding = page.locator('[data-test="table-row-0"]').getByText('Onboarding');
-    await expect(typeOnboarding).toBeVisible();
-    // Onboarding steps format
-    const steps = page
-      .locator('[data-test="table-row-0"]')
-      .getByRole('cell')
-      .filter({ hasText: /^$/ })
-      .first();
-    await expect(steps).toBeVisible();
+    await test.step('Validate date/time format and operation data displays correctly', async () => {
+      // Date and time format
+      const dateRegex = /^\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/;
+      await expect(page.getByText(dateRegex).nth(0)).toBeVisible();
+      // Operation ID format
+      const operationIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+      await expect(page.getByText(operationIdRegex).nth(0)).toBeVisible();
+      // Type format
+      const typeOnboarding = page.locator('[data-test="table-row-0"]').getByText('Onboarding');
+      await expect(typeOnboarding).toBeVisible();
+      // Onboarding steps format
+      const steps = page
+        .locator('[data-test="table-row-0"]')
+        .getByRole('cell')
+        .filter({ hasText: /^$/ })
+        .first();
+      await expect(steps).toBeVisible();
+    });
   });
 
   test('Uses the calendar pop-up with random dates, validating UI "X" and "Clear all" buttons and RSC response', async ({
     page,
   }) => {
-    const calendar = new CalendarHelper(page);
-    calendar.opensCalendar();
-    await calendar.goToPreviousMonth();
-    await calendar.selectRandomDateRange();
+    await test.step('Open calendar and select a random date range', async () => {
+      const calendar = new CalendarHelper(page);
+      calendar.opensCalendar();
+      await calendar.goToPreviousMonth();
+      await calendar.selectRandomDateRange();
 
-    await waitForMultipleRSCResponses(page, 2);
+      await waitForMultipleRSCResponses(page, 2);
+    });
 
-    await page.locator('[data-test="input-remove-value"]').isVisible();
-    await page.locator('[data-test="input-remove-value"]').click();
+    await test.step('Test "X" button to clear date filter', async () => {
+      await page.locator('[data-test="input-remove-value"]').isVisible();
+      await page.locator('[data-test="input-remove-value"]').click();
+    });
 
-    calendar.opensCalendar();
-    await calendar.goToPreviousMonth();
-    await calendar.selectRandomDateRange();
+    await test.step('Select another random date range and use "Clear all" button', async () => {
+      const calendar = new CalendarHelper(page);
+      calendar.opensCalendar();
+      await calendar.goToPreviousMonth();
+      await calendar.selectRandomDateRange();
 
-    await waitForMultipleRSCResponses(page, 2);
+      await waitForMultipleRSCResponses(page, 2);
 
-    await page.locator('[data-test="clear-all"]').isVisible();
-    await page.locator('[data-test="clear-all"]').click();
+      await page.locator('[data-test="clear-all"]').isVisible();
+      await page.locator('[data-test="clear-all"]').click();
+    });
   });
 
   test('Validates there is a warning SVG element after a denied operation', async ({ page }) => {
-    const resultsPage = page.locator('#tableBody');
+    await test.step('Find a rejected operation row', async () => {
+      const resultsPage = page.locator('#tableBody');
 
-    const rejectedRow = resultsPage
-      .locator('[data-test^="table-row-"]')
-      .filter({
-        hasText: /Rejected|Rechazado|Rejeitado/,
-      })
-      .first();
+      const rejectedRow = resultsPage
+        .locator('[data-test^="table-row-"]')
+        .filter({
+          hasText: /Rejected|Rechazado|Rejeitado/,
+        })
+        .first();
 
-    await expect(rejectedRow).toBeVisible();
+      await expect(rejectedRow).toBeVisible();
+    });
 
-    const errorStatusElement = rejectedRow.locator(
-      'span.facephi-ui-status[style*="--colors-error400"]'
-    );
-    await expect(errorStatusElement).toBeVisible();
+    await test.step('Verify error status elements are displayed correctly', async () => {
+      const resultsPage = page.locator('#tableBody');
+      const rejectedRow = resultsPage
+        .locator('[data-test^="table-row-"]')
+        .filter({
+          hasText: /Rejected|Rechazado|Rejeitado/,
+        })
+        .first();
 
-    const rejectedOperationElement = rejectedRow.locator('[data-test^="operationDetail-"]').nth(1);
+      const errorStatusElement = rejectedRow.locator(
+        'span.facephi-ui-status[style*="--colors-error400"]'
+      );
+      await expect(errorStatusElement).toBeVisible();
 
-    await expect(rejectedOperationElement).toHaveAttribute(
-      'href',
-      expect.stringContaining('?tab=timeline')
-    );
+      const rejectedOperationElement = rejectedRow
+        .locator('[data-test^="operationDetail-"]')
+        .nth(1);
 
-    await rejectedOperationElement.focus();
-    await expect(rejectedOperationElement).toBeEnabled();
+      await expect(rejectedOperationElement).toHaveAttribute(
+        'href',
+        expect.stringContaining('?tab=timeline')
+      );
+
+      await rejectedOperationElement.focus();
+      await expect(rejectedOperationElement).toBeEnabled();
+    });
   });
 
   test('Sees the assets appear inside a listing', async ({ page }) => {
-    const filesButton = page.getByRole('button', { name: /Files \(\d+\)/ }).first();
-    await expect(filesButton).toBeVisible();
-    await expect(filesButton).toBeEnabled();
+    await test.step('Find and click on Files button', async () => {
+      const filesButton = page.getByRole('button', { name: /Files \(\d+\)/ }).first();
+      await expect(filesButton).toBeVisible();
+      await expect(filesButton).toBeEnabled();
 
-    await filesButton.click();
+      await filesButton.click();
+    });
 
-    const filesModal = page.locator('[data-test="option-menu"]');
-    await expect(filesModal).toBeVisible();
-    await expect(filesModal).toBeEnabled();
+    await test.step('Verify files modal appears with correct menu items', async () => {
+      const filesModal = page.locator('[data-test="option-menu"]');
+      await expect(filesModal).toBeVisible();
+      await expect(filesModal).toBeEnabled();
 
-    const optionItems = filesModal.locator('button.facephi-ui-option-menu__item');
-    const count = await optionItems.count();
+      const optionItems = filesModal.locator('button.facephi-ui-option-menu__item');
+      const count = await optionItems.count();
 
-    expect(count).toBeGreaterThanOrEqual(1);
-    expect(count).toBeLessThanOrEqual(6);
+      expect(count).toBeGreaterThanOrEqual(1);
+      expect(count).toBeLessThanOrEqual(6);
 
-    console.log(`Found ${count} option menu items`);
+      console.log(`Found ${count} option menu items`);
+    });
   });
 
   test('Opens the document modal and validates all buttons @smoke', async ({ page }) => {
-    const resultsPage = page.locator('#tableBody');
+    await test.step('Find an operation with status and click on Files button', async () => {
+      const resultsPage = page.locator('#tableBody');
 
-    const statusRow = resultsPage
-      .locator('[data-test^="table-row-"]')
-      .filter({
-        hasText: /Rejected|Rechazado|Rejeitado|Successful|Exitosa|Conseguiu/,
-      })
-      .first();
+      const statusRow = resultsPage
+        .locator('[data-test^="table-row-"]')
+        .filter({
+          hasText: /Rejected|Rechazado|Rejeitado|Successful|Exitosa|Conseguiu/,
+        })
+        .first();
 
-    const filesButton = statusRow.getByRole('button', { name: /Files/ });
-    await expect(filesButton).toBeVisible();
-    await expect(filesButton).toBeEnabled();
+      const filesButton = statusRow.getByRole('button', { name: /Files/ });
+      await expect(filesButton).toBeVisible();
+      await expect(filesButton).toBeEnabled();
 
-    await filesButton.click();
+      await filesButton.click();
+    });
 
-    const filesModal = page.locator('button.facephi-ui-option-menu__item').nth(0);
-    await filesModal.click();
+    await test.step('Select a document from files menu', async () => {
+      const filesModal = page.locator('button.facephi-ui-option-menu__item').nth(0);
+      await filesModal.click();
+    });
 
-    await expect(page.locator('[data-test="modal-assets"]')).toBeVisible();
-    const modalAssets = page.locator('[data-test="modal-assets"] img');
-    await expect(modalAssets).toBeVisible();
+    await test.step('Verify document modal appears with the image', async () => {
+      await expect(page.locator('[data-test="modal-assets"]')).toBeVisible();
+      const modalAssets = page.locator('[data-test="modal-assets"] img');
+      await expect(modalAssets).toBeVisible();
+    });
 
-    const docBack = page
-      .locator('div')
-      .filter({ hasText: /^Document back$/ })
-      .getByRole('button');
-    await expect(docBack).toBeVisible();
-    await expect(docBack).toBeEnabled();
+    await test.step('Validate all modal control buttons', async () => {
+      const docBack = page
+        .locator('div')
+        .filter({ hasText: /^Document back$/ })
+        .getByRole('button');
+      await expect(docBack).toBeVisible();
+      await expect(docBack).toBeEnabled();
 
-    const minusZoom = page
-      .locator('div')
-      .filter({ hasText: /^100%$/ })
-      .getByRole('button')
-      .first();
-    await expect(minusZoom).toBeVisible();
-    await expect(minusZoom).toBeEnabled();
+      const minusZoom = page
+        .locator('div')
+        .filter({ hasText: /^100%$/ })
+        .getByRole('button')
+        .first();
+      await expect(minusZoom).toBeVisible();
+      await expect(minusZoom).toBeEnabled();
 
-    const moreZoom = page
-      .locator('div')
-      .filter({ hasText: /^100%$/ })
-      .getByRole('button')
-      .nth(1);
-    await expect(moreZoom).toBeVisible();
-    await expect(moreZoom).toBeEnabled();
+      const moreZoom = page
+        .locator('div')
+        .filter({ hasText: /^100%$/ })
+        .getByRole('button')
+        .nth(1);
+      await expect(moreZoom).toBeVisible();
+      await expect(moreZoom).toBeEnabled();
 
-    const printBttn = page.locator('div:nth-child(3) > button').first();
-    await expect(printBttn).toBeVisible();
-    await expect(printBttn).toBeEnabled();
+      const printBttn = page.locator('div:nth-child(3) > button').first();
+      await expect(printBttn).toBeVisible();
+      await expect(printBttn).toBeEnabled();
 
-    const downloadBttn = page.locator('div:nth-child(3) > button:nth-child(2)').first();
-    await expect(downloadBttn).toBeVisible();
-    await expect(downloadBttn).toBeEnabled();
+      const downloadBttn = page.locator('div:nth-child(3) > button:nth-child(2)').first();
+      await expect(downloadBttn).toBeVisible();
+      await expect(downloadBttn).toBeEnabled();
 
-    const backBttn = page
-      .locator('.facephi-ui-modal__base > div > div:nth-child(3) > button')
-      .first();
-    await expect(backBttn).toBeVisible();
-    await expect(backBttn).toBeDisabled();
+      const backBttn = page
+        .locator('.facephi-ui-modal__base > div > div:nth-child(3) > button')
+        .first();
+      await expect(backBttn).toBeVisible();
+      await expect(backBttn).toBeDisabled();
 
-    const fwdBttn = page.locator(
-      '.facephi-ui-modal__base > div > div:nth-child(3) > button:nth-child(2)'
-    );
-    await expect(fwdBttn).toBeVisible();
-    await expect(fwdBttn).toBeEnabled();
+      const fwdBttn = page.locator(
+        '.facephi-ui-modal__base > div > div:nth-child(3) > button:nth-child(2)'
+      );
+      await expect(fwdBttn).toBeVisible();
+      await expect(fwdBttn).toBeEnabled();
+    });
   });
 
   test('Opens and closes the document modal', async ({ page }) => {
