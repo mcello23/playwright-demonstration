@@ -1,4 +1,4 @@
-import { expect, interceptTenantExchange, loginUnsigned, test } from '../utils/fixtures/e2e';
+import { expect, test } from '../utils/controller/e2e';
 
 test.describe('Happy path: Profile and tenants validation @regression', async () => {
   test.beforeEach(async ({ page }) => {
@@ -68,10 +68,6 @@ test.describe('Happy path: Profile and tenants validation @regression', async ()
   });
 
   test('Changes the Tenant of a user and validates through UI @smoke', async ({ page }) => {
-    await test.step('Setup route interception for tenant exchange', async () => {
-      await page.route('**/realms/idv/tenant-exchange', interceptTenantExchange);
-    });
-
     await test.step('Open tenant modal', async () => {
       await page.getByRole('button', { name: 'Demo' }).click();
       const tenantText = page.getByText('Switch tenant');
@@ -114,10 +110,12 @@ test.describe('Happy path: Profile and tenants validation @regression', async ()
 
 test.describe('Negative path: Profile and tenants validation @regression', () => {
   test.use({ storageState: 'auth/unsigned.json' });
-  test.beforeEach(async ({ page }) => {
-    loginUnsigned(page);
+
+  test.beforeEach(async ({ loginPage }) => {
+    await loginPage.loginUnsigned();
   });
-  //TODO: add different logedin auth state for this test
+  //TODO: add different loggedin auth state for this test
+
   test('Access a IDV URL with a tenant not associated to my user and sees the 404 page', async ({
     page,
   }) => {

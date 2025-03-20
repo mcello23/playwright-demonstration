@@ -1,10 +1,4 @@
-import {
-  clicksAnyOperation,
-  clicksOperationRejected,
-  clicksOperationSuccessful,
-  expect,
-  test,
-} from '../utils/fixtures/e2e';
+import { expect, test } from '../utils/controller/e2e';
 
 test.describe('Operations page validation @regression', async () => {
   test.beforeEach(async ({ page }) => {
@@ -12,94 +6,83 @@ test.describe('Operations page validation @regression', async () => {
   });
 
   test("Enters any operation and validates it's header elements @smoke", async ({ page }) => {
-    await test.step('Navigate to operation details page', async () => {
-      await page.locator('[data-test^="operationDetail-"]').first().click();
-    });
+    await page.locator('[data-test^="operationDetail-"]').first().click();
 
-    await test.step('Validate upper header buttons', async () => {
-      // Upper Header buttons
-      const dataButton = page.getByRole('button', { name: 'Data' });
-      await expect(dataButton).toBeEnabled();
-      await expect(dataButton).toBeVisible();
-      const securityButton = page.getByRole('button', { name: 'Security' });
-      await expect(securityButton).toBeEnabled();
-      await expect(securityButton).toBeVisible();
-      const ocrButton = page.getByRole('button', { name: 'OCR' });
-      await expect(ocrButton).toBeEnabled();
-      await expect(ocrButton).toBeVisible();
-      const timelineButton = page.getByRole('button', { name: 'Timeline' });
-      await expect(timelineButton).toBeEnabled();
-      await expect(timelineButton).toBeVisible();
-      const advancedTrackingButton = page.getByRole('button', { name: 'Advanced tracking' });
-      await expect(advancedTrackingButton).toBeEnabled();
-      await expect(advancedTrackingButton).toBeVisible();
-    });
+    // Upper Header buttons
+    const dataButton = page.getByRole('button', { name: 'Data' });
+    await expect(dataButton).toBeEnabled();
+    await expect(dataButton).toBeVisible();
+    const securityButton = page.getByRole('button', { name: 'Security' });
+    await expect(securityButton).toBeEnabled();
+    await expect(securityButton).toBeVisible();
+    const ocrButton = page.getByRole('button', { name: 'OCR' });
+    await expect(ocrButton).toBeEnabled();
+    await expect(ocrButton).toBeVisible();
+    const timelineButton = page.getByRole('button', { name: 'Timeline' });
+    await expect(timelineButton).toBeEnabled();
+    await expect(timelineButton).toBeVisible();
+    const advancedTrackingButton = page.getByRole('button', { name: 'Advanced tracking' });
+    await expect(advancedTrackingButton).toBeEnabled();
+    await expect(advancedTrackingButton).toBeVisible();
 
-    await test.step('Validate date format in header', async () => {
-      // Date format validation
-      const dateLocator = page.locator('p.facephi-ui-label', { hasText: /Date:|Fecha:|Data:/ });
-      await expect(dateLocator).toBeVisible();
+    // Date format validation
+    const dateLocator = page.locator('p.facephi-ui-label', { hasText: /Date:|Fecha:|Data:/ });
+    await expect(dateLocator).toBeVisible();
 
-      const dateElement = page
-        .locator('p.facephi-ui-label', {
-          hasText: /\d{2}\/\d{2}\/\d{2}/,
-        })
-        .first();
-      const dateText = await dateElement.textContent();
+    const dateElement = page
+      .locator('p.facephi-ui-label', {
+        hasText: /\d{2}\/\d{2}\/\d{2}/,
+      })
+      .first();
+    const dateText = await dateElement.textContent();
 
-      const dateRegex = /\d{2}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}/;
-      expect(dateText).not.toBeNull();
+    const dateRegex = /\d{2}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}/;
+    expect(dateText).not.toBeNull();
 
-      if (dateText) {
-        expect(dateText.trim()).toMatch(dateRegex);
-      }
-    });
+    if (dateText) {
+      expect(dateText.trim()).toMatch(dateRegex);
+    }
 
-    await test.step('Validate operation ID format', async () => {
-      // Operation ID format validation
-      const operationIdLocator = page.locator('p.facephi-ui-label', { hasText: 'ID:' });
-      await expect(operationIdLocator).toBeVisible();
+    // Operation ID format validation
+    const operationIdLocator = page.locator('p.facephi-ui-label', { hasText: 'ID:' });
+    await expect(operationIdLocator).toBeVisible();
 
-      const idTextContent = await operationIdLocator.textContent();
-      expect(idTextContent).not.toBeNull();
+    const idTextContent = await operationIdLocator.textContent();
+    expect(idTextContent).not.toBeNull();
 
-      if (idTextContent) {
-        const idRegex = /^ID:\s*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
-        const match = idTextContent.match(idRegex);
-        expect(match).toBeDefined();
-      }
-    });
+    if (idTextContent) {
+      const idRegex = /^ID:\s*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
+      const match = idTextContent.match(idRegex);
+      expect(match).toBeDefined();
+    }
 
-    await test.step('Validate operation step and status information', async () => {
-      const endStepLocator = page
-        .locator('p.facephi-ui-label', {
-          hasText: /Start|Inicio|Começar|SelphID|Selphi|Finish|Fin|Fim/,
-        })
-        .nth(0);
-      await expect(endStepLocator).toBeVisible();
+    const endStepLocator = page
+      .locator('p.facephi-ui-label', {
+        hasText: /Start|Inicio|Começar|SelphID|Selphi|Finish|Fin|Fim/,
+      })
+      .nth(0);
+    await expect(endStepLocator).toBeVisible();
 
-      const operationName = page
-        .locator('p.facephi-ui-label', {
-          hasText: /Onboarding|Authentication|Autenticación|Autenticação/,
-        })
-        .nth(0);
-      await expect(operationName).toBeVisible();
+    const operationName = page
+      .locator('p.facephi-ui-label', {
+        hasText: /Onboarding|Authentication|Autenticación|Autenticação/,
+      })
+      .nth(0);
+    await expect(operationName).toBeVisible();
 
-      // TODO: add other locales
-      const operationStatus = page
-        .locator('div')
-        .filter({ hasText: /^Successful|Started|Rejected$/ })
-        .nth(0);
-      await expect(operationStatus).toBeVisible();
-    });
+    // TODO: add other locales
+    const operationStatus = page
+      .locator('div')
+      .filter({ hasText: /^Successful|Started|Rejected$/ })
+      .nth(0);
+    await expect(operationStatus).toBeVisible();
   });
 
   test('Enters a successful operation and validates all green/successful elements @smoke', async ({
     page,
+    operationPage,
   }) => {
-    await test.step('Navigate to successful operation details', async () => {
-      await clicksOperationSuccessful(page);
-    });
+    await operationPage.clicksOperationSuccessful();
 
     await test.step('Validate successful status messages and icons', async () => {
       const successfulStepMessage = page.getByText('Successful step');
@@ -132,9 +115,10 @@ test.describe('Operations page validation @regression', async () => {
 
   test('Enters a rejected operation and validates all red/unsuccessful elements @smoke', async ({
     page,
+    operationPage,
   }) => {
     await test.step('Navigate to rejected operation details', async () => {
-      await clicksOperationRejected(page);
+      await operationPage.clicksOperationRejected();
     });
 
     await test.step('Validate error styling and messages', async () => {
@@ -154,9 +138,10 @@ test.describe('Operations page validation @regression', async () => {
 
   test('Validates that the requirements details of a successful operation are seen in UI', async ({
     page,
+    operationPage,
   }) => {
     await test.step('Navigate to successful operation details', async () => {
-      await clicksOperationSuccessful(page);
+      await operationPage.clicksOperationSuccessful();
     });
 
     await test.step('Validate session status message', async () => {
@@ -218,9 +203,9 @@ test.describe('Operations page validation @regression', async () => {
     });
   });
 
-  test('Validates OCR section inside a operation', async ({ page }) => {
-    await test.step('Navigate to any operation and click on OCR tab', async () => {
-      await clicksAnyOperation(page);
+  test('Validates OCR section inside a operation', async ({ page, operationPage }) => {
+    await test.step('Navigate to any operation and clicks on OCR tab', async () => {
+      await operationPage.clicksAnyOperation();
       await page.getByRole('button', { name: 'OCR' }).click();
     });
 

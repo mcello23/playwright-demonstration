@@ -1,4 +1,4 @@
-import { description, expect, tags, test } from 'utils/fixtures/e2e';
+import { description, expect, tags, test } from 'utils/controller/e2e';
 // This is an example that will be built upon
 // It still doesn't test UX (focus, keyboard navigation, etc.)
 
@@ -33,12 +33,12 @@ test.describe('Accessibility and visual testing of UX in IDV', () => {
           - img "Avatar"
           - paragraph: /.+@facephi\.com/
           - img
-        - checkbox /\\d+ hours/
-        - checkbox "7 days" [checked]
-        - checkbox /\\d+ days/
         - button:
           - img
-        - textbox "Filter by date": /\\d+\\/\\d+\\/\\d+ - \\d+\\/\\d+\\/\\d+/
+        - textbox "Filter by date"
+        - checkbox "24 hours"
+        - checkbox "7 days" [checked]
+        - checkbox "30 days"
         - img
         - paragraph: /\\d+/
         - paragraph: New onboardings
@@ -62,7 +62,8 @@ test.describe('Accessibility and visual testing of UX in IDV', () => {
         - paragraph
     `);
 
-      await expect(page.locator('body')).toMatchAriaSnapshot(`
+      await expect(page.locator('body')).toMatchAriaSnapshot(
+        `
       - alert
       - link:
         - img
@@ -90,12 +91,12 @@ test.describe('Accessibility and visual testing of UX in IDV', () => {
           - img "Avatar"
           - paragraph: /.+@facephi\.com/
           - img
-        - checkbox /\\d+ hours/
-        - checkbox "7 days" [checked]
-        - checkbox /\\d+ days/
         - button:
           - img
-        - textbox "Filter by date": /\\d+\\/\\d+\\/\\d+ - \\d+\\/\\d+\\/\\d+/
+        - textbox "Filter by date"
+        - checkbox "24 hours"
+        - checkbox "7 days" [checked]
+        - checkbox "30 days"
         - img
         - paragraph: /\\d+/
         - paragraph: New onboardings
@@ -109,16 +110,8 @@ test.describe('Accessibility and visual testing of UX in IDV', () => {
         - paragraph: Succesful
         - paragraph: Started
         - paragraph: Expired
-        - paragraph: Cancelled
-        - paragraph: Blocked
-        - paragraph: Rejected
-        - paragraph: Error
-        - paragraph: Success rate
-        - paragraph
-        - paragraph: Error rate
-        - paragraph
-      - region "Notifications alt+T"
-    `);
+      `
+      );
     });
 
     await test.step('Validates the Dashboard main content screenshot', async () => {

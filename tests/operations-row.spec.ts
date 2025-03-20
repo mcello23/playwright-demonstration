@@ -1,12 +1,6 @@
 import { faker } from '@faker-js/faker';
-import {
-  CalendarHelper,
-  expect,
-  getFormattedDateRange,
-  test,
-  verifyDateRangeInput,
-  waitForMultipleRSCResponses,
-} from '../utils/fixtures/e2e';
+import { getFormattedDateRange } from 'utils/helpers/calandarHelper';
+import { expect, test, verifyDateRangeInput } from '../utils/controller/e2e';
 
 test.describe('Operations page validation @regression', () => {
   test.beforeEach(async ({ page }) => {
@@ -76,14 +70,15 @@ test.describe('Operations page validation @regression', () => {
 
   test('Uses the calendar pop-up with random dates, validating UI "X" and "Clear all" buttons and RSC response', async ({
     page,
+    apiHelpers,
+    calendarHelper,
   }) => {
     await test.step('Open calendar and select a random date range', async () => {
-      const calendar = new CalendarHelper(page);
-      calendar.opensCalendar();
-      await calendar.goToPreviousMonth();
-      await calendar.selectRandomDateRange();
+      calendarHelper.opensCalendar();
+      await calendarHelper.goToPreviousMonth();
+      await calendarHelper.selectRandomDateRange();
 
-      await waitForMultipleRSCResponses(page, 2);
+      await apiHelpers.waitForMultipleRSCResponses(2);
     });
 
     await test.step('Test "X" button to clear date filter', async () => {
@@ -92,12 +87,11 @@ test.describe('Operations page validation @regression', () => {
     });
 
     await test.step('Select another random date range and use "Clear all" button', async () => {
-      const calendar = new CalendarHelper(page);
-      calendar.opensCalendar();
-      await calendar.goToPreviousMonth();
-      await calendar.selectRandomDateRange();
+      calendarHelper.opensCalendar();
+      await calendarHelper.goToPreviousMonth();
+      await calendarHelper.selectRandomDateRange();
 
-      await waitForMultipleRSCResponses(page, 2);
+      await apiHelpers.waitForMultipleRSCResponses(2);
 
       await page.locator('[data-test="clear-all"]').isVisible();
       await page.locator('[data-test="clear-all"]').click();
@@ -223,7 +217,7 @@ test.describe('Operations page validation @regression', () => {
       await expect(moreZoom).toBeVisible();
       await expect(moreZoom).toBeEnabled();
 
-      const printBttn = page.locator('div:nth-child(3) > button').first();
+      const printBttn = page.locator('.facephi-ui-flex > div:nth-child(3) > button').first();
       await expect(printBttn).toBeVisible();
       await expect(printBttn).toBeEnabled();
 
@@ -341,8 +335,10 @@ test.describe('Operations page validation @regression', () => {
   });
 
   test('Validates the print functionality inside the modal', async ({ page }) => {
+    let printPromise: Promise<void>;
+
     await test.step('Setup print function interception', async () => {
-      const printPromise = new Promise<void>((resolve) => {
+      printPromise = new Promise<void>((resolve) => {
         page.exposeFunction('notifyPrintCalled', () => {
           resolve();
         });
@@ -392,25 +388,11 @@ test.describe('Operations page validation @regression', () => {
     });
 
     await test.step('Click on print button and validate', async () => {
-      const printPromise = new Promise<void>((resolve) => {
-        page.exposeFunction('notifyPrintCalled', () => {
-          resolve();
-        });
-      });
-
-      await page.addInitScript(() => {
-        const originalPrint = window.print;
-        window.print = () => {
-          // Call original function
-          // And prevents opening the real print windows by commenting:
-          // originalPrint.call(window);
-
-          // @ts-ignore
-          window.notifyPrintCalled();
-        };
-      });
-      await Promise.all([printPromise, page.locator('div:nth-child(3) > button').first().click()]);
-
+      await page
+        .locator('[data-test="modal-assets"] button:has(svg[viewBox="0 0 256 256"])')
+        .nth(3)
+        .click();
+      await printPromise;
       console.log('Print function was successfully called');
     });
   });

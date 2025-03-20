@@ -13,6 +13,36 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+// Detecta se está rodando no Currents
+const isCurrents = process.env.CURRENTS_CI === 'true';
+
+// Função para obter o caminho do storage state com fallback
+// Interface for the storage state object
+interface StorageStateObject {
+  cookies: any[];
+  origins: any[];
+}
+
+// Type for the return value of getStorageState
+type StorageState = string | StorageStateObject;
+// Type for browser names
+type BrowserName = 'chromium' | 'firefox' | 'webkit';
+
+/**
+ * Returns the appropriate storage state path or empty state object
+ * based on browser name and execution environment
+ */
+function getStorageState(browserName: BrowserName): StorageState {
+  const filePath = path.resolve(__dirname, `auth/auth-${browserName}.json`);
+
+  // Se estiver no Currents, use um objeto em memória em vez de um arquivo
+  if (isCurrents) {
+    return { cookies: [], origins: [] };
+  }
+
+  return filePath;
+}
+
 export default defineConfig({
   timeout: process.env.CI ? 35_000 : 25_000,
   expect: {
@@ -101,9 +131,6 @@ export default defineConfig({
       },
     ],
   ],
-  metadata: {
-    gitcommit: 'generate',
-  },
   globalSetup: path.resolve(__dirname, 'utils/global-setup.ts'),
   use: {
     baseURL: 'https://idv-suite.identity-platform.dev/',
@@ -117,7 +144,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: path.resolve(__dirname, 'auth/auth-chromium.json'),
+        storageState: getStorageState('chromium'),
         video: 'retain-on-failure',
         permissions: ['clipboard-read', 'clipboard-write'],
       },
@@ -126,7 +153,7 @@ export default defineConfig({
       name: 'firefox',
       use: {
         ...devices['Desktop Firefox'],
-        storageState: path.resolve(__dirname, 'auth/auth-firefox.json'),
+        storageState: getStorageState('firefox'),
         video: 'retain-on-failure',
       },
     },
@@ -134,7 +161,7 @@ export default defineConfig({
       name: 'webkit',
       use: {
         ...devices['Desktop Safari'],
-        storageState: path.resolve(__dirname, 'auth/auth-webkit.json'),
+        storageState: getStorageState('webkit'),
         video: 'retain-on-failure',
       },
     },

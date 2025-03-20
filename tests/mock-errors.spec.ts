@@ -1,9 +1,9 @@
-import { expect, expectNoResponse, test } from '../utils/fixtures/e2e';
+import { expect, expectNoResponse, test } from '../utils/controller/e2e';
 
 test.describe('Mocking server errors and validating behaviour on frontend and console @smoke', () => {
   test('Mocks a 500 (internal server error) and sees it in frontend and console', async ({
     page,
-    simulateServerError,
+    mockHelpers,
   }, testInfo) => {
     const consoleMessages: string[] = [];
     let errorPrinted = false;
@@ -29,7 +29,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     });
 
     await test.step('Simulate server error', async () => {
-      await simulateServerError({
+      await mockHelpers.simulateServerError({
         endpoint: '**/operations/**',
         statusCode: 500,
       });
@@ -73,7 +73,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
 
   test('Mocks a 401 (Unauthorized) and sees it in frontend and console', async ({
     page,
-    simulateUnauthorized,
+    mockHelpers,
   }, testInfo) => {
     const consoleMessages: string[] = [];
     let errorPrinted = false;
@@ -109,7 +109,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     });
 
     await test.step('Simulate unauthorized response', async () => {
-      await simulateUnauthorized({
+      await mockHelpers.simulateUnauthorized({
         endpoint: '**/operations/**',
         statusCode: 401,
       });
@@ -137,7 +137,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
 
   test('Mocks a 403 (Forbidden) response and validates console message and frontend', async ({
     page,
-    simulateForbidden,
+    mockHelpers,
   }, testInfo) => {
     const consoleMessages: string[] = [];
     let errorPrinted = false;
@@ -172,11 +172,9 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
       await expect(filterElement).toBeVisible();
     });
 
-    await test.step('Simulate forbidden response', async () => {
-      await simulateForbidden({
-        endpoint: '**/operations/**',
-        statusCode: 403,
-      });
+    await mockHelpers.simulateForbidden({
+      endpoint: '**/operations/**',
+      statusCode: 403,
     });
 
     await test.step('Navigate to trigger the error', async () => {
@@ -202,7 +200,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
 
   test('Mocks a 408 (request timeout) response and validates through unresponsive navigation', async ({
     page,
-    simulateTimeout,
+    mockHelpers,
   }) => {
     const timeoutMessages: string[] = [];
 
@@ -223,11 +221,9 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
       await expect(filterElement).toBeVisible();
     });
 
-    await test.step('Simulate timeout response', async () => {
-      await simulateTimeout({
-        endpoint: '**/tenant/**',
-        timeoutMs: 30000,
-      });
+    await mockHelpers.simulateTimeout({
+      endpoint: '**/tenant/**',
+      timeoutMs: 30000,
     });
 
     await test.step('Navigate to trigger the timeout', async () => {

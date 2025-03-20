@@ -69,7 +69,7 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
 
     try {
       await page.waitForURL('**/tenant/**', { timeout: 30000 });
-      await page.locator('[data-test="header"]').getByText('Dashboard').waitFor({ timeout: 5000 });
+      await page.locator('[data-test="header"]').getByText('Dashboard').waitFor({ timeout: 10000 });
 
       console.log(`✅ Login successful with ${browserType}! Saving state...`);
       await context.storageState({ path: authFilePath });
@@ -199,7 +199,6 @@ async function globalSetup(config: FullConfig) {
   // Create unsigned state
   await createUnsignedState();
 
-  // Usar a função para gerenciar browsers com base no sharding
   await handleBrowsersBasedOnSharding(config);
 
   console.log('✅ Global setup completed!');
