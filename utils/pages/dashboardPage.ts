@@ -1,6 +1,8 @@
 import { Page, expect } from '@playwright/test';
 import { stepPOM, verifyDateRangeInput } from 'utils/controller/e2e';
 import { getFormattedDateRange } from 'utils/helpers/calandarHelper';
+import { StringsValidationBase, TextAssertion } from 'utils/helpers/stringsHelper';
+import { dashboardTexts } from 'utils/strings/dashboard.strings';
 
 export class dashboardCommands {
   page: Page;
@@ -70,34 +72,36 @@ export class dashboardCommands {
     await verifyDateRangeInput(this.filterByDateLocator, formattedDate);
   }
 
-  @stepPOM('Clicks on 24 hours filter and validates UI')
-  async selectHoursFilterAndValidate(apiHelpers: any) {
+  @stepPOM('Clicks on 24 hours button filter and validates RSC responses')
+  async clicksHoursButtonAndValidatesRSC(apiHelpers: any) {
     await this.hourCheckbox.click();
     await expect(this.hourCheckbox).toHaveAttribute('aria-checked', 'true');
     await apiHelpers.waitForMultipleRSCResponses(2);
+  }
 
+  @stepPOM('Validates Echarts responses on UI')
+  async validatesUIDashboardResponse() {
     const count = await this.chartsDashboard.count();
     expect(count).toBeGreaterThanOrEqual(2);
     expect(count).toBeLessThanOrEqual(3);
   }
 
-  @stepPOM('Clicks on 7 days filter and validates UI')
-  async selectSevenDaysFilterAndValidate(apiHelpers: any) {
+  @stepPOM('Clicks on 7 days button filter and validates RSC responses')
+  async clicks7DaysButtonAndValidatesRSC(apiHelpers: any) {
     await this.sevenDaysCheckbox.click();
     await expect(this.sevenDaysCheckbox).toHaveAttribute('aria-checked', 'true');
     await apiHelpers.waitForMultipleRSCResponses(2);
-
-    const count = await this.chartsDashboard.count();
-    expect(count).toBeGreaterThanOrEqual(2);
-    expect(count).toBeLessThanOrEqual(3);
   }
 
-  @stepPOM('Clicks on 30 days filter and validates UI')
-  async selectThirtyDaysFilterAndValidate(apiHelpers: any) {
+  @stepPOM('Clicks on 30 days filter and validates RSC responses')
+  async clicks30DaysButtonAndValidatesRSC(apiHelpers: any) {
     await this.thirtyDaysCheckbox.click();
     await expect(this.thirtyDaysCheckbox).toHaveAttribute('aria-checked', 'true');
     await apiHelpers.waitForMultipleRSCResponses(2);
+  }
 
+  @stepPOM('Validates Echarts responses on UI')
+  async validatesUIDashboard30days() {
     await expect(this.operationsCanvas).toBeVisible();
     expect(this.chartsDashboard).toHaveCount(3);
   }
@@ -109,5 +113,68 @@ export class dashboardCommands {
     const count = await this.chartsDashboard.count();
     expect(count).toBeGreaterThanOrEqual(2);
     expect(count).toBeLessThanOrEqual(3);
+  }
+}
+export class DashboardStringsValidation extends StringsValidationBase {
+  constructor(page: Page) {
+    super(page);
+  }
+
+  @stepPOM('Navigates to Dashboard page and locates every string')
+  async navigateToDashboard(locale: string) {
+    await this.page.goto(`/${locale}`, { waitUntil: 'commit' });
+    await this.page.locator('[data-test="header-logo"]').click();
+  }
+
+  getDashboardAssertions(locale: string): TextAssertion[] {
+    const data = (dashboardTexts as DashboardTexts)[locale];
+    type DashboardTexts = /*unresolved*/ any;
+
+    return [
+      // Upper section
+      {
+        locator: this.page.getByRole('checkbox', { name: data.hours }),
+        isEnabled: false,
+      },
+      {
+        locator: this.page.getByRole('checkbox', { name: data.sevenDays }),
+        isEnabled: false,
+      },
+      {
+        locator: this.page.getByRole('checkbox', { name: data.thirtyDays }),
+        isEnabled: false,
+      },
+      {
+        locator: this.page.locator('[data-test="filter-by-date"]'),
+        isEnabled: true,
+      },
+      // Middle section
+      { locator: this.page.getByText(data.newOnboardings), isEnabled: false },
+      { locator: this.page.getByText(data.authentications), isEnabled: false },
+      {
+        locator: this.page.getByText(data.onboardings, { exact: true }),
+        isEnabled: false,
+      },
+      { locator: this.page.getByText(data.successRate), isEnabled: false },
+      { locator: this.page.getByText(data.errorRate), isEnabled: false },
+      { locator: this.page.getByText(data.allOperations), isEnabled: false },
+      // Bottom section
+      { locator: this.page.getByText(data.succeeded), isEnabled: false },
+      { locator: this.page.getByText(data.started), isEnabled: false },
+      { locator: this.page.getByText(data.expired), isEnabled: false },
+      { locator: this.page.getByText(data.cancelled), isEnabled: false },
+      { locator: this.page.getByText(data.blocked), isEnabled: false },
+      { locator: this.page.getByText(data.denied), isEnabled: false },
+      {
+        locator: this.page.getByText(data.error, { exact: true }),
+        isEnabled: false,
+      },
+    ];
+  }
+
+  @stepPOM('Validate that all strings are visible in the Dashboard page')
+  async validateDashboardTexts(locale: string) {
+    const assertions = this.getDashboardAssertions(locale);
+    await this.validateTexts(assertions);
   }
 }

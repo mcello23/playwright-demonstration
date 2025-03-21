@@ -1,4 +1,26 @@
-export const dashboardTexts = {
+type DashboardTexts = {
+  [key: string]: {
+    lang: string;
+    hours: string;
+    sevenDays: string;
+    thirtyDays: string;
+    newOnboardings: string;
+    authentications: string;
+    onboardings: string;
+    successRate: string;
+    errorRate: string;
+    allOperations: string;
+    succeeded: string;
+    started: string;
+    expired: string;
+    cancelled: string;
+    blocked: string;
+    denied: string;
+    error: string;
+  };
+};
+
+export const dashboardTexts: DashboardTexts = {
   en: {
     lang: 'en',
     hours: 'hours',

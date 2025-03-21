@@ -13,29 +13,20 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-// Detecta se está rodando no Currents
+//Currents logic for POC
 const isCurrents = process.env.CURRENTS_CI === 'true';
 
-// Função para obter o caminho do storage state com fallback
-// Interface for the storage state object
 interface StorageStateObject {
   cookies: any[];
   origins: any[];
 }
 
-// Type for the return value of getStorageState
 type StorageState = string | StorageStateObject;
-// Type for browser names
 type BrowserName = 'chromium' | 'firefox' | 'webkit';
 
-/**
- * Returns the appropriate storage state path or empty state object
- * based on browser name and execution environment
- */
 function getStorageState(browserName: BrowserName): StorageState {
   const filePath = path.resolve(__dirname, `auth/auth-${browserName}.json`);
 
-  // Se estiver no Currents, use um objeto em memória em vez de um arquivo
   if (isCurrents) {
     return { cookies: [], origins: [] };
   }
@@ -110,7 +101,7 @@ export default defineConfig({
           node_version: process.version,
           playwright_version: require('@playwright/test/package.json').version,
           environment: process.env.NODE_ENV || 'development',
-          test_branch: process.env.GITHUB_REF_NAME || 'local',
+          test_branch: process.env.GITHUB_REF_NAME || 'main',
           test_run_timestamp: new Date().toISOString(),
         },
         labels: [

@@ -30,7 +30,7 @@ test.describe('Happy Path: Authenticates correctly to IDV and validates Login an
 
     await dashboardPage.logout();
     await apiHelpers.validatesOIDCRedirect();
-    console.log('✅ OIDC 303 redirection intercepted');
+    console.log("✅ OIDC '303' redirection intercepted");
     await loginPage.seesLoginPage();
   });
 });

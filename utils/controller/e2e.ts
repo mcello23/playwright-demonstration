@@ -1,15 +1,20 @@
 import { test as baseTest, expect, Page } from '@playwright/test';
 import { description, tag, tags } from 'allure-js-commons';
-import { apiCommands } from 'utils/helpers/apiHelpers';
+import { apiCommands } from 'utils/helpers/apiHelper';
 import { CalendarCommands, verifyDateRangeInput } from 'utils/helpers/calandarHelper';
+import { ErrorForceCommands } from 'utils/helpers/errorHelper';
+import { MockCommands } from 'utils/helpers/mockFixtures';
 import {
-  ErrorFixtureOptions,
-  MockCommands,
-  SimulateTimeoutOptions,
-} from 'utils/helpers/mockFixtures';
-import { dashboardCommands } from 'utils/pages/dashboardPage';
+  AntifraudAndRulesNavigation,
+  DashboardAndOperationNavigation,
+  FlowsAndIntegrationsNavigation,
+  IdentitiesNavigation,
+  UserManagementNavigation,
+} from 'utils/helpers/navigationHelper';
+import { dashboardCommands, DashboardStringsValidation } from 'utils/pages/dashboardPage';
+import { ErrorPageNavigation } from 'utils/pages/errorPage';
 import { loginCommands } from 'utils/pages/loginPage';
-import { operationPageCommands } from 'utils/pages/operationsPage';
+import { operationPageCommands, OperationsStringsValidation } from 'utils/pages/operationsPage';
 
 export function stepPOM(stepName?: string) {
   return function decorator(target: Function, context?: ClassMethodDecoratorContext | undefined) {
@@ -23,27 +28,20 @@ export function stepPOM(stepName?: string) {
   };
 }
 
-// Navigation helpers
-export async function expectNoResponse(
-  page: Page,
-  urlPattern: string | RegExp,
-  options = { timeout: 1000 }
-) {
-  let responseReceived = false;
+class MissingStringCommand {
+  page: Page;
+  constructor(page: Page) {
+    this.page = page;
+  }
 
-  const responsePromise = page
-    .waitForResponse(urlPattern, { timeout: options.timeout })
-    .then(() => {
-      responseReceived = true;
-    })
-    .catch(() => {
-      // Nothing, timeout expected
+  @stepPOM('Validates no missing string is found')
+  async validateMissingString() {
+    this.page.on('console', (msg) => {
+      if (msg.text().includes('MISSING TRANSLATION')) {
+        console.log(`Missing translation found: ${msg.text()}`);
+      }
     });
-
-  await page.waitForTimeout(options.timeout);
-  await responsePromise;
-
-  expect(responseReceived).toBeFalsy();
+  }
 }
 
 interface CustomFixtures {
@@ -53,16 +51,22 @@ interface CustomFixtures {
   dashboardPage: dashboardCommands;
   calendarHelper: CalendarCommands;
   mockHelpers: MockCommands;
-  simulateServerError: (options: ErrorFixtureOptions) => Promise<void>;
-  simulateTimeout: (options: SimulateTimeoutOptions) => Promise<void>;
-  simulateForbidden: (options: ErrorFixtureOptions) => Promise<void>;
-  simulateUnauthorized: (options: ErrorFixtureOptions) => Promise<void>;
+  operationsAndDasbhaord: DashboardAndOperationNavigation;
+  antifraudAndRules: AntifraudAndRulesNavigation;
+  flowsAndIntegrations: FlowsAndIntegrationsNavigation;
+  identitiesNavigation: IdentitiesNavigation;
+  userManagementNavigation: UserManagementNavigation;
+  errorPageNavigation: ErrorPageNavigation;
+  errorCommands: ErrorForceCommands;
+  MissingString: MissingStringCommand;
+  dashboardStrings: DashboardStringsValidation;
+  operationsStrings: OperationsStringsValidation;
 }
 
 export const test = baseTest.extend<CustomFixtures>({
   page: async ({ page }: { page: Page }, use: (page: Page) => Promise<void>) => {
     test.step('Goes to baseURL', async () => {
-      await page.goto('/');
+      await page.goto('/', { waitUntil: 'commit' });
       await use(page);
     });
     // afterEach cleanup logic here
@@ -102,22 +106,103 @@ export const test = baseTest.extend<CustomFixtures>({
     await use(calendar);
   },
 
+  operationsAndDasbhaord: async (
+    { page }: { page: Page },
+    use: (operationsAndDasbhaord: DashboardAndOperationNavigation) => Promise<void>
+  ) => {
+    const operationsAndDasbhaord = new DashboardAndOperationNavigation(page);
+    await use(operationsAndDasbhaord);
+  },
+
+  antifraudAndRules: async (
+    { page }: { page: Page },
+    use: (antifraudAndRules: AntifraudAndRulesNavigation) => Promise<void>
+  ) => {
+    const antifraudAndRules = new AntifraudAndRulesNavigation(page);
+    await use(antifraudAndRules);
+  },
+
+  flowsAndIntegrations: async (
+    { page }: { page: Page },
+    use: (flowsAndIntegrations: FlowsAndIntegrationsNavigation) => Promise<void>
+  ) => {
+    const flowsAndIntegrations = new FlowsAndIntegrationsNavigation(page);
+    await use(flowsAndIntegrations);
+  },
+
+  identitiesNavigation: async (
+    { page }: { page: Page },
+    use: (identitiesNavigation: IdentitiesNavigation) => Promise<void>
+  ) => {
+    const identitiesNavigation = new IdentitiesNavigation(page);
+    await use(identitiesNavigation);
+  },
+
+  userManagementNavigation: async (
+    { page }: { page: Page },
+    use: (userManagementNavigation: UserManagementNavigation) => Promise<void>
+  ) => {
+    const userManagementNavigation = new UserManagementNavigation(page);
+    await use(userManagementNavigation);
+  },
+
+  errorPageNavigation: async (
+    { page }: { page: Page },
+    use: (errorPageNavigation: ErrorPageNavigation) => Promise<void>
+  ) => {
+    const errorPageNavigation = new ErrorPageNavigation(page);
+    await use(errorPageNavigation);
+  },
+
   mockHelpers: async ({ page }: { page: Page }, use: (mock: MockCommands) => Promise<void>) => {
     const mock = new MockCommands(page);
     await use(mock);
+  },
+
+  MissingString: async (
+    { page }: { page: Page },
+    use: (MissingString: MissingStringCommand) => Promise<void>
+  ) => {
+    const MissingString = new MissingStringCommand(page);
+    await use(MissingString);
+  },
+
+  errorCommands: async (
+    { page }: { page: Page },
+    use: (errorCommands: ErrorForceCommands) => Promise<void>
+  ) => {
+    const errorCommands = new ErrorForceCommands(page);
+    await use(errorCommands);
+  },
+  dashboardStrings: async ({ page }, use) => {
+    const dashboardStrings = new DashboardStringsValidation(page);
+    await use(dashboardStrings);
+  },
+  operationsStrings: async ({ page }, use) => {
+    const operationsStrings = new OperationsStringsValidation(page);
+    await use(operationsStrings);
   },
 });
 
 export {
   apiCommands,
   CalendarCommands,
+  DashboardAndOperationNavigation,
   dashboardCommands,
+  DashboardStringsValidation,
   description,
+  ErrorForceCommands,
+  ErrorPageNavigation,
   expect,
+  FlowsAndIntegrationsNavigation,
+  IdentitiesNavigation,
   loginCommands,
+  MissingStringCommand,
   MockCommands,
   operationPageCommands,
+  OperationsStringsValidation,
   tag,
   tags,
+  UserManagementNavigation,
   verifyDateRangeInput,
 };

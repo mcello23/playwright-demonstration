@@ -1,5 +1,5 @@
 import { Page, Route } from '@playwright/test';
-import { stepPOM } from '../controller/e2e';
+import { stepPOM } from 'utils/controller/e2e';
 
 export interface ErrorFixtureOptions {
   statusCode?: number;

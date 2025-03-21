@@ -1,4 +1,4 @@
-import { expect, expectNoResponse, test } from '../utils/controller/e2e';
+import { expect, test } from '../utils/controller/e2e';
 
 test.describe('Mocking server errors and validating behaviour on frontend and console @smoke', () => {
   test('Mocks a 500 (internal server error) and sees it in frontend and console', async ({
@@ -201,6 +201,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
   test('Mocks a 408 (request timeout) response and validates through unresponsive navigation', async ({
     page,
     mockHelpers,
+    errorCommands,
   }) => {
     const timeoutMessages: string[] = [];
 
@@ -233,7 +234,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     await test.step('Verify timeout behavior', async () => {
       const opElement = page.locator('[data-test="header"]').getByText('Operations');
       await page.waitForTimeout(1000);
-      await expectNoResponse(page, '**/tenant/**');
+      await errorCommands.expectNoResponse(page, '**/tenant/**');
       await expect(opElement).not.toBeVisible({
         timeout: 1000,
       });

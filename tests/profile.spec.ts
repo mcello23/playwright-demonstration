@@ -96,7 +96,7 @@ test.describe('Happy path: Profile and tenants validation @regression', async ()
     });
 
     await test.step('Navigate to operations page with different tenant', async () => {
-      await page.goto('/en/tenant/idv-prueba/operations');
+      await page.goto('/en/tenant/idv-prueba/operations', { waitUntil: 'commit' });
     });
 
     await test.step('Validate operations header is visible', async () => {
@@ -121,8 +121,7 @@ test.describe('Negative path: Profile and tenants validation @regression', () =>
   }) => {
     await test.step('Navigate to tenant URL and wait for loading', async () => {
       await page.waitForURL(/.*tenant.*/);
-      await page.goto('/en/tenant/idv-prueba/operations');
-      await page.waitForLoadState('networkidle');
+      await page.goto('/en/tenant/idv-prueba/operations', { waitUntil: 'commit' });
     });
 
     await test.step('Validate top logo is visible', async () => {
@@ -153,8 +152,7 @@ test.describe('Negative path: Profile and tenants validation @regression', () =>
   }) => {
     await test.step('Navigate to tenant URL and wait for loading', async () => {
       await page.waitForURL(/.*tenant.*/);
-      await page.goto('/en/tenant/idv-prueba/operations');
-      await page.waitForLoadState('networkidle');
+      await page.goto('/en/tenant/idv-prueba/operations', { waitUntil: 'commit' });
     });
 
     await test.step('Validate error messages are visible', async () => {

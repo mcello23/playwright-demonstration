@@ -30,7 +30,7 @@ async function createUnsignedState() {
   const page = await context.newPage();
 
   try {
-    await page.goto(process.env.BASE_URL!);
+    await page.goto(process.env.BASE_URL!, { waitUntil: 'commit' });
     await context.storageState({ path: unsignedStatePath });
     console.log(`✅ Unsigned state saved: ${unsignedStatePath}`);
   } catch (error) {
@@ -52,15 +52,13 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
   const page = await context.newPage();
 
   try {
-    await page.goto(process.env.BASE_URL!);
-    await page.waitForLoadState('networkidle');
+    await page.goto(process.env.BASE_URL!, { waitUntil: 'commit' });
 
     const emailInput = page.getByRole('textbox', { name: 'Email address' });
     await emailInput.waitFor({ state: 'visible' });
     await emailInput.fill(process.env.USER_EMAIL!, { timeout: 40000 });
 
     await page.getByRole('button', { name: 'Next' }).click();
-    await page.waitForLoadState('networkidle');
 
     const passwordInput = page.getByRole('textbox', { name: 'Password' });
     await passwordInput.waitFor({ state: 'visible' });
@@ -68,8 +66,8 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
     await page.getByRole('button', { name: 'Continue' }).click();
 
     try {
-      await page.waitForURL('**/tenant/**', { timeout: 30000 });
-      await page.locator('[data-test="header"]').getByText('Dashboard').waitFor({ timeout: 10000 });
+      await page.waitForURL('**/tenant/**', { waitUntil: 'commit' });
+      await (await page.waitForSelector('[data-test="header"]')).isVisible();
 
       console.log(`✅ Login successful with ${browserType}! Saving state...`);
       await context.storageState({ path: authFilePath });

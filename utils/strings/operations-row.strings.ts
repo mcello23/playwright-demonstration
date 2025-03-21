@@ -1,4 +1,22 @@
-export const operationsTexts = {
+type OperationsTexts = {
+  [key: string]: {
+    lang: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    userID: string;
+    type: string;
+    steps: string;
+    Assets: string | RegExp;
+    status: string;
+    actions: string | RegExp;
+    sarted: string;
+    successful: string;
+    rejected: string;
+  };
+};
+
+export const operationsTexts: OperationsTexts = {
   en: {
     lang: 'en',
     title: 'Operations',
