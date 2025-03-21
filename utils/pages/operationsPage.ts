@@ -1,12 +1,20 @@
 import { expect, Page } from '@playwright/test';
 import { stepPOM } from 'utils/controller/e2e';
-import { StringsValidationBase, TextAssertion } from 'utils/helpers/stringsHelper';
+import { StringsValidationBase, TextAssertion } from 'utils/helpers/miscHelper';
 import { operationsTexts } from 'utils/strings/operations-row.strings';
 
 export class operationPageCommands {
   page: Page;
   constructor(page: Page) {
     this.page = page;
+  }
+
+  @stepPOM('Validates Operations page is visible')
+  async operationsHeaderVisible() {
+    const operationsHeader = this.page
+      .locator('[data-test="header"] div')
+      .filter({ hasText: 'Operations' });
+    await expect(operationsHeader).toBeVisible();
   }
 
   @stepPOM('Clicks on any operation')

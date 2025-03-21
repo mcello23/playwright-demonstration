@@ -1,7 +1,7 @@
 import { Page, expect } from '@playwright/test';
 import { stepPOM, verifyDateRangeInput } from 'utils/controller/e2e';
 import { getFormattedDateRange } from 'utils/helpers/calandarHelper';
-import { StringsValidationBase, TextAssertion } from 'utils/helpers/stringsHelper';
+import { StringsValidationBase, TextAssertion } from 'utils/helpers/miscHelper';
 import { dashboardTexts } from 'utils/strings/dashboard.strings';
 
 export class dashboardCommands {
@@ -31,8 +31,21 @@ export class dashboardCommands {
     this.page = page;
   }
 
+  @stepPOM('Loads main page after login')
+  async loadsMainURL() {
+    await this.page.waitForURL(/.*tenant.*/);
+  }
+
+  // Profile
+  @stepPOM('Clicks on user name and sees profile options')
+  async seesProfileOptions() {
+    await this.page.locator('[data-test="user-name"]').click();
+    const logoutOption = this.page.locator('[data-test="option-menu"]');
+    await expect(logoutOption).toContainText('Log out');
+  }
+
   @stepPOM('Clicks on logout button')
-  async logout() {
+  async clicksLogout() {
     await this.page.locator('[data-test="user-name"]').click();
     await this.page.getByText('Log out').click();
   }
@@ -52,6 +65,7 @@ export class dashboardCommands {
     });
   }
 
+  // Input fields and Echarts
   @stepPOM('Fills the date input with random date')
   async fillDateInputWithRandomDate() {
     const formattedDate = getFormattedDateRange();
@@ -62,6 +76,8 @@ export class dashboardCommands {
 
   @stepPOM('Validates the UI charts after filter change')
   async validateChartsVisibility() {
+    await this.page.waitForSelector('.echarts-for-react', { timeout: 10000 });
+
     const count = await this.chartsDashboard.count();
     expect(count).toBeGreaterThanOrEqual(2);
     expect(count).toBeLessThanOrEqual(3);
@@ -113,6 +129,182 @@ export class dashboardCommands {
     const count = await this.chartsDashboard.count();
     expect(count).toBeGreaterThanOrEqual(2);
     expect(count).toBeLessThanOrEqual(3);
+  }
+
+  @stepPOM('Fills date input with random date and validates its value')
+  async fillAndValidateRandomDate() {
+    const formattedDate = await this.fillDateInputWithRandomDate();
+    await this.validateDateRangeFilter(formattedDate);
+    return formattedDate;
+  }
+
+  // Tenant modal
+  @stepPOM('Clicks on the Tenant button and sees all elements available')
+  async clicksTenantButtonAndSeesElements() {
+    await this.page.getByRole('button', { name: 'demo' }).click();
+    const tenantText = this.page.getByText('Switch tenant');
+    await expect(tenantText).toBeVisible();
+    await this.page.locator('[data-test="modal-tenant"] button').first().isVisible();
+    await this.page.getByRole('button', { name: 'demo idv-demo' }).isVisible();
+    await this.page.getByRole('button', { name: 'demo idv-demo' }).isEnabled();
+    await this.page.getByRole('button', { name: 'idv-prueba idv-prueba' }).isVisible();
+    await this.page.getByRole('button', { name: 'idv-prueba idv-prueba' }).isEnabled();
+    await this.page.getByRole('button', { name: 'Apply' }).isVisible();
+    await this.page.getByRole('button', { name: 'Apply' }).isDisabled();
+  }
+
+  @stepPOM('Opens tenant modal')
+  async openTenantModal() {
+    await this.page.getByRole('button', { name: 'demo' }).click();
+    // await this.page.addStyleTag({
+    //   content: `* { animation: none !important; transition: none !important; }`,
+    // });
+  }
+
+  @stepPOM('Selects copy tenant and validates toast message in UI')
+  async copiesTenantAndSeesToast() {
+    const copyButton = this.page.locator(
+      '[data-test="button-copy-809b44ff-26af-4ffc-9bb8-5dd9b0e87c44"]'
+    );
+    await expect(copyButton).toBeAttached();
+    await copyButton.click();
+    const toastMessage = this.page.locator('[data-test="copied-value"]', {
+      hasText: 'Copied to clipboard',
+    });
+    await expect(toastMessage).toBeVisible();
+  }
+
+  @stepPOM('Changes the Tenant of a user and validates through UI')
+  async changesTenantAndValidatesUI() {
+    await this.page.getByRole('button', { name: 'idv-prueba 809b44ff-26af-4ffc' }).click();
+    await this.page.getByRole('button', { name: 'Apply' }).click();
+
+    await this.page
+      .locator('[data-test="update-tenant"]', { hasText: 'Successfully changed tenant' })
+      .isVisible();
+    const tenantButton = this.page.getByRole('button', { name: 'idv-prueba' });
+    await tenantButton.isVisible();
+  }
+
+  @stepPOM('Validates the tenant change in the URL')
+  async goesToURLWithDifferentTenant() {
+    await this.page.waitForURL(/.*tenant.*/);
+    await this.page.goto('/en/tenant/idv-prueba/operations', { waitUntil: 'commit' });
+  }
+
+  // Accessibility
+  @stepPOM('Validates all Aria attributes in the Dashboard page')
+  async seesAriaAttributesDashboard() {
+    await expect(this.page.locator('[data-test="header"]')).toMatchAriaSnapshot(`
+        - paragraph: Dashboard
+        - button "demo":
+          - paragraph: demo
+          - img
+        - button /Avatar .+@facephi\.com/:
+          - img "Avatar"
+          - paragraph: /.+@facephi\.com/
+          - img
+      `);
+
+    await expect(this.page.getByRole('main')).toMatchAriaSnapshot(`
+        - main:
+          - paragraph: Dashboard
+          - button "demo":
+            - paragraph: demo
+            - img
+          - button /Avatar .+@facephi\.com/:
+            - img "Avatar"
+            - paragraph: /.+@facephi\.com/
+            - img
+          - button:
+            - img
+          - textbox "Filter by date"
+          - checkbox "24 hours"
+          - checkbox "7 days" [checked]
+          - checkbox "30 days"
+          - img
+          - paragraph: /\\d+/
+          - paragraph: New onboardings
+          - img
+          - paragraph: /\\d+/
+          - paragraph: Authentications
+          - img
+          - paragraph: /\\d+/
+          - paragraph: Onboardings
+          - paragraph: All operations (%)
+          - paragraph: Succesful
+          - paragraph: Started
+          - paragraph: Expired
+          - paragraph: Cancelled
+          - paragraph: Blocked
+          - paragraph: Rejected
+          - paragraph: Error
+          - paragraph: Success rate
+          - paragraph
+          - paragraph: Error rate
+          - paragraph
+      `);
+
+    await expect(this.page.locator('body')).toMatchAriaSnapshot(
+      `
+        - alert
+        - link:
+          - img
+        - list:
+          - listitem:
+            - link "Dashboard":
+              - img
+              - paragraph: Dashboard
+          - listitem:
+            - link "Operations":
+              - img
+              - paragraph: Operations
+        - list:
+          - img
+          - paragraph: Operations
+          - button "Application":
+            - img
+            - paragraph: Application
+        - main:
+          - paragraph: Dashboard
+          - button "demo":
+            - paragraph: demo
+            - img
+          - button /Avatar .+@facephi\.com/:
+            - img "Avatar"
+            - paragraph: /.+@facephi\.com/
+            - img
+          - button:
+            - img
+          - textbox "Filter by date"
+          - checkbox "24 hours"
+          - checkbox "7 days" [checked]
+          - checkbox "30 days"
+          - img
+          - paragraph: /\\d+/
+          - paragraph: New onboardings
+          - img
+          - paragraph: /\\d+/
+          - paragraph: Authentications
+          - img
+          - paragraph: /\\d+/
+          - paragraph: Onboardings
+          - paragraph: All operations (%)
+          - paragraph: Succesful
+          - paragraph: Started
+          - paragraph: Expired
+        `
+    );
+  }
+  @stepPOM('Compares Aria content with UI screenshots')
+  async comparesAriaSnapshotScreenshots(browserName: string) {
+    await expect(this.page.getByRole('main')).toHaveScreenshot(
+      `dashboard-main-content-${browserName}.png`
+    );
+
+    await expect(this.page.locator('body')).toHaveScreenshot(
+      `dashboard-sidebar-${browserName}.png`
+    );
   }
 }
 export class DashboardStringsValidation extends StringsValidationBase {

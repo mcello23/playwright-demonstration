@@ -17,9 +17,9 @@ export class DashboardAndOperationNavigation {
 
   @stepPOM('Checks Operations icon color')
   async operationsIconColor() {
-    const operationsDiv = this.page.locator('div').filter({ hasText: 'Operations' });
-    const iconWrapper = operationsDiv.locator(
-      '.facephi-ui-icon-wrapper[style*="background-color: var(--colors-yellow400)"]'
+    const operationsLocator = this.page.locator('[data-test="app-Operations"]');
+    const iconWrapper = operationsLocator.locator(
+      'div.facephi-ui-icon-wrapper[style*="background-color: var(--colors-yellow400)"]'
     );
     await expect(iconWrapper).toBeVisible();
   }

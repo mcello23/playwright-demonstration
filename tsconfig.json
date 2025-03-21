@@ -3,8 +3,8 @@
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
     "noEmit": true,
-    "target": "ES2020",
-    "module": "ESNext",
+    "target": "es2022",
+    "module": "preserve",
     "moduleResolution": "Bundler",
     "esModuleInterop": true,
     "strict": true,
@@ -12,7 +12,11 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "utils/*": ["utils/*"]
+    },
+    "types": ["@playwright/test", "node"]
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

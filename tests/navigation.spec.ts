@@ -1,27 +1,27 @@
 import { test } from '../utils/controller/e2e';
 
 test.beforeEach(async ({ page }) => {
-  await page.waitForURL(/.*tenant.*/, { waitUntil: 'domcontentloaded' });
+  await page.waitForURL(/.*tenant.*/);
 });
 
 test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar', () => {
   test.describe('Dashboard and Operations pages tests', () => {
     test('Validates Dashboard href values, icon color and URL', async ({
       operationsAndDasbhaord,
-      MissingString,
+      missingString,
     }) => {
-      operationsAndDasbhaord.operationsIconColor();
-      operationsAndDasbhaord.dashboardHREFLink();
-      MissingString.validateMissingString();
+      await operationsAndDasbhaord.operationsIconColor();
+      await operationsAndDasbhaord.dashboardHREFLink();
+      missingString.validateMissingString();
     });
 
     test('Validates Operations href values and URL', async ({
       operationsAndDasbhaord,
-      MissingString,
+      missingString,
     }) => {
-      operationsAndDasbhaord.operationsHREFLink();
+      await operationsAndDasbhaord.operationsHREFLink();
       await operationsAndDasbhaord.clicksNavigationValidatesURL();
-      MissingString.validateMissingString();
+      missingString.validateMissingString();
     });
   });
 
@@ -32,17 +32,17 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
 
     test('Validates Antifraud href values, icon color and URL', async ({
       antifraudAndRules,
-      MissingString,
+      missingString,
     }) => {
-      antifraudAndRules.antifraudIconColor();
-      antifraudAndRules.rejectedHREFLinkProperties();
-      MissingString.validateMissingString();
+      await antifraudAndRules.antifraudIconColor();
+      await antifraudAndRules.rejectedHREFLinkProperties();
+      missingString.validateMissingString();
     });
 
-    test('Validates Rules href values and URL', async ({ antifraudAndRules, MissingString }) => {
-      antifraudAndRules.rulesHREFLink();
+    test('Validates Rules href values and URL', async ({ antifraudAndRules, missingString }) => {
+      await antifraudAndRules.rulesHREFLink();
       await antifraudAndRules.rulesClickAndRedirection();
-      MissingString.validateMissingString();
+      missingString.validateMissingString();
     });
   });
 
@@ -53,66 +53,66 @@ test.describe('Tests for IDV sub-pages validating URLs, HREF values and Navbar',
 
     test('Validates Flows href values, icon color and URL', async ({
       flowsAndIntegrations,
-      MissingString,
+      missingString,
     }) => {
-      flowsAndIntegrations.validateFlowsIconColor();
-      flowsAndIntegrations.validateFlowsLinkProperties();
-      MissingString.validateMissingString();
+      await flowsAndIntegrations.validateFlowsIconColor();
+      await flowsAndIntegrations.validateFlowsLinkProperties();
+      missingString.validateMissingString();
     });
 
     test('Validates Integrations href values and URL', async ({
       flowsAndIntegrations,
-      MissingString,
+      missingString,
     }) => {
-      flowsAndIntegrations.validateIntegrationsLinkProperties();
+      await flowsAndIntegrations.validateIntegrationsLinkProperties();
       await flowsAndIntegrations.navigateToIntegrationsAndVerifyUrl();
-      MissingString.validateMissingString();
+      missingString.validateMissingString();
     });
   });
 
   test.describe('Identities page tests', () => {
-    test.beforeEach(async ({ identitiesNavigation, MissingString }) => {
+    test.beforeEach(async ({ identitiesNavigation, missingString }) => {
       await identitiesNavigation.goesToIdentities();
-      MissingString.validateMissingString();
+      missingString.validateMissingString();
     });
 
     test('Validates Identities href values, icon color and URL', async ({
       identitiesNavigation,
     }) => {
-      identitiesNavigation.validateIdentitiesIconColor();
-      identitiesNavigation.validateIdentitiesListProperties();
+      await identitiesNavigation.validateIdentitiesIconColor();
+      await identitiesNavigation.validateIdentitiesListProperties();
     });
   });
 
   test.describe('User Management page tests', () => {
-    test.beforeEach(async ({ userManagementNavigation, MissingString }) => {
+    test.beforeEach(async ({ userManagementNavigation, missingString }) => {
       await userManagementNavigation.goesToUserManagement();
-      MissingString.validateMissingString();
+      missingString.validateMissingString();
     });
 
     test('Validates User Management href values, icon color and URL', async ({
       userManagementNavigation,
     }) => {
-      userManagementNavigation.validateUserManagementIconColor();
-      userManagementNavigation.validateUsersLinkProperties();
+      await userManagementNavigation.validateUserManagementIconColor();
+      await userManagementNavigation.validateUsersLinkProperties();
     });
   });
 });
 
 test.describe('Negative tests', async () => {
   test('Goes to a wrong URL and validates the 404 page has the correct format', async ({
-    errorPageNavigation,
-    MissingString,
+    errorPage,
+    missingString,
   }) => {
-    await errorPageNavigation.navigateToWrongURL();
-    await errorPageNavigation.validateErrorPageUI();
-    MissingString.validateMissingString();
+    await errorPage.navigateToWrongURL();
+    await errorPage.validateErrorPageUI();
+    missingString.validateMissingString();
   });
 
   test('Goes to 404, clicks on the return button and is redirected to home', async ({
-    errorPageNavigation,
+    errorPage,
   }) => {
-    errorPageNavigation.navigateToWrongURL();
-    await errorPageNavigation.clickReturnButtonAndVerifyRedirection();
+    await errorPage.navigateToWrongURL();
+    await errorPage.clickReturnButtonAndVerifyRedirection();
   });
 });

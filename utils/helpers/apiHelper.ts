@@ -41,7 +41,7 @@ export class apiCommands {
     console.log('Response status:', response.status());
   }
 
-  @stepPOM('Validates a RSC request')
+  @stepPOM('Validates a Rendering Server Components (RSC) response')
   async waitForMultipleRSCResponses(count = 1, options = { timeout: 10000 }) {
     try {
       for (let i = 0; i < count; i++) {
@@ -54,7 +54,7 @@ export class apiCommands {
         console.log(`✅ Status: ${response.status()}`);
       }
     } catch (error) {
-      console.warn('⚠️ Not able to capture all RSC requests. Continuing test...');
+      console.warn('⚠️ Not able to capture all RSC response. Continuing test...');
       await this.page.waitForTimeout(1000);
     }
   }

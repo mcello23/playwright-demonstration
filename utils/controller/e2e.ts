@@ -2,7 +2,7 @@ import { test as baseTest, expect, Page } from '@playwright/test';
 import { description, tag, tags } from 'allure-js-commons';
 import { apiCommands } from 'utils/helpers/apiHelper';
 import { CalendarCommands, verifyDateRangeInput } from 'utils/helpers/calandarHelper';
-import { ErrorForceCommands } from 'utils/helpers/errorHelper';
+import { ErrorForceCommands, MissingStringCommand } from 'utils/helpers/miscHelper';
 import { MockCommands } from 'utils/helpers/mockFixtures';
 import {
   AntifraudAndRulesNavigation,
@@ -28,22 +28,6 @@ export function stepPOM(stepName?: string) {
   };
 }
 
-class MissingStringCommand {
-  page: Page;
-  constructor(page: Page) {
-    this.page = page;
-  }
-
-  @stepPOM('Validates no missing string is found')
-  async validateMissingString() {
-    this.page.on('console', (msg) => {
-      if (msg.text().includes('MISSING TRANSLATION')) {
-        console.log(`Missing translation found: ${msg.text()}`);
-      }
-    });
-  }
-}
-
 interface CustomFixtures {
   loginPage: loginCommands;
   operationPage: operationPageCommands;
@@ -56,9 +40,9 @@ interface CustomFixtures {
   flowsAndIntegrations: FlowsAndIntegrationsNavigation;
   identitiesNavigation: IdentitiesNavigation;
   userManagementNavigation: UserManagementNavigation;
-  errorPageNavigation: ErrorPageNavigation;
+  errorPage: ErrorPageNavigation;
   errorCommands: ErrorForceCommands;
-  MissingString: MissingStringCommand;
+  missingString: MissingStringCommand;
   dashboardStrings: DashboardStringsValidation;
   operationsStrings: OperationsStringsValidation;
 }
@@ -146,12 +130,12 @@ export const test = baseTest.extend<CustomFixtures>({
     await use(userManagementNavigation);
   },
 
-  errorPageNavigation: async (
+  errorPage: async (
     { page }: { page: Page },
-    use: (errorPageNavigation: ErrorPageNavigation) => Promise<void>
+    use: (errorPage: ErrorPageNavigation) => Promise<void>
   ) => {
-    const errorPageNavigation = new ErrorPageNavigation(page);
-    await use(errorPageNavigation);
+    const errorPage = new ErrorPageNavigation(page);
+    await use(errorPage);
   },
 
   mockHelpers: async ({ page }: { page: Page }, use: (mock: MockCommands) => Promise<void>) => {
@@ -159,12 +143,12 @@ export const test = baseTest.extend<CustomFixtures>({
     await use(mock);
   },
 
-  MissingString: async (
+  missingString: async (
     { page }: { page: Page },
-    use: (MissingString: MissingStringCommand) => Promise<void>
+    use: (missingString: MissingStringCommand) => Promise<void>
   ) => {
-    const MissingString = new MissingStringCommand(page);
-    await use(MissingString);
+    const missingString = new MissingStringCommand(page);
+    await use(missingString);
   },
 
   errorCommands: async (

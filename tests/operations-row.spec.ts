@@ -78,7 +78,7 @@ test.describe('Operations page validation @regression', () => {
       await calendarHelper.goToPreviousMonth();
       await calendarHelper.selectRandomDateRange();
 
-      await apiHelpers.waitForMultipleRSCResponses(2);
+      apiHelpers.waitForMultipleRSCResponses(2);
     });
 
     await test.step('Test "X" button to clear date filter', async () => {
@@ -91,7 +91,7 @@ test.describe('Operations page validation @regression', () => {
       await calendarHelper.goToPreviousMonth();
       await calendarHelper.selectRandomDateRange();
 
-      await apiHelpers.waitForMultipleRSCResponses(2);
+      apiHelpers.waitForMultipleRSCResponses(2);
 
       await page.locator('[data-test="clear-all"]').isVisible();
       await page.locator('[data-test="clear-all"]').click();

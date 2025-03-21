@@ -28,7 +28,7 @@ test.describe('Happy Path: Authenticates correctly to IDV and validates Login an
   }) => {
     description('Validation of Logout flow, intercepting OpenID response and login page.');
 
-    await dashboardPage.logout();
+    await dashboardPage.clicksLogout();
     await apiHelpers.validatesOIDCRedirect();
     console.log("✅ OIDC '303' redirection intercepted");
     await loginPage.seesLoginPage();
