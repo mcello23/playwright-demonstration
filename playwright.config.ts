@@ -1,3 +1,9 @@
+import {
+  CurrentsConfig,
+  CurrentsFixtures,
+  CurrentsWorkerFixtures,
+  currentsReporter,
+} from '@currents/playwright';
 import { defineConfig, devices } from '@playwright/test';
 import { Status } from 'allure-js-commons';
 import dotenv from 'dotenv';
@@ -7,14 +13,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const require = createRequire(import.meta.url);
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-//Currents logic for POC
-const isCurrents = process.env.CURRENTS_CI === 'true';
+const currentsConfig: CurrentsConfig = {
+  recordKey: 'f7K0RfsXfCokKZJg',
+  projectId: 'zkJiaU',
+};
 
 interface StorageStateObject {
   cookies: any[];
@@ -22,19 +24,21 @@ interface StorageStateObject {
 }
 
 type StorageState = string | StorageStateObject;
-type BrowserName = 'chromium' | 'firefox' | 'webkit';
+type BrowserName = 'chromium' | 'firefox' | 'webkit' | 'iphone';
 
+/**
+ * @param browserName -
+ */
 function getStorageState(browserName: BrowserName): StorageState {
-  const filePath = path.resolve(__dirname, `auth/auth-${browserName}.json`);
-
-  if (isCurrents) {
-    return { cookies: [], origins: [] };
-  }
-
-  return filePath;
+  return path.resolve(__dirname, `auth/auth-${browserName}.json`);
 }
 
-export default defineConfig({
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+export default defineConfig<CurrentsFixtures, CurrentsWorkerFixtures>({
   timeout: process.env.CI ? 35_000 : 25_000,
   expect: {
     timeout: process.env.CI ? 30_000 : 15_000,
@@ -51,6 +55,7 @@ export default defineConfig({
   fullyParallel: false,
   reporter: [
     ['list'],
+    currentsReporter(currentsConfig),
     [
       'allure-playwright',
       {
