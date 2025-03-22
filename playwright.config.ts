@@ -6,16 +6,9 @@ import * as os from 'node:os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const require = createRequire(import.meta.url);
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-//Currents logic for POC
-const isCurrents = process.env.CURRENTS_CI === 'true';
-
+const require = createRequire(import.meta.url);
 interface StorageStateObject {
   cookies: any[];
   origins: any[];
@@ -24,15 +17,14 @@ interface StorageStateObject {
 type StorageState = string | StorageStateObject;
 type BrowserName = 'chromium' | 'firefox' | 'webkit';
 
+/**
+ * @param browserName -
+ */
 function getStorageState(browserName: BrowserName): StorageState {
-  const filePath = path.resolve(__dirname, `auth/auth-${browserName}.json`);
-
-  if (isCurrents) {
-    return { cookies: [], origins: [] };
-  }
-
-  return filePath;
+  return path.resolve(__dirname, `auth/auth-${browserName}.json`);
 }
+
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
   timeout: process.env.CI ? 35_000 : 25_000,
