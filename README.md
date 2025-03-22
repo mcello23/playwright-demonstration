@@ -11,6 +11,9 @@ Testing IDV with PW (API / UI)
 ## 🚀 Setup
 
 ```bash
+# Yarn 4.x
+corepack enable
+
 # Install
 yarn
 
