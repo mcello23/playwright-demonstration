@@ -1,167 +1,50 @@
-import { faker } from '@faker-js/faker';
-import { getFormattedDateRange } from 'utils/helpers/calandarHelper';
-import { expect, test, verifyDateRangeInput } from '../utils/controller/e2e';
+import { expect, test } from '../utils/controller/e2e';
 
 test.describe('Operations page validation @regression', () => {
-  test.beforeEach(async ({ page }) => {
-    const operationsButton = page.locator('[data-test="Operations"]');
-    await expect(operationsButton).toBeVisible();
-    await operationsButton.click();
-    await page.locator('[data-test="header"]').getByText('Operations').focus();
+  test.beforeEach(async ({ operationPage }) => {
+    await operationPage.goesToOperationsWait();
   });
 
-  test('Sees all elements in Operations page @smoke', async ({ page }) => {
-    await test.step('Validate static elements visibility and interactivity', async () => {
-      // Static elements
-      await expect(page.locator('[data-test="filter-by-date"]')).toBeVisible();
-      await expect(page.locator('[data-test="filter-by-date"]')).toBeEnabled();
-      await expect(page.locator('[data-test="filter-by-search"]')).toBeVisible();
-      await expect(page.locator('[data-test="filter-by-search"]')).toBeEnabled();
-      await expect(page.locator('[data-test="filter-button"]')).toBeVisible();
-      await expect(page.locator('[data-test="filter-button"]')).toBeEnabled();
-    });
-
-    await test.step('Test date filter functionality', async () => {
-      const formattedDate = getFormattedDateRange();
-
-      const filterByDateLocator = page.locator('[data-test="filter-by-date"]');
-      await filterByDateLocator.click();
-      await filterByDateLocator.fill(formattedDate);
-      await filterByDateLocator.press('Enter');
-      await filterByDateLocator.focus();
-      await verifyDateRangeInput(filterByDateLocator, formattedDate);
-    });
-
-    await test.step('Test search input and clear functionality', async () => {
-      const randomName = faker.person.firstName();
-      await page.locator('[data-test="filter-by-search"]').fill(randomName);
-      await expect(page.locator('[data-test="clear-all"]')).toBeVisible();
-      await page.locator('[data-test="clear-all"]').click();
-      await expect(page.locator('[data-test="filter-by-search"]')).not.toHaveValue(randomName);
-    });
-
-    await test.step('Test filter button functionality', async () => {
-      await page.locator('[data-test="filter-button"]').click();
-      await page.getByLabel('Onboarding').click();
-      const buttonChecked = page.locator('[data-test="filter-option-ONBOARDING"] label').first();
-      await expect(buttonChecked).toHaveAttribute('aria-checked', 'true');
-      await page.mouse.click(10, 10);
-    });
-
-    await test.step('Validate date/time format and operation data displays correctly', async () => {
-      // Date and time format
-      const dateRegex = /^\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/;
-      await expect(page.getByText(dateRegex).nth(0)).toBeVisible();
-      // Operation ID format
-      const operationIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-      await expect(page.getByText(operationIdRegex).nth(0)).toBeVisible();
-      // Type format
-      const typeOnboarding = page.locator('[data-test="table-row-0"]').getByText('Onboarding');
-      await expect(typeOnboarding).toBeVisible();
-      // Onboarding steps format
-      const steps = page
-        .locator('[data-test="table-row-0"]')
-        .getByRole('cell')
-        .filter({ hasText: /^$/ })
-        .first();
-      await expect(steps).toBeVisible();
-    });
+  test('Sees all elements in Operations page @smoke', async ({ operationPage }) => {
+    await operationPage.validateStaticElements();
+    await operationPage.insertsRandomDate();
+    await operationPage.insertsRandomNameOnInputSearch();
+    await operationPage.selectsFilterButtonAndLabel();
+    await operationPage.validatesDateOpIDTypesAndSteps();
   });
 
-  test('Uses the calendar pop-up with random dates, validating UI "X" and "Clear all" buttons and RSC response', async ({
-    page,
+  test('Uses the calendar component with random dates, validating UI "X" and "Clear all" buttons and Rendering Server Components (RSC) responses', async ({
+    operationPage,
     apiHelpers,
     calendarHelper,
   }) => {
-    await test.step('Open calendar and select a random date range', async () => {
-      calendarHelper.opensCalendar();
-      await calendarHelper.goToPreviousMonth();
-      await calendarHelper.selectRandomDateRange();
+    await calendarHelper.opensCalendar();
+    await calendarHelper.goToPreviousMonth();
+    await calendarHelper.selectRandomDateRange();
 
-      apiHelpers.waitForMultipleRSCResponses(2);
-    });
+    apiHelpers.waitForMultipleRSCResponses(2);
 
-    await test.step('Test "X" button to clear date filter', async () => {
-      await page.locator('[data-test="input-remove-value"]').isVisible();
-      await page.locator('[data-test="input-remove-value"]').click();
-    });
+    await operationPage.clicksOnXButtonToClearInput();
 
-    await test.step('Select another random date range and use "Clear all" button', async () => {
-      calendarHelper.opensCalendar();
-      await calendarHelper.goToPreviousMonth();
-      await calendarHelper.selectRandomDateRange();
+    await calendarHelper.opensCalendar();
+    await calendarHelper.goToPreviousMonth();
+    await calendarHelper.selectRandomDateRange();
 
-      apiHelpers.waitForMultipleRSCResponses(2);
+    apiHelpers.waitForMultipleRSCResponses(2);
 
-      await page.locator('[data-test="clear-all"]').isVisible();
-      await page.locator('[data-test="clear-all"]').click();
-    });
+    await operationPage.clicksOnClearAllButtonToClearInput();
   });
 
-  test('Validates there is a warning SVG element after a denied operation', async ({ page }) => {
-    await test.step('Find a rejected operation row', async () => {
-      const resultsPage = page.locator('#tableBody');
-
-      const rejectedRow = resultsPage
-        .locator('[data-test^="table-row-"]')
-        .filter({
-          hasText: /Rejected|Rechazado|Rejeitado/,
-        })
-        .first();
-
-      await expect(rejectedRow).toBeVisible();
-    });
-
-    await test.step('Verify error status elements are displayed correctly', async () => {
-      const resultsPage = page.locator('#tableBody');
-      const rejectedRow = resultsPage
-        .locator('[data-test^="table-row-"]')
-        .filter({
-          hasText: /Rejected|Rechazado|Rejeitado/,
-        })
-        .first();
-
-      const errorStatusElement = rejectedRow.locator(
-        'span.facephi-ui-status[style*="--colors-error400"]'
-      );
-      await expect(errorStatusElement).toBeVisible();
-
-      const rejectedOperationElement = rejectedRow
-        .locator('[data-test^="operationDetail-"]')
-        .nth(1);
-
-      await expect(rejectedOperationElement).toHaveAttribute(
-        'href',
-        expect.stringContaining('?tab=timeline')
-      );
-
-      await rejectedOperationElement.focus();
-      await expect(rejectedOperationElement).toBeEnabled();
-    });
+  test('Validates there is a warning SVG element after a denied operation', async ({
+    operationPage,
+  }) => {
+    await operationPage.findsRejectedOperation();
+    await operationPage.findsErrorColorAndSVGWarning();
   });
 
-  test('Sees the assets appear inside a listing', async ({ page }) => {
-    await test.step('Find and click on Files button', async () => {
-      const filesButton = page.getByRole('button', { name: /Files \(\d+\)/ }).first();
-      await expect(filesButton).toBeVisible();
-      await expect(filesButton).toBeEnabled();
-
-      await filesButton.click();
-    });
-
-    await test.step('Verify files modal appears with correct menu items', async () => {
-      const filesModal = page.locator('[data-test="option-menu"]');
-      await expect(filesModal).toBeVisible();
-      await expect(filesModal).toBeEnabled();
-
-      const optionItems = filesModal.locator('button.facephi-ui-option-menu__item');
-      const count = await optionItems.count();
-
-      expect(count).toBeGreaterThanOrEqual(1);
-      expect(count).toBeLessThanOrEqual(6);
-
-      console.log(`Found ${count} option menu items`);
-    });
+  test('Sees the assets appear inside a listing', async ({ operationPage }) => {
+    await operationPage.clicksOnFilesButton();
+    await operationPage.validatesListingAndContent();
   });
 
   test('Opens the document modal and validates all buttons @smoke', async ({ page }) => {
@@ -171,7 +54,7 @@ test.describe('Operations page validation @regression', () => {
       const statusRow = resultsPage
         .locator('[data-test^="table-row-"]')
         .filter({
-          hasText: /Rejected|Rechazado|Rejeitado|Successful|Exitosa|Conseguiu/,
+          hasText: /Successful|Exitosa|Conseguiu/,
         })
         .first();
 
@@ -246,7 +129,7 @@ test.describe('Operations page validation @regression', () => {
       const statusRow = resultsPage
         .locator('[data-test^="table-row-"]')
         .filter({
-          hasText: /Rejected|Rechazado|Rejeitado|Successful|Exitosa|Conseguiu/,
+          hasText: /Successful|Exitosa|Conseguiu/,
         })
         .first();
 

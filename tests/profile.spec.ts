@@ -9,6 +9,8 @@ test.describe('Happy path: Profile and tenants validation @regression', async ()
     await dashboardPage.seesProfileOptions();
   });
 
+  // TODO: Add search tenant test
+
   test('Clicks on the Tenant button and sees all elements available @smoke', async ({
     dashboardPage,
   }) => {

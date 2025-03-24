@@ -21,12 +21,12 @@ test.describe('Happy Path: Authenticates correctly to IDV and validates Login an
     await dashboardPage.seesFilterDate();
   });
 
-  test('Logs out successfully and validates OIDC redirection code and login page at UI @smoke', async ({
+  test('Logs out successfully and validates OIDC redirection code and sees login page at UI @smoke', async ({
     apiHelpers,
     dashboardPage,
     loginPage,
   }) => {
-    description('Validation of Logout flow, intercepting OpenID response and login page.');
+    description('Validation of Logout flow, intercepting OpenID response and sees login page.');
 
     await dashboardPage.clicksLogout();
     await apiHelpers.validatesOIDCRedirect();

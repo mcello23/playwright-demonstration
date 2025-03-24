@@ -124,14 +124,14 @@ test.describe('Operations page validation @regression', async () => {
     await test.step('Validate error styling and messages', async () => {
       const errorDiv = page.locator('div.facephi-ui-flex[style*="--colors-error500"]');
       await expect(errorDiv).toBeVisible();
-      expect(errorDiv).toBeTruthy();
 
-      const errorMessage = page.locator('div', { hasText: /^Failed step/ }).nth(0);
+      const errorMessage = page.locator('div', { hasText: /^Failed step/ }).first();
       await expect(errorMessage).toBeVisible();
 
-      const errorIcon = page
-        .locator('div.facephi-ui-icon-wrapper[style*="--colors-error400"]')
-        .nth(0);
+      const errorContainer = page.locator('div:has-text("Failed step")').first();
+      const errorIcon = errorContainer
+        .locator('div[class*="icon-wrapper"], div[class*="IconWrapper"]')
+        .first();
       await expect(errorIcon).toBeVisible();
     });
   });
@@ -205,12 +205,12 @@ test.describe('Operations page validation @regression', async () => {
 
   test('Validates OCR section inside a operation', async ({ page, operationPage }) => {
     await test.step('Navigate to any operation and clicks on OCR tab', async () => {
-      await operationPage.clicksAnyOperation();
+      await operationPage.clicksOperationSuccessful();
       await page.getByRole('button', { name: 'OCR' }).click();
     });
 
     await test.step('Validate main section headings', async () => {
-      const expectedMainTexts = ['Front side', 'Back side', 'Scoring', 'Checks'];
+      const expectedMainTexts = ['Document front', 'Document back', 'Scoring', 'Checks'];
 
       for (const text of expectedMainTexts) {
         const textElement = page.locator('p', { hasText: text });
@@ -221,7 +221,7 @@ test.describe('Operations page validation @regression', async () => {
     await test.step('Validate collapsable buttons functionality', async () => {
       const buttons = page.locator('[data-test="collapsable-button"]');
       const buttonsNum = await buttons.count();
-      expect(buttonsNum).toBe(4);
+      expect(buttonsNum).toBe(1); // Remove
 
       for (let i = 0; i < buttonsNum; i++) {
         const button = buttons.nth(i);

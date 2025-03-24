@@ -32,6 +32,25 @@ export class ErrorPageNavigation {
     await expect(homeButton).toBeEnabled();
   }
 
+  @stepPOM('Validate error (mocked) page UI elements')
+  async validatesErrorMockedPageUI() {
+    const topLogo = this.page.getByRole('img').first();
+    await expect(topLogo).toBeVisible();
+
+    const errorImage = this.page.getByRole('img', { name: 'Error image' });
+    await expect(errorImage).toBeVisible();
+
+    const firstErrorText = this.page.getByText('Something went wrong');
+    await expect(firstErrorText).toBeVisible();
+
+    const secondErrorText = this.page.getByText('Retry later');
+    await expect(secondErrorText).toBeVisible();
+
+    const homeButton = this.page.locator('[data-test="error-button"]').getByText('Land here');
+    await expect(homeButton).toBeVisible();
+    await expect(homeButton).toBeEnabled();
+  }
+
   @stepPOM('Verify error page appears')
   async verifyErrorPageAppears() {
     const errorImage = this.page.getByRole('img', { name: 'Error image' });

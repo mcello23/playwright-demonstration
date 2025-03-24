@@ -6,7 +6,7 @@
 
 Testing IDV with PW (API / UI)
 
-- ```fullyParallel``` should be ```false``` due to Cognito OIDC + Keycloack IDP cookie session / login page SPA + multiple browsers usage issues.
+- ```fullyParallel``` should be ```false``` due to Cognito OIDC + Keycloack IDP cookies / SPA + multiple browsers usage issues.
 
 ## 🚀 Setup
 

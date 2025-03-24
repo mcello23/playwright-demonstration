@@ -34,6 +34,8 @@ export class dashboardCommands {
   @stepPOM('Loads main page after login')
   async loadsMainURL() {
     await this.page.waitForURL(/.*tenant.*/);
+    const filterElement = this.page.locator('[data-test="filter-by-date"]');
+    await expect(filterElement).toBeVisible();
   }
 
   // Profile
@@ -149,16 +151,15 @@ export class dashboardCommands {
     await this.page.getByRole('button', { name: 'demo idv-demo' }).isEnabled();
     await this.page.getByRole('button', { name: 'idv-prueba idv-prueba' }).isVisible();
     await this.page.getByRole('button', { name: 'idv-prueba idv-prueba' }).isEnabled();
-    await this.page.getByRole('button', { name: 'Apply' }).isVisible();
-    await this.page.getByRole('button', { name: 'Apply' }).isDisabled();
+    await this.page.getByRole('textbox', { name: 'Search tenant' }).isVisible();
   }
 
   @stepPOM('Opens tenant modal')
   async openTenantModal() {
     await this.page.getByRole('button', { name: 'demo' }).click();
-    // await this.page.addStyleTag({
-    //   content: `* { animation: none !important; transition: none !important; }`,
-    // });
+    await this.page.addStyleTag({
+      content: `* { animation: none !important; transition: none !important; }`,
+    });
   }
 
   @stepPOM('Selects copy tenant and validates toast message in UI')
@@ -177,11 +178,11 @@ export class dashboardCommands {
   @stepPOM('Changes the Tenant of a user and validates through UI')
   async changesTenantAndValidatesUI() {
     await this.page.getByRole('button', { name: 'idv-prueba 809b44ff-26af-4ffc' }).click();
-    await this.page.getByRole('button', { name: 'Apply' }).click();
-
     await this.page
       .locator('[data-test="update-tenant"]', { hasText: 'Successfully changed tenant' })
       .isVisible();
+
+    await this.page.locator('[data-test="modal-tenant"]').getByRole('button').first().click();
     const tenantButton = this.page.getByRole('button', { name: 'idv-prueba' });
     await tenantButton.isVisible();
   }

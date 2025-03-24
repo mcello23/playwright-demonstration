@@ -66,13 +66,13 @@ export default defineConfig({
         },
         categories: [
           {
-            name: 'Flaky tests',
+            name: 'Broken tests',
             messageRegex: '.*',
             matchedStatuses: [Status.FAILED, Status.BROKEN],
             flaky: true,
           },
           {
-            name: 'Broken tests',
+            name: 'Flaky tests',
             messageRegex: '.*',
             matchedStatuses: [Status.BROKEN],
           },
