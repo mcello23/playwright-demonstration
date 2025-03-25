@@ -5,7 +5,7 @@ test.describe('Operations page validation @regression', async () => {
     await operationPage.goesToOperations();
   });
 
-  test("Enters any operation and validates it's header elements @smoke", async ({
+  test("Enters any operation and validates it's header elements and format @smoke", async ({
     operationDetailPage,
   }) => {
     await operationDetailPage.entersOperationDetail_Any();
@@ -14,9 +14,9 @@ test.describe('Operations page validation @regression', async () => {
 
   test('Enters a successful operation and validates all green/successful elements @smoke', async ({
     page,
-    operationPage,
+    operationDetailPage,
   }) => {
-    await operationPage.clicksOperationSuccessful();
+    await operationDetailPage.entersOperationDetail_Any();
 
     await test.step('Validate successful status messages and icons', async () => {
       const successfulStepMessage = page.getByText('Successful step');
@@ -49,10 +49,10 @@ test.describe('Operations page validation @regression', async () => {
 
   test('Enters a rejected operation and validates all red/unsuccessful elements @smoke', async ({
     page,
-    operationPage,
+    operationDetailPage,
   }) => {
     await test.step('Navigate to rejected operation details', async () => {
-      await operationPage.clicksOperationRejected();
+      await operationDetailPage.entersOperationDetail_Rejected();
     });
 
     await test.step('Validate error styling and messages', async () => {
@@ -72,10 +72,10 @@ test.describe('Operations page validation @regression', async () => {
 
   test('Validates that the requirements details of a successful operation are seen in UI', async ({
     page,
-    operationPage,
+    operationDetailPage,
   }) => {
     await test.step('Navigate to successful operation details', async () => {
-      await operationPage.clicksOperationSuccessful();
+      await operationDetailPage.entersOperationDetail_Successful();
     });
 
     await test.step('Validate session status message', async () => {
@@ -137,9 +137,9 @@ test.describe('Operations page validation @regression', async () => {
     });
   });
 
-  test('Validates OCR section inside a operation', async ({ page, operationPage }) => {
+  test('Validates OCR section inside a operation', async ({ page, operationDetailPage }) => {
     await test.step('Navigate to any operation and clicks on OCR tab', async () => {
-      await operationPage.clicksOperationSuccessful();
+      await operationDetailPage.entersOperationDetail_Successful();
       await page.getByRole('button', { name: 'OCR' }).click();
     });
 

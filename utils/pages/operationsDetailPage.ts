@@ -7,9 +7,50 @@ export class operationDetailCommands {
     this.page = page;
   }
 
-  @stepPOM('Enters an Operation details')
+  // Clicks on different types of operations details
+  @stepPOM('Clicks on any operation detail')
   async entersOperationDetail_Any() {
-    await this.page.locator('[data-test^="operationDetail-"]').first().click();
+    const resultsPage = this.page.locator('#tableBody');
+    const successfullRow = resultsPage.locator('[data-test^="table-row-"]').nth(1);
+
+    const successOperation = successfullRow.locator('[data-test^="operationDetail-"]');
+    await successOperation.click();
+    await this.page.waitForRequest('**/operations/**');
+  }
+
+  @stepPOM('Clicks on a successful operation detail')
+  async entersOperationDetail_Successful() {
+    const resultsPage = this.page.locator('#tableBody');
+    const successfullRow = resultsPage
+      .locator('[data-test^="table-row-"]')
+      .filter({
+        hasText: /Successful|Exitoso|Conseguiu/,
+      })
+      .nth(1);
+
+    const successOperation = successfullRow.locator('[data-test^="operationDetail-"]');
+    await successOperation.click();
+    await this.page.waitForRequest('**/operations/**');
+  }
+
+  @stepPOM('Clicks on a rejected operation detail')
+  async entersOperationDetail_Rejected() {
+    const resultsPage = this.page.locator('#tableBody');
+    const rejectedRow = resultsPage
+      .locator('[data-test^="table-row-"]')
+      .filter({
+        hasText: /Rejected|Rechazado|Rejeitado/,
+      })
+      .first();
+
+    const errorStatusElement = rejectedRow.locator(
+      'span.facephi-ui-status[style*="--colors-error400"]'
+    );
+    await expect(errorStatusElement).toBeVisible();
+
+    const rejectedOperationElement = rejectedRow.locator('[data-test^="operationDetail-"]').nth(0);
+    await rejectedOperationElement.click();
+    await this.page.waitForRequest('**/operations/**');
   }
 
   @stepPOM('Validates all header elements are visible and in the correct format inside a Operation')
