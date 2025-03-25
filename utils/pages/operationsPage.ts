@@ -11,6 +11,8 @@ export class operationPageCommands {
     this.page = page;
   }
 
+  private printPromise: Promise<void> | undefined;
+
   @stepPOM('Navigates to Operations page')
   async goesToOperations() {
     await this.page.getByRole('link', { name: 'Operations' }).click();
@@ -149,6 +151,7 @@ export class operationPageCommands {
     await expect(rejectedOperationElement).toBeEnabled();
   }
 
+  // Files listing
   @stepPOM('Clicks on a operation that has assests available')
   async clicksOnFilesButton() {
     const filesButton = this.page.getByRole('button', { name: /Files \(\d+\)/ }).first();
@@ -157,8 +160,8 @@ export class operationPageCommands {
     await filesButton.click();
   }
 
-  @stepPOM('Validates that the files listing is visible and contains from 1 to 6 items')
-  async validatesListingAndContent() {
+  @stepPOM('Validates that the files button listing is visible and contains from 1 to 6 items')
+  async validatesFilesButtonAndItems() {
     const filesModal = this.page.locator('[data-test="option-menu"]');
     await expect(filesModal).toBeVisible();
     await expect(filesModal).toBeEnabled();
@@ -172,7 +175,263 @@ export class operationPageCommands {
     console.log(`Found ${count} option menu items`);
   }
 
-  @stepPOM('Clicks on any operation')
+  @stepPOM('Find a successful operation and clicks on the files button')
+  async clicksOnFilesButton_SuccesOp() {
+    const resultsPage = this.page.locator('#tableBody');
+
+    const statusRow = resultsPage
+      .locator('[data-test^="table-row-"]')
+      .filter({
+        hasText: /Successful|Exitosa|Conseguiu/,
+      })
+      .first();
+
+    const filesButton = statusRow.getByRole('button', { name: /Files/ });
+    await expect(filesButton).toBeVisible();
+    await expect(filesButton).toBeEnabled();
+
+    await filesButton.click();
+  }
+
+  @stepPOM('Find any operation that has a Files button and clicks on it')
+  async clicksOnFilesButton_AnyOp() {
+    const resultsPage = this.page.locator('#tableBody');
+
+    const statusRow = resultsPage
+      .locator('[data-test^="table-row-"]')
+      .filter({
+        hasText: /Rejected|Rechazado|Rejeitado|Successful|Exitosa|Conseguiu/,
+      })
+      .first();
+
+    const filesButton = statusRow.getByRole('button', { name: /Files/ });
+    await expect(filesButton).toBeVisible();
+    await expect(filesButton).toBeEnabled();
+
+    await filesButton.click();
+  }
+
+  @stepPOM('Validates that the files listing is visible and contains from 1 to 6 items')
+  async clicksOnADocument() {
+    const filesModal = this.page.locator('button.facephi-ui-option-menu__item').nth(0);
+    await filesModal.click();
+  }
+
+  // Modal
+  @stepPOM('Validates that the modal appears with an image')
+  async seesImageInsideModal() {
+    await expect(this.page.locator('[data-test="modal-assets"]')).toBeVisible();
+    const modalAssets = this.page.locator('[data-test="modal-assets"] img');
+    await expect(modalAssets).toBeVisible();
+  }
+
+  @stepPOM('Validates all modal control buttons are visible and enabled/disabled')
+  async validatesAllModalButtons() {
+    const docBack = this.page
+      .locator('div')
+      .filter({ hasText: /^Document back$/ })
+      .getByRole('button');
+    await expect(docBack).toBeVisible();
+    await expect(docBack).toBeEnabled();
+
+    const minusZoom = this.page
+      .locator('div')
+      .filter({ hasText: /^100%$/ })
+      .getByRole('button')
+      .first();
+    await expect(minusZoom).toBeVisible();
+    await expect(minusZoom).toBeEnabled();
+
+    const moreZoom = this.page
+      .locator('div')
+      .filter({ hasText: /^100%$/ })
+      .getByRole('button')
+      .nth(1);
+    await expect(moreZoom).toBeVisible();
+    await expect(moreZoom).toBeEnabled();
+
+    const printBttn = this.page.locator('.facephi-ui-flex > div:nth-child(3) > button').first();
+    await expect(printBttn).toBeVisible();
+    await expect(printBttn).toBeEnabled();
+
+    const downloadBttn = this.page.locator('div:nth-child(3) > button:nth-child(2)').first();
+    await expect(downloadBttn).toBeVisible();
+    await expect(downloadBttn).toBeEnabled();
+
+    const backBttn = this.page
+      .locator('.facephi-ui-modal__base > div > div:nth-child(3) > button')
+      .first();
+    await expect(backBttn).toBeVisible();
+    await expect(backBttn).toBeDisabled();
+
+    const fwdBttn = this.page.locator(
+      '.facephi-ui-modal__base > div > div:nth-child(3) > button:nth-child(2)'
+    );
+    await expect(fwdBttn).toBeVisible();
+    await expect(fwdBttn).toBeEnabled();
+  }
+
+  @stepPOM('Clicks on the modal back button')
+  async clicksOnModalBackButton() {
+    const docBack = this.page
+      .locator('div')
+      .filter({ hasText: /^Document back$/ })
+      .getByRole('button');
+    await docBack.click();
+  }
+
+  @stepPOM('Validates that the modal was closed')
+  async validateModalClosed() {
+    const modalWindow = this.page.locator('[data-test="modal-oberlay"]');
+    await expect(modalWindow).not.toBeVisible();
+  }
+
+  @stepPOM('Clicks on the modal download button and logs the downloaded file')
+  async validatesModalDownloadButton() {
+    const downloadPromise = this.page.waitForEvent('download');
+
+    await this.page.locator('div:nth-child(3) > button:nth-child(2)').first().click();
+
+    const download = await downloadPromise;
+
+    const fileName = download.suggestedFilename();
+    expect(fileName).toBeTruthy();
+
+    const fileExtension = fileName.split('.').pop()?.toLowerCase();
+    expect('jpeg').toContain(fileExtension);
+    console.log(`Downloaded file: ${fileName}`);
+
+    const path = await download.path();
+    expect(path).toBeTruthy();
+  }
+
+  @stepPOM('Setup print function interception')
+  async setupPrintFunctionInterception(): Promise<void> {
+    this.printPromise = new Promise<void>((resolve) => {
+      this.page.exposeFunction('notifyPrintCalled', () => {
+        resolve();
+      });
+    });
+
+    await this.page.addInitScript(() => {
+      const originalPrint = window.print;
+      window.print = () => {
+        // Call original function
+        // And prevents opening the real print windows by commenting:
+        // originalPrint.call(window);
+
+        // @ts-ignore
+        window.notifyPrintCalled();
+      };
+    });
+  }
+
+  @stepPOM('Click on print button and validate')
+  async clickOnPrintButtonAndValidate(): Promise<void> {
+    await this.page
+      .locator('[data-test="modal-assets"] button:has(svg[viewBox="0 0 256 256"])')
+      .nth(3)
+      .click();
+    if (this.printPromise) {
+      await this.printPromise;
+    }
+    console.log('Print function was successfully called');
+  }
+
+  // Column toggles selector
+  @stepPOM('Clicks on column selector')
+  async clickOnColumnSelector() {
+    await this.page.getByRole('button').filter({ hasText: /^$/ }).nth(2).click();
+    const viewSelector = this.page.locator('[data-test="hide-columns"]');
+    await expect(viewSelector).toBeVisible();
+  }
+
+  @stepPOM('Sees the available toggles on the column selector')
+  async definesAvailableColumns() {
+    const availableColumns = [
+      'Start Date',
+      'End Date',
+      'User ID',
+      'Type',
+      'Steps',
+      'Assets',
+      'Status',
+      'Actions',
+    ];
+    const numColumnsToToggle = Math.floor(Math.random() * availableColumns.length) + 1;
+
+    // Selects random columns to toggle
+    const columnsToToggle = [];
+    const availableIndices = [...Array(availableColumns.length).keys()];
+    for (let i = 0; i < numColumnsToToggle; i++) {
+      const randomIndex = Math.floor(Math.random() * availableIndices.length);
+      const selectedIndex = availableIndices.splice(randomIndex, 1)[0];
+      columnsToToggle.push(availableColumns[selectedIndex]);
+    }
+  }
+
+  @stepPOM('Selects randomly columns toggles')
+  async selectsRandomColumnsToggles() {
+    const availableColumns = [
+      'Start Date',
+      'End Date',
+      'User ID',
+      'Type',
+      'Steps',
+      'Assets',
+      'Status',
+      'Actions',
+    ];
+    const numColumnsToToggle = Math.floor(Math.random() * availableColumns.length) + 1;
+
+    // Select random columns to toggle
+    const columnsToToggle = [];
+    const availableIndices = [...Array(availableColumns.length).keys()];
+    for (let i = 0; i < numColumnsToToggle; i++) {
+      const randomIndex = Math.floor(Math.random() * availableIndices.length);
+      const selectedIndex = availableIndices.splice(randomIndex, 1)[0];
+      columnsToToggle.push(availableColumns[selectedIndex]);
+    }
+    const viewSelector = this.page.locator('[data-test="option-menu"]');
+    for (const columnLabel of columnsToToggle) {
+      console.log(`Removing column: ${columnLabel}`);
+      await viewSelector.getByLabel(columnLabel).click();
+    }
+
+    await this.page.mouse.click(0, 0);
+  }
+
+  @stepPOM('Verify columns are not visible')
+  async verifyColumnsAreNotVisible() {
+    const availableColumns = [
+      'Start Date',
+      'End Date',
+      'User ID',
+      'Type',
+      'Steps',
+      'Assets',
+      'Status',
+      'Actions',
+    ];
+    const numColumnsToToggle = Math.floor(Math.random() * availableColumns.length) + 1;
+
+    // Select random columns to toggle
+    const columnsToToggle = [];
+    const availableIndices = [...Array(availableColumns.length).keys()];
+    for (let i = 0; i < numColumnsToToggle; i++) {
+      const randomIndex = Math.floor(Math.random() * availableIndices.length);
+      const selectedIndex = availableIndices.splice(randomIndex, 1)[0];
+      columnsToToggle.push(availableColumns[selectedIndex]);
+    }
+    for (const columnLabel of columnsToToggle) {
+      const columnHeader = this.page.locator(`th:has-text("${columnLabel}")`);
+      await expect(columnHeader).not.toBeVisible();
+      console.log(`✅ Column "${columnLabel}" is not visilbe`);
+    }
+  }
+
+  // Clicks on different types of operations details
+  @stepPOM('Clicks on any operation detail')
   async clicksAnyOperation() {
     const resultsPage = this.page.locator('#tableBody');
     const successfullRow = resultsPage.locator('[data-test^="table-row-"]').nth(1);
@@ -182,7 +441,7 @@ export class operationPageCommands {
     await this.page.waitForRequest('**/operations/**');
   }
 
-  @stepPOM('Clicks on a successful operation')
+  @stepPOM('Clicks on a successful operation detail')
   async clicksOperationSuccessful() {
     const resultsPage = this.page.locator('#tableBody');
     const successfullRow = resultsPage
@@ -197,7 +456,7 @@ export class operationPageCommands {
     await this.page.waitForRequest('**/operations/**');
   }
 
-  @stepPOM('Clicks on a rejected operation')
+  @stepPOM('Clicks on a rejected operation detail')
   async clicksOperationRejected() {
     const resultsPage = this.page.locator('#tableBody');
     const rejectedRow = resultsPage

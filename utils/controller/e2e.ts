@@ -14,6 +14,7 @@ import {
 import { dashboardCommands, DashboardStringsValidation } from 'utils/pages/dashboardPage';
 import { ErrorPageNavigation } from 'utils/pages/errorPage';
 import { loginCommands } from 'utils/pages/loginPage';
+import { operationDetailCommands } from 'utils/pages/operationsDetailPage';
 import { operationPageCommands, OperationsStringsValidation } from 'utils/pages/operationsPage';
 
 export function stepPOM(stepName?: string) {
@@ -45,6 +46,7 @@ interface CustomFixtures {
   missingString: MissingStringCommand;
   dashboardStrings: DashboardStringsValidation;
   operationsStrings: OperationsStringsValidation;
+  operationDetailPage: operationDetailCommands;
 }
 
 export const test = baseTest.extend<CustomFixtures>({
@@ -166,6 +168,13 @@ export const test = baseTest.extend<CustomFixtures>({
     const operationsStrings = new OperationsStringsValidation(page);
     await use(operationsStrings);
   },
+  operationDetailPage: async (
+    { page }: { page: Page },
+    use: (operationDetailPage: operationDetailCommands) => Promise<void>
+  ) => {
+    const operationDetailPage = new operationDetailCommands(page);
+    await use(operationDetailPage);
+  },
 });
 
 export {
@@ -183,6 +192,7 @@ export {
   loginCommands,
   MissingStringCommand,
   MockCommands,
+  operationDetailCommands,
   operationPageCommands,
   OperationsStringsValidation,
   tag,

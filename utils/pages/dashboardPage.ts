@@ -182,7 +182,6 @@ export class dashboardCommands {
       .locator('[data-test="update-tenant"]', { hasText: 'Successfully changed tenant' })
       .isVisible();
 
-    await this.page.locator('[data-test="modal-tenant"]').getByRole('button').first().click();
     const tenantButton = this.page.getByRole('button', { name: 'idv-prueba' });
     await tenantButton.isVisible();
   }
