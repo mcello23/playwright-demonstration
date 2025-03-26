@@ -1,4 +1,4 @@
-import { description, test } from '../utils/controller/e2e';
+import { description, test } from 'utils/controller/e2e';
 
 test.describe('Dashboard validation flows @regression', () => {
   test('Inserts random dates in the dashboard filter and validates via UI and RSC responses ', async ({

@@ -1,4 +1,4 @@
-import { test } from '../utils/controller/e2e';
+import { test } from 'utils/controller/e2e';
 
 test.describe('Operations page validation @regression', () => {
   test.beforeEach(async ({ operationPage }) => {

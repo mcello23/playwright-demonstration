@@ -103,8 +103,8 @@ export class AntifraudAndRulesNavigation {
     await rulesLocator.isEnabled();
 
     const rulesHref = await rulesLocator.getAttribute('href');
-    const expectedRulesdHref = '/en/tenant/idv-demo/antifraud/rules';
-    expect(rulesHref).toBe(expectedRulesdHref);
+    const expectedRulesHref = '/en/tenant/idv-demo/antifraud/rules';
+    expect(rulesHref).toBe(expectedRulesHref);
   }
 
   @stepPOM('Navigate to Rules page and verify URL')
@@ -240,3 +240,132 @@ export class UserManagementNavigation {
     expect(identitiesHref).toBe(expectedIDHref);
   }
 }
+
+export interface NavigationTest {
+  name: string;
+  url: string;
+  fixtureKey:
+    | 'operationsAndDasbhaord'
+    | 'antifraudAndRules'
+    | 'flowsAndIntegrations'
+    | 'identitiesNavigation'
+    | 'userManagementNavigation';
+  setup: (fixture: any) => Promise<void>;
+  validate: (fixture: any, missingString: any) => Promise<void>;
+}
+
+export class NavigationTestsManager {
+  private page: Page;
+
+  constructor(page: Page) {
+    this.page = page;
+  }
+
+  // Method to get all the tests
+  getTests(): NavigationTest[] {
+    return navigationTestsConfig;
+  }
+}
+
+export const navigationTestsConfig: NavigationTest[] = [
+  {
+    name: 'Dashboard',
+    url: '/en/tenant/idv-demo',
+    fixtureKey: 'operationsAndDasbhaord',
+    setup: async () => {},
+    validate: async (fixture, missingString) => {
+      await fixture.operationsIconColor();
+      await fixture.dashboardHREFLink();
+      await missingString.validateMissingString();
+    },
+  },
+  {
+    name: 'Operations',
+    url: '/en/tenant/idv-demo/operations',
+    fixtureKey: 'operationsAndDasbhaord',
+    setup: async () => {},
+    validate: async (fixture, missingString) => {
+      await fixture.operationsHREFLink();
+      await fixture.clicksNavigationValidatesURL();
+      await missingString.validateMissingString();
+    },
+  },
+  {
+    name: 'Antifraud',
+    url: '/en/tenant/idv-demo/antifraud',
+    fixtureKey: 'antifraudAndRules',
+    setup: async (fixture) => {
+      await fixture.goesToAntifraud();
+    },
+    validate: async (fixture, missingString) => {
+      await fixture.antifraudIconColor();
+      await fixture.rejectedHREFLinkProperties();
+      await missingString.validateMissingString();
+    },
+  },
+  {
+    name: 'Rules',
+    url: '/en/tenant/idv-demo/antifraud/rules',
+    fixtureKey: 'antifraudAndRules',
+    setup: async (fixture) => {
+      await fixture.goesToAntifraud();
+    },
+    validate: async (fixture, missingString) => {
+      await fixture.rulesHREFLink();
+      await fixture.rulesClickAndRedirection();
+      await missingString.validateMissingString();
+    },
+  },
+  {
+    name: 'Flows',
+    url: '/en/tenant/idv-demo/flows',
+    fixtureKey: 'flowsAndIntegrations',
+    setup: async (fixture) => {
+      await fixture.goesToFlows();
+    },
+    validate: async (fixture, missingString) => {
+      await fixture.validateFlowsIconColor();
+      await fixture.validateFlowsLinkProperties();
+      await missingString.validateMissingString();
+    },
+  },
+  {
+    name: 'Integrations',
+    url: '/en/tenant/idv-demo/integrations',
+    fixtureKey: 'flowsAndIntegrations',
+    setup: async (fixture) => {
+      await fixture.goesToFlows();
+    },
+    validate: async (fixture, missingString) => {
+      await fixture.validateIntegrationsLinkProperties();
+      await fixture.navigateToIntegrationsAndVerifyUrl();
+      await missingString.validateMissingString();
+    },
+  },
+  {
+    name: 'Identities',
+    url: '/en/tenant/idv-demo/identities',
+    fixtureKey: 'identitiesNavigation',
+    setup: async (fixture) => {
+      await fixture.goesToIdentities();
+    },
+    validate: async (fixture, missingString) => {
+      await fixture.validateIdentitiesIconColor();
+      await fixture.validateIdentitiesListProperties();
+      await missingString.validateMissingString();
+    },
+  },
+  {
+    name: 'User Management',
+    url: '/en/tenant/idv-demo/user-management',
+    fixtureKey: 'userManagementNavigation',
+    setup: async (fixture) => {
+      await fixture.goesToUserManagement();
+    },
+    validate: async (fixture, missingString) => {
+      await fixture.validateUserManagementIconColor();
+      await fixture.validateUsersLinkProperties();
+      await missingString.validateMissingString();
+    },
+  },
+];

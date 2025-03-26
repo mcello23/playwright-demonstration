@@ -124,4 +124,150 @@ export class operationDetailCommands {
       .nth(0);
     await expect(operationStatus).toBeVisible();
   }
+
+  @stepPOM('Validates the successful status messages and icons')
+  async validatesSuccessfulStatusIcons() {
+    const successfulStepMessage = this.page.getByText('Successful step');
+    await expect(successfulStepMessage).toBeVisible();
+
+    const successIcon = this.page
+      .locator('div.facephi-ui-icon-wrapper[style*="--colors-success400"]')
+      .nth(0);
+    await expect(successIcon).toBeVisible();
+  }
+
+  @stepPOM('Validates timeline header and items')
+  async validatesTimelineItems() {
+    const timelineHeader = this.page.locator('div.facephi-ui-card__header', {
+      hasText: 'Timeline',
+    });
+    await expect(timelineHeader).toBeVisible();
+
+    const expectedTimelineItems = ['Document', 'Face', 'Security Checks', 'Finish'];
+
+    for (const item of expectedTimelineItems) {
+      const timelineItem = this.page
+        .locator('div', {
+          hasText: new RegExp(`^${item}$`),
+        })
+        .first();
+
+      await expect(timelineItem).toBeVisible();
+      console.log(`✅ "${item}" is visible in Timeline`);
+    }
+  }
+
+  @stepPOM('Validates error styling and messages')
+  async validatesErrorStatusIcons() {
+    const errorDiv = this.page.locator('div.facephi-ui-flex[style*="--colors-error400"]');
+    await expect(errorDiv).toBeVisible();
+
+    const errorMessage = this.page.locator('div', { hasText: /^Failed step/ }).first();
+    await expect(errorMessage).toBeVisible();
+
+    const errorContainer = this.page.locator('div:has-text("Failed step")').first();
+    const errorIcon = errorContainer
+      .locator('div[class*="icon-wrapper"], div[class*="IconWrapper"]')
+      .first();
+    await expect(errorIcon).toBeVisible();
+  }
+
+  @stepPOM('Validates session status message')
+  async validatesSuccessHeader() {
+    const sessionPassedMessage = this.page.getByText(
+      /This session has passed the following tests:/
+    );
+    await expect(sessionPassedMessage).toBeVisible();
+  }
+
+  @stepPOM('Validate selfie and document images')
+  async validatesSelfieAndDocs() {
+    const selfieImage = this.page
+      .getByRole('figure')
+      .filter({ hasText: 'Selfie' })
+      .getByRole('img');
+    await expect(selfieImage).toBeVisible();
+
+    const selfieDocumentContainer = this.page
+      .locator('figure', { hasText: 'Document image' })
+      .getByRole('img');
+    await expect(selfieDocumentContainer).toBeVisible();
+  }
+
+  @stepPOM('Validates success strings in the ID verification section')
+  async validatesSuccessStrings() {
+    const firstText = this.page.getByText('The person in the document and selfie match');
+    await expect(firstText).toBeVisible();
+
+    const belowText = this.page.getByText('Passive liveness');
+    await expect(belowText).toBeVisible();
+
+    const nationalityText = this.page.getByText('Nationality and geolocation match');
+    await expect(nationalityText).toBeVisible();
+
+    const scoreText = this.page.getByText(/Score:\s*\d+\.\d+%/);
+    await expect(scoreText).toBeVisible();
+  }
+
+  @stepPOM('Validates ID Verification section')
+  async validatesIDVerificationSection() {
+    const idVerificationSection = this.page.getByText('ID Verification').first();
+    await expect(idVerificationSection).toBeVisible();
+
+    const idImages = this.page
+      .locator('img')
+      .filter({
+        has: this.page.getByText('ID Verification'),
+      })
+      .or(this.page.locator('div:near(:text("ID Verification")) img'));
+    const count = await idImages.count();
+    expect(count).toBeGreaterThanOrEqual(2);
+    expect(count).toBeLessThanOrEqual(4);
+  }
+
+  @stepPOM('Validates collapsable elements functionality')
+  async validatesCollapsableElements() {
+    await this.page.locator('[data-test="collapsable-button"]').first().click();
+    const collapsable = this.page.locator('button.facephi-ui-option-menu__item');
+    const countCollapsable = await collapsable.count();
+    expect(countCollapsable).toBeGreaterThanOrEqual(1);
+    expect(countCollapsable).toBeLessThanOrEqual(6);
+
+    await this.page.locator('[data-test="collapsable-button"]').last().click();
+    const collapsableSelphi = this.page.getByRole('listitem').filter({ hasText: 'Selfie' });
+    expect(collapsableSelphi).toBeVisible();
+    expect(collapsableSelphi).toBeEnabled();
+  }
+
+  // OCR section
+  @stepPOM('Goes to OCR section inside a operation')
+  async entersOCRSection() {
+    await this.page.getByRole('button', { name: 'OCR' }).click();
+  }
+
+  @stepPOM('Validates main section headings')
+  async validatesMainSectionHeadings() {
+    const expectedMainTexts = ['Document front', 'Document back', 'Scoring', 'Checks'];
+
+    for (const text of expectedMainTexts) {
+      const textElement = this.page.locator('p', { hasText: text });
+      await expect(textElement).toBeVisible();
+    }
+  }
+
+  @stepPOM('Validates collapsable buttons functionality')
+  async validatesCollapsableButtons() {
+    const collapsableButtons = this.page.locator('[data-test="collapsable-button"]');
+    const buttonsCount = await collapsableButtons.count();
+    expect(buttonsCount).toBeGreaterThan(0);
+
+    for (let i = 0; i < buttonsCount; i++) {
+      const button = collapsableButtons.nth(i);
+      await expect(button).toBeEnabled();
+      await expect(button).toBeVisible();
+      await button.click();
+      const content = await button.textContent();
+      expect(content).toBeDefined();
+    }
+  }
 }

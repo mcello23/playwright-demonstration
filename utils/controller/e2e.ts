@@ -9,6 +9,8 @@ import {
   DashboardAndOperationNavigation,
   FlowsAndIntegrationsNavigation,
   IdentitiesNavigation,
+  navigationTestsConfig,
+  NavigationTestsManager,
   UserManagementNavigation,
 } from 'utils/helpers/navigationHelper';
 import { dashboardCommands, DashboardStringsValidation } from 'utils/pages/dashboardPage';
@@ -47,6 +49,7 @@ interface CustomFixtures {
   dashboardStrings: DashboardStringsValidation;
   operationsStrings: OperationsStringsValidation;
   operationDetailPage: operationDetailCommands;
+  navigationTestsManager: NavigationTestsManager;
 }
 
 export const test = baseTest.extend<CustomFixtures>({
@@ -175,6 +178,13 @@ export const test = baseTest.extend<CustomFixtures>({
     const operationDetailPage = new operationDetailCommands(page);
     await use(operationDetailPage);
   },
+  navigationTestsManager: async (
+    { page }: { page: Page },
+    use: (navigationTestsManager: NavigationTestsManager) => Promise<void>
+  ) => {
+    const manager = new NavigationTestsManager(page);
+    await use(manager);
+  },
 });
 
 export {
@@ -192,6 +202,8 @@ export {
   loginCommands,
   MissingStringCommand,
   MockCommands,
+  navigationTestsConfig,
+  NavigationTestsManager,
   operationDetailCommands,
   operationPageCommands,
   OperationsStringsValidation,

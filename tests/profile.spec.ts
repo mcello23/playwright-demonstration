@@ -1,4 +1,4 @@
-import { test } from '../utils/controller/e2e';
+import { test } from 'utils/controller/e2e';
 
 test.describe('Happy path: Profile and tenants validation @regression', async () => {
   test.beforeEach(async ({ dashboardPage }) => {

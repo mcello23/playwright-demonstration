@@ -1,4 +1,4 @@
-import { expect, test } from '../utils/controller/e2e';
+import { expect, test } from 'utils/controller/e2e';
 
 test.beforeEach(async ({ dashboardPage }) => {
   await dashboardPage.loadsMainURL();

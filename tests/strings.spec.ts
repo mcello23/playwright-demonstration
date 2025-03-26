@@ -1,6 +1,6 @@
+import { test } from 'utils/controller/e2e';
 import { dashboardTexts } from 'utils/strings/dashboard.strings';
-import { test } from '../utils/controller/e2e';
-import { operationsTexts } from '../utils/strings/operations-row.strings';
+import { operationsTexts } from 'utils/strings/operations-row.strings';
 
 test.describe('Strings validations for Dashboard and Operations @smoke', () => {
   for (const locale of Object.keys(dashboardTexts)) {
