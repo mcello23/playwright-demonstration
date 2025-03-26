@@ -16,7 +16,7 @@ test.describe('Operations page validation @regression', async () => {
     page,
     operationDetailPage,
   }) => {
-    await operationDetailPage.entersOperationDetail_Any();
+    await operationDetailPage.entersOperationDetail_Successful();
 
     await test.step('Validate successful status messages and icons', async () => {
       const successfulStepMessage = page.getByText('Successful step');

@@ -346,32 +346,8 @@ export class operationPageCommands {
     await expect(viewSelector).toBeVisible();
   }
 
-  @stepPOM('Sees the available toggles on the column selector')
-  async definesAvailableColumns() {
-    const availableColumns = [
-      'Start Date',
-      'End Date',
-      'User ID',
-      'Type',
-      'Steps',
-      'Assets',
-      'Status',
-      'Actions',
-    ];
-    const numColumnsToToggle = Math.floor(Math.random() * availableColumns.length) + 1;
-
-    // Selects random columns to toggle
-    const columnsToToggle = [];
-    const availableIndices = [...Array(availableColumns.length).keys()];
-    for (let i = 0; i < numColumnsToToggle; i++) {
-      const randomIndex = Math.floor(Math.random() * availableIndices.length);
-      const selectedIndex = availableIndices.splice(randomIndex, 1)[0];
-      columnsToToggle.push(availableColumns[selectedIndex]);
-    }
-  }
-
   @stepPOM('Selects randomly columns toggles')
-  async selectsRandomColumnsToggles() {
+  async selectsRandomTooglesAndLogsNotVisibles() {
     const availableColumns = [
       'Start Date',
       'End Date',
@@ -382,7 +358,7 @@ export class operationPageCommands {
       'Status',
       'Actions',
     ];
-    const numColumnsToToggle = Math.min(2, Math.floor(Math.random() * 2) + 1);
+    const numColumnsToToggle = 3;
 
     // Select random columns to toggle
     const columnsToToggle = [];
@@ -397,32 +373,10 @@ export class operationPageCommands {
       console.log(`Removing column: ${columnLabel}`);
       await viewSelector.getByLabel(columnLabel).click();
     }
-
     await this.page.mouse.click(0, 0);
-  }
 
-  @stepPOM('Verify columns are not visible')
-  async verifyColumnsAreNotVisible() {
-    const availableColumns = [
-      'Start Date',
-      'End Date',
-      'User ID',
-      'Type',
-      'Steps',
-      'Assets',
-      'Status',
-      'Actions',
-    ];
-    const numColumnsToToggle = Math.floor(Math.random() * availableColumns.length) + 1;
+    await expect(viewSelector).not.toBeVisible();
 
-    // Select random columns to toggle
-    const columnsToToggle = [];
-    const availableIndices = [...Array(availableColumns.length).keys()];
-    for (let i = 0; i < numColumnsToToggle; i++) {
-      const randomIndex = Math.floor(Math.random() * availableIndices.length);
-      const selectedIndex = availableIndices.splice(randomIndex, 1)[0];
-      columnsToToggle.push(availableColumns[selectedIndex]);
-    }
     for (const columnLabel of columnsToToggle) {
       const columnHeader = this.page.locator(`th:has-text("${columnLabel}")`);
       await expect(columnHeader).not.toBeVisible();

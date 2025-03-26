@@ -81,12 +81,10 @@ test.describe('Operations page validation @regression', () => {
     await operationPage.clickOnPrintButtonAndValidate();
   });
 
-  test("Validates that the column selector doesn't shows unselected toggles", async ({
+  test("Validates that the column selector doesn't show unselected toggles", async ({
     operationPage,
   }) => {
-    operationPage.definesAvailableColumns();
-    operationPage.clickOnColumnSelector();
-    operationPage.selectsRandomColumnsToggles();
-    operationPage.verifyColumnsAreNotVisible();
+    await operationPage.clickOnColumnSelector();
+    await operationPage.selectsRandomTooglesAndLogsNotVisibles();
   });
 });

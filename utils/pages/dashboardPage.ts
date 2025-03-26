@@ -196,104 +196,113 @@ export class dashboardCommands {
   @stepPOM('Validates all Aria attributes in the Dashboard page')
   async seesAriaAttributesDashboard() {
     await expect(this.page.locator('[data-test="header"]')).toMatchAriaSnapshot(`
+      - paragraph: Dashboard
+      - button "demo":
+        - paragraph: demo
+        - img
+      - button "marcelocosta@facephi.com":
+        - img
+        - paragraph: marcelocosta@facephi.com
+        - img
+    `);
+
+    await expect(this.page.getByRole('main')).toMatchAriaSnapshot(`
+      - main:
         - paragraph: Dashboard
         - button "demo":
           - paragraph: demo
           - img
-        - button /Avatar .+@facephi\.com/:
-          - img "Avatar"
-          - paragraph: /.+@facephi\.com/
+        - button "marcelocosta@facephi.com":
           - img
-      `);
-
-    await expect(this.page.getByRole('main')).toMatchAriaSnapshot(`
-        - main:
-          - paragraph: Dashboard
-          - button "demo":
-            - paragraph: demo
-            - img
-          - button /Avatar .+@facephi\.com/:
-            - img "Avatar"
-            - paragraph: /.+@facephi\.com/
-            - img
-          - button:
-            - img
-          - textbox "Filter by date"
-          - checkbox "24 hours"
-          - checkbox "7 days" [checked]
-          - checkbox "30 days"
+          - paragraph: marcelocosta@facephi.com
           - img
-          - paragraph: /\\d+/
-          - paragraph: New onboardings
+        - button:
           - img
-          - paragraph: /\\d+/
-          - paragraph: Authentications
-          - img
-          - paragraph: /\\d+/
-          - paragraph: Onboardings
-          - paragraph: All operations (%)
-          - paragraph: Succesful
-          - paragraph: Started
-          - paragraph: Expired
-          - paragraph: Cancelled
-          - paragraph: Blocked
-          - paragraph: Rejected
-          - paragraph: Error
-          - paragraph: Success rate
-          - paragraph
-          - paragraph: Error rate
-          - paragraph
-      `);
+        - textbox "Filter by date": /\\d+\\/\\d+\\/\\d+ - \\d+\\/\\d+\\/\\d+/
+        - checkbox /\\d+ hours/
+        - checkbox "7 days" [checked]
+        - checkbox /\\d+ days/
+        - img
+        - paragraph: /\\d+/
+        - paragraph: New onboardings
+        - img
+        - paragraph: "0"
+        - paragraph: Authentications
+        - img
+        - paragraph: "0"
+        - paragraph: Onboardings
+        - paragraph: All operations (%)
+        - paragraph: Succesful
+        - paragraph: Started
+        - paragraph: Expired
+        - paragraph: Cancelled
+        - paragraph: Blocked
+        - paragraph: Rejected
+        - paragraph: Error
+        - paragraph: Success rate
+        - paragraph
+        - paragraph: Error rate
+        - paragraph
+    `);
 
     await expect(this.page.locator('body')).toMatchAriaSnapshot(
       `
-        - alert
-        - link:
-          - img
-        - list:
-          - listitem:
-            - link "Dashboard":
-              - img
-              - paragraph: Dashboard
-          - listitem:
-            - link "Operations":
-              - img
-              - paragraph: Operations
-        - list:
-          - img
-          - paragraph: Operations
-          - button "Application":
+      - alert
+      - link:
+        - img
+      - list:
+        - listitem:
+          - link "Dashboard":
             - img
-            - paragraph: Application
-        - main:
-          - paragraph: Dashboard
-          - button "demo":
-            - paragraph: demo
+            - paragraph: Dashboard
+        - listitem:
+          - link "Operations":
             - img
-          - button /Avatar .+@facephi\.com/:
-            - img "Avatar"
-            - paragraph: /.+@facephi\.com/
-            - img
-          - button:
-            - img
-          - textbox "Filter by date"
-          - checkbox "24 hours"
-          - checkbox "7 days" [checked]
-          - checkbox "30 days"
+            - paragraph: Operations
+      - list:
+        - img
+        - paragraph: Operations
+        - button "Application":
           - img
-          - paragraph: /\\d+/
-          - paragraph: New onboardings
+          - paragraph: Application
+      - main:
+        - paragraph: Dashboard
+        - button "demo":
+          - paragraph: demo
           - img
-          - paragraph: /\\d+/
-          - paragraph: Authentications
+        - button "marcelocosta@facephi.com":
           - img
-          - paragraph: /\\d+/
-          - paragraph: Onboardings
-          - paragraph: All operations (%)
-          - paragraph: Succesful
-          - paragraph: Started
-          - paragraph: Expired
-        `
+          - paragraph: marcelocosta@facephi.com
+          - img
+        - button:
+          - img
+        - textbox "Filter by date": /\\d+\\/\\d+\\/\\d+ - \\d+\\/\\d+\\/\\d+/
+        - checkbox /\\d+ hours/
+        - checkbox "7 days" [checked]
+        - checkbox /\\d+ days/
+        - img
+        - paragraph: /\\d+/
+        - paragraph: New onboardings
+        - img
+        - paragraph: "0"
+        - paragraph: Authentications
+        - img
+        - paragraph: "0"
+        - paragraph: Onboardings
+        - paragraph: All operations (%)
+        - paragraph: Succesful
+        - paragraph: Started
+        - paragraph: Expired
+        - paragraph: Cancelled
+        - paragraph: Blocked
+        - paragraph: Rejected
+        - paragraph: Error
+        - paragraph: Success rate
+        - paragraph
+        - paragraph: Error rate
+        - paragraph
+      - region "Notifications alt+T"
+    `
     );
   }
   @stepPOM('Compares Aria content with UI screenshots')
