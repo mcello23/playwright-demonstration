@@ -12,6 +12,7 @@ export class userManagementCommands {
   async clicksOnUser() {
     await this.page.locator('[data-test="user-b9896f8d-4e74-4976-84f7-c557e90b273f"]').click();
   }
+
   @stepPOM('Validates user management page elements')
   async validatesUserManagementAriaSnapshot() {
     await expect(this.page.locator('div').filter({ hasText: 'Personal' }).first())
@@ -20,9 +21,9 @@ export class userManagementCommands {
         - paragraph
         - paragraph: Personal information
         - text: Name
-        - textbox [disabled]: Chaim
+        - textbox [disabled]: /^[A-Z][a-zA-Z]*$/
         - text: Surname
-        - textbox [disabled]: Flatley
+        - textbox [disabled]: /^[A-Z][a-zA-Z\-]*$/
         - paragraph: Account settings
         - text: Email
         - img
@@ -57,10 +58,12 @@ export class userManagementCommands {
         - paragraph: Has read-only access to operations, workflows (list view), and identities. This role cannot modify any data, configuration, or integrations.
       `);
   }
+
   @stepPOM('Clicks on "Edit" profile button')
   async clicksOnEditButton() {
     await this.page.locator('[data-test="button-edit"]').click();
   }
+
   @stepPOM('Validates user management page elements when editing')
   async validatesAllInputsAndDropdown() {
     await expect(this.page.locator('[data-test="input-name"]')).toBeEditable();
@@ -109,8 +112,10 @@ export class userManagementCommands {
     let name = faker.person.firstName();
     let lastName = faker.person.lastName();
     await this.page.locator('[data-test="input-name"]').fill(name);
+    await this.page.locator('[data-test="input-name"]').focus();
     await expect(this.page.locator('[data-test="input-name"]')).toHaveValue(name);
     await this.page.locator('[data-test="input-lastName"]').fill(lastName);
+    await this.page.locator('[data-test="input-lastName"]').focus();
     await expect(this.page.locator('[data-test="input-lastName"]')).toHaveValue(lastName);
     // await this.page.locator('[data-test="input-email"]').fill(faker.internet.email());
     await this.page.locator('[data-test="button-save"]').click();

@@ -51,7 +51,6 @@ export class dashboardCommands {
     await this.page.locator('[data-test="header-welcome-tour-button"]').click();
     await expect(this.page.locator('[data-test="welcome-modal"]')).toMatchAriaSnapshot(`
       - img
-      - img
       - paragraph: Identity verification flows without code.
       - paragraph: Shall we get started?
       - paragraph: Discover how IDV Suite allows you to create, manage and import complete identity verification flows, with just a few clicks.

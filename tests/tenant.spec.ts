@@ -73,9 +73,10 @@ test.describe('Negative path: Profile and tenants validation @regression', () =>
   test('Access a IDV URL with a tenant not associated to my user, sees the 404 page and returns to landing', async ({
     dashboardPage,
     errorPage,
+    loginPage,
   }) => {
     await dashboardPage.goesToURLWithDifferentTenant();
     await errorPage.validateErrorPageUI();
-    await errorPage.clickReturnButtonAndVerifyRedirection();
+    await errorPage.clickReturnButtonAndVerifyRedirection(loginPage);
   });
 });
