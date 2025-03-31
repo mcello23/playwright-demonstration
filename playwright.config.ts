@@ -146,6 +146,9 @@ export default defineConfig({
         ...devices['Desktop Safari'],
         storageState: getStorageState('webkit'),
         video: 'retain-on-failure',
+        launchOptions: {
+          slowMo: 100,
+        },
       },
     },
   ],
