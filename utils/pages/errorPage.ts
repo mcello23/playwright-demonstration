@@ -1,5 +1,5 @@
 import { Page, expect } from '@playwright/test';
-import { loginCommands, stepPOM } from 'utils/controller/e2e';
+import { dashboardCommands, loginCommands, stepPOM } from 'utils/controller/e2e';
 
 export class ErrorPageNavigation {
   page: Page;
@@ -56,6 +56,25 @@ export class ErrorPageNavigation {
     await expect(homeButton).toBeEnabled();
   }
 
+  @stepPOM('Validate old error page UI elements')
+  async validatesOldErrorPage() {
+    const topLogo = this.page.getByRole('img').first();
+    await expect(topLogo).toBeVisible();
+
+    const errorImage = this.page.getByRole('img', { name: 'Error image' });
+    await expect(errorImage).toBeVisible();
+
+    const firstErrorText = this.page.getByText('Houstoooon, Something went wrong');
+    await expect(firstErrorText).toBeVisible();
+
+    const secondErrorText = this.page.getByText('Click below to land in IDV Suite.');
+    await expect(secondErrorText).toBeVisible();
+
+    const homeButton = this.page.locator('[data-test="error-button"]').getByText('Land here');
+    await expect(homeButton).toBeVisible();
+    await expect(homeButton).toBeEnabled();
+  }
+
   @stepPOM('Verify error page appears')
   async verifyErrorPageAppears() {
     const errorImage = this.page.getByRole('img', { name: 'Error image' });
@@ -66,5 +85,11 @@ export class ErrorPageNavigation {
   async clickReturnButtonAndVerifyRedirection(loginPage: loginCommands) {
     await this.page.locator('[data-test="error-button"]').click();
     await loginPage.seesLoginPage();
+  }
+
+  @stepPOM('Click on error button and verifies redirection to login page')
+  async clicksOnErrorButtonSeesLanding(dashboardPage: dashboardCommands) {
+    await this.page.locator('[data-test="error-button"]').click();
+    await dashboardPage.loadsURLSkipsTutorial();
   }
 }

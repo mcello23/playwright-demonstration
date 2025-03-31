@@ -33,7 +33,7 @@ export default defineConfig({
     toHaveScreenshot: { pathTemplate: 'tests/visual-tests/{arg}{ext}' },
   },
   snapshotDir: 'tests/visual-tests',
-  updateSnapshots: 'missing',
+  updateSnapshots: 'all',
   updateSourceMethod: 'patch',
   testDir: './tests',
   forbidOnly: !!process.env.CI,
