@@ -22,8 +22,8 @@ export class loginCommands {
 
     const emailInput = this.page.getByRole('textbox', { name: 'Email address' });
     await emailInput.waitFor({ state: 'visible' });
+    await emailInput.fill(credentials.email, { timeout: 4000 });
     await emailInput.focus();
-    await emailInput.fill(credentials.email);
 
     const emailValue = await emailInput.inputValue();
     expect(emailValue).toBe(credentials.email);
@@ -34,8 +34,8 @@ export class loginCommands {
 
     const passwordInput = this.page.getByRole('textbox', { name: 'Password' });
     await passwordInput.waitFor({ state: 'visible' });
+    await passwordInput.fill(credentials.password), { timeout: 4000 };
     await passwordInput.focus();
-    await passwordInput.fill(credentials.password);
 
     await this.page.getByRole('button', { name: 'Continue' }).click();
 
