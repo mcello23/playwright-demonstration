@@ -2,7 +2,7 @@
   "name": "idv-qa",
   "version": "1.0.0",
   "type": "module",
-  "packageManager": "yarn@4.7.0",
+  "packageManager": "yarn@4.8.1",
   "engines": {
     "node": ">=20.17.0"
   },
@@ -30,14 +30,14 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@currents/playwright": "^1.11.5",
+    "@currents/playwright": "^1.11.7",
     "@faker-js/faker": "^9.6.0",
     "@playwright/test": "^1.51.1",
     "@types/node": "^22.13.13",
-    "@typescript-eslint/eslint-plugin": "^8.27.0",
-    "@typescript-eslint/parser": "^8.27.0",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
     "allure-commandline": "^2.33.0",
-    "allure-playwright": "^3.2.0",
+    "allure-playwright": "^3.2.1",
     "dotenv": "^16.4.7",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",
@@ -47,6 +47,6 @@
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.27.0"
+    "typescript-eslint": "^8.28.0"
   }
 }
