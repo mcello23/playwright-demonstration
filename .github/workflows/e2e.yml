@@ -49,8 +49,8 @@ jobs:
         env:
           USER_EMAIL: ${{ secrets.USER_EMAIL }}
           USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
-          USER_EMAIL_1: ${{ secrets.USER_TEST_EMAIL }}
-          USER_PASSWORD_1: ${{ secrets.USER_TEST_PASSWORD }}
+          USER_TEST_EMAIL: ${{ secrets.USER_TEST_EMAIL }}
+          USER_TEST_PASSWORD: ${{ secrets.USER_TEST_PASSWORD }}
           BASE_URL: ${{ vars.BASE_URL || 'https://idv-suite.identity-platform.dev' }}
           HOME: /root
         run: yarn playwright test --shard=${{ matrix.shardIndex }}/3
