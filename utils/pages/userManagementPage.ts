@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { Page, expect } from '@playwright/test';
 import { stepPOM } from 'utils/controller/e2e';
 
@@ -10,15 +11,18 @@ export class userManagementCommands {
   @stepPOM('Clicks on a user from the list')
   async clicksOnUser() {
     await this.page.locator('[data-test="user-b9896f8d-4e74-4976-84f7-c557e90b273f"]').click();
-    await expect(this.page.locator('div').filter({ hasText: 'Personal' }).nth(1))
+  }
+  @stepPOM('Validates user management page elements')
+  async validatesUserManagementAriaSnapshot() {
+    await expect(this.page.locator('div').filter({ hasText: 'Personal' }).first())
       .toMatchAriaSnapshot(`
         - img "preview image"
         - paragraph
         - paragraph: Personal information
         - text: Name
-        - textbox [disabled]: Testing
+        - textbox [disabled]: Chaim
         - text: Surname
-        - textbox [disabled]: IDV
+        - textbox [disabled]: Flatley
         - paragraph: Account settings
         - text: Email
         - img
@@ -52,5 +56,68 @@ export class userManagementCommands {
         - paragraph: Viewer
         - paragraph: Has read-only access to operations, workflows (list view), and identities. This role cannot modify any data, configuration, or integrations.
       `);
+  }
+  @stepPOM('Clicks on "Edit" profile button')
+  async clicksOnEditButton() {
+    await this.page.locator('[data-test="button-edit"]').click();
+  }
+  @stepPOM('Validates user management page elements when editing')
+  async validatesAllInputsAndDropdown() {
+    await expect(this.page.locator('[data-test="input-name"]')).toBeEditable();
+    await expect(this.page.locator('[data-test="input-lastName"]')).toBeEditable();
+    await expect(this.page.locator('[data-test="input-email"]')).toBeEditable();
+    await this.page.locator('[data-test="input-container"]').nth(3).click();
+
+    const dropdown = this.page.locator('.facephi-ui-dropdown__list');
+    await expect(dropdown).toBeVisible();
+
+    const englishOption = this.page.locator('[data-test="option-en"]');
+    await expect(englishOption).toBeVisible();
+    await expect(englishOption).toHaveText('English');
+    await expect(englishOption).toHaveClass(/isSelected_false/);
+
+    const spanishOption = this.page.locator('[data-test="option-es"]');
+    await expect(spanishOption).toBeVisible();
+    await expect(spanishOption).toHaveText('Spanish');
+    await expect(spanishOption).toHaveClass(/isSelected_true/);
+
+    const portugueseOption = this.page.locator('[data-test="option-pt"]');
+    await expect(portugueseOption).toBeVisible();
+    await expect(portugueseOption).toHaveText('Portuguese');
+    await expect(portugueseOption).toHaveClass(/isSelected_false/);
+
+    await this.page.keyboard.press('Enter');
+
+    await this.page.locator('input[name="timezone"]').click();
+    const timezoneOptions = this.page.locator('ul.facephi-ui-dropdown__list button');
+    await expect(timezoneOptions).toHaveCount(386);
+
+    await this.page.keyboard.press('Enter');
+
+    await this.page.locator('[data-test="input-container"]').nth(5).click();
+    const roleOptions = this.page.locator('ul.facephi-ui-option-menu__list');
+    await expect(roleOptions).toContainText('Admin');
+    await expect(roleOptions).toContainText('Supervisor');
+    await expect(roleOptions).toContainText('Agent');
+    await expect(roleOptions).toContainText('Viewer');
+
+    await this.page.keyboard.press('Enter');
+  }
+
+  @stepPOM('Edits all unput fields in profile and saves it')
+  async editsProfile() {
+    let name = faker.person.firstName();
+    let lastName = faker.person.lastName();
+    await this.page.locator('[data-test="input-name"]').fill(name);
+    await expect(this.page.locator('[data-test="input-name"]')).toHaveValue(name);
+    await this.page.locator('[data-test="input-lastName"]').fill(lastName);
+    await expect(this.page.locator('[data-test="input-lastName"]')).toHaveValue(lastName);
+    // await this.page.locator('[data-test="input-email"]').fill(faker.internet.email());
+    await this.page.locator('[data-test="button-save"]').click();
+    await expect(this.page.locator('[data-test="toast-message"]')).toMatchAriaSnapshot(
+      `
+      - paragraph: User edited
+    `
+    );
   }
 }
