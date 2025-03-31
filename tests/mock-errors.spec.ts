@@ -1,7 +1,7 @@
 import { expect, test } from 'utils/controller/e2e';
 
 test.beforeEach(async ({ dashboardPage }) => {
-  await dashboardPage.loadsMainURL();
+  await dashboardPage.loadsURLSkipsTutorial();
 });
 
 test.describe('Mocking server errors and validating behaviour on frontend and console @smoke', () => {
@@ -9,6 +9,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     mockHelpers,
     operationPage,
     errorPage,
+    dashboardPage,
   }, testInfo) => {
     const consoleMessages = await mockHelpers.listenForErrorInConsole(testInfo, 500);
 
@@ -17,7 +18,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
       statusCode: 500,
     });
 
-    await operationPage.goesToOperations();
+    await operationPage.goesToOperations(dashboardPage);
 
     await errorPage.validatesErrorMockedPageUI();
 
@@ -31,6 +32,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     mockHelpers,
     operationPage,
     errorPage,
+    dashboardPage,
   }, testInfo) => {
     const consoleMessages = await mockHelpers.listenForErrorInConsole(testInfo, 401);
 
@@ -39,7 +41,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
       statusCode: 401,
     });
 
-    await operationPage.goesToOperations();
+    await operationPage.goesToOperations(dashboardPage);
 
     await errorPage.validatesErrorMockedPageUI();
 
@@ -53,6 +55,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
     mockHelpers,
     operationPage,
     errorPage,
+    dashboardPage,
   }, testInfo) => {
     const consoleMessages = await mockHelpers.listenForErrorInConsole(testInfo, 403);
 
@@ -61,7 +64,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
       statusCode: 403,
     });
 
-    await operationPage.goesToOperations();
+    await operationPage.goesToOperations(dashboardPage);
 
     await errorPage.validatesErrorMockedPageUI();
 
@@ -74,6 +77,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
   test('Mocks a 408 (request timeout) and validates through unresponsive navigation', async ({
     mockHelpers,
     operationPage,
+    dashboardPage,
   }, testInfo) => {
     const consoleMessages = await mockHelpers.listenForErrorInConsole(testInfo, 408);
 
@@ -83,7 +87,7 @@ test.describe('Mocking server errors and validating behaviour on frontend and co
       message: 'Request Timeout',
     });
 
-    await operationPage.goesToOperations();
+    await operationPage.goesToOperations(dashboardPage);
     await mockHelpers.validateTimeoutBehavior();
 
     const timeoutMessage = consoleMessages.find(

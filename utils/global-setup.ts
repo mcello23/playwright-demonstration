@@ -30,7 +30,7 @@ async function createUnsignedState() {
   const page = await context.newPage();
 
   try {
-    await page.goto(process.env.BASE_URL!, { waitUntil: 'commit' });
+    await page.goto(process.env.BASE_URL!, { waitUntil: 'domcontentloaded' });
     await context.storageState({ path: unsignedStatePath });
     console.log(`✅ Unsigned state saved: ${unsignedStatePath}`);
   } catch (error) {
@@ -66,8 +66,7 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
     await page.getByRole('button', { name: 'Continue' }).click();
 
     try {
-      await page.waitForURL('**/tenant/**');
-      await (await page.waitForSelector('[data-test="header"]')).isVisible();
+      await page.waitForURL('**/tenant/**', { waitUntil: 'commit' });
 
       console.log(`✅ Login successful with ${browserType}! Saving state...`);
       await context.storageState({ path: authFilePath });
@@ -76,7 +75,7 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
       await page.screenshot({ path: path.join(authDir, `redirect-fail-${browserType}.png`) });
     }
 
-    // Failsafe logic
+    // Failsafe
     const imageError = page.getByRole('img', { name: 'Error image' });
     const errorHeader = page.getByText('Sorry, aliens have stolen our server');
 

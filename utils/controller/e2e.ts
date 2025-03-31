@@ -1,5 +1,5 @@
 import { test as baseTest, expect, Page } from '@playwright/test';
-import { description, tag, tags } from 'allure-js-commons';
+import { description } from 'allure-js-commons';
 import { apiCommands } from 'utils/helpers/apiHelper';
 import { CalendarCommands, verifyDateRangeInput } from 'utils/helpers/calandarHelper';
 import { ErrorForceCommands, MissingStringCommand } from 'utils/helpers/miscHelper';
@@ -18,6 +18,7 @@ import { ErrorPageNavigation } from 'utils/pages/errorPage';
 import { loginCommands } from 'utils/pages/loginPage';
 import { operationDetailCommands } from 'utils/pages/operationsDetailPage';
 import { operationPageCommands, OperationsStringsValidation } from 'utils/pages/operationsPage';
+import { userManagementCommands } from 'utils/pages/userManagementPage';
 
 export function stepPOM(stepName?: string) {
   return function decorator(target: Function, context?: ClassMethodDecoratorContext | undefined) {
@@ -50,6 +51,7 @@ interface CustomFixtures {
   operationsStrings: OperationsStringsValidation;
   operationDetailPage: operationDetailCommands;
   navigationTestsManager: NavigationTestsManager;
+  userManagementPage: userManagementCommands;
 }
 
 export const test = baseTest.extend<CustomFixtures>({
@@ -185,6 +187,13 @@ export const test = baseTest.extend<CustomFixtures>({
     const manager = new NavigationTestsManager(page);
     await use(manager);
   },
+  userManagementPage: async (
+    { page }: { page: Page },
+    use: (userManagementPage: userManagementCommands) => Promise<void>
+  ) => {
+    const userManagementPage = new userManagementCommands(page);
+    await use(userManagementPage);
+  },
 });
 
 export {
@@ -207,8 +216,7 @@ export {
   operationDetailCommands,
   operationPageCommands,
   OperationsStringsValidation,
-  tag,
-  tags,
+  userManagementCommands,
   UserManagementNavigation,
   verifyDateRangeInput,
 };

@@ -2,8 +2,8 @@ import { Page } from '@playwright/test';
 import { test } from 'utils/controller/e2e';
 
 test.describe('Operations page validation @regression', async () => {
-  test.beforeEach(async ({ operationPage }) => {
-    await operationPage.goesToOperations();
+  test.beforeEach(async ({ operationPage, dashboardPage }) => {
+    await operationPage.goesToOperationsSkipTutorial(dashboardPage);
   });
 
   test("Enters any operation and validates it's header elements and format @smoke", async ({

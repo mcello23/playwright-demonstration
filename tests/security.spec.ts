@@ -1,7 +1,7 @@
 import { description, expect, test } from 'utils/controller/e2e';
 
 test.describe('Security validation for environment variables @regression', () => {
-  test.skip('Verifies sensitive environment variables are not exposed in the DOM after login', async ({
+  test('Verifies sensitive environment variables are not exposed in the DOM after login', async ({
     page,
   }) => {
     description(

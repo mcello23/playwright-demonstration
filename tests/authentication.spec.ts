@@ -1,5 +1,10 @@
 import { description, test } from 'utils/controller/e2e';
 
+const userCredentials = {
+  email: process.env.USER_TEST_EMAIL,
+  password: process.env.USER_TEST_PASSWORD,
+};
+
 test.describe('Happy Path: Authenticates correctly to IDV and validates Login and Logout @regression', async () => {
   test.use({ storageState: 'auth/unsigned.json' });
 
@@ -14,13 +19,17 @@ test.describe('Happy Path: Authenticates correctly to IDV and validates Login an
 
     const tokenDataPromise = apiHelpers.validatesOIDCTokenAndParams();
 
-    await loginPage.loginUnsigned();
+    await loginPage.loginUnsigned({
+      email: userCredentials.email as string,
+      password: userCredentials.password as string,
+    });
 
     const tokenData = await tokenDataPromise;
     console.log('✅ OIDC token and params intercepted:', tokenData);
 
-    await dashboardPage.seesFilterDate();
+    await dashboardPage.validatesDashboradElements();
   });
+
   test('Logs out successfully and validates OIDC redirection code and sees login page at UI @smoke', async ({
     apiHelpers,
     dashboardPage,
@@ -28,7 +37,10 @@ test.describe('Happy Path: Authenticates correctly to IDV and validates Login an
   }) => {
     description('Validation of Logout flow, intercepting OpenID response and sees login page.');
 
-    await loginPage.loginUnsigned();
+    await loginPage.loginUnsigned({
+      email: userCredentials.email as string,
+      password: userCredentials.password as string,
+    });
 
     const logoutDataPromise = apiHelpers.validatesOIDCRedirect();
     await dashboardPage.clicksLogout();

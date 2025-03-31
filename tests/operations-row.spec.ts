@@ -1,8 +1,8 @@
 import { test } from 'utils/controller/e2e';
 
 test.describe('Operations page validation @regression', () => {
-  test.beforeEach(async ({ operationPage }) => {
-    await operationPage.goesToOperationsWait();
+  test.beforeEach(async ({ operationPage, dashboardPage }) => {
+    await operationPage.goesToOperationsWait(dashboardPage);
   });
 
   test('Sees all elements in Operations page @smoke', async ({ operationPage }) => {

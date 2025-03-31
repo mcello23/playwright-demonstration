@@ -239,6 +239,23 @@ export class UserManagementNavigation {
     const expectedIDHref = '/en/tenant/idv-demo/user-management';
     expect(identitiesHref).toBe(expectedIDHref);
   }
+
+  @stepPOM('Clicks on Permissions and validates URL')
+  async validatePermissionsLinkProperties() {
+    const permissionsLocator = this.page.locator('[data-test="Permissions"] > a');
+    await permissionsLocator.isVisible();
+    await permissionsLocator.isEnabled();
+
+    const permissionsHref = await permissionsLocator.getAttribute('href');
+    const expectedPermissionsHref = '/en/tenant/idv-demo/permissions';
+    expect(permissionsHref).toBe(expectedPermissionsHref);
+  }
+
+  @stepPOM('Navigate to Permissions page and verify URL')
+  async navigateToPermissionsAndVerifyUrl() {
+    await this.page.locator('[data-test="Permissions"]').click();
+    await this.page.waitForURL('**/permissions');
+  }
 }
 
 export interface NavigationTest {
@@ -364,6 +381,19 @@ export const navigationTestsConfig: NavigationTest[] = [
     },
     validate: async (fixture, missingString) => {
       await fixture.validateUserManagementIconColor();
+      await fixture.validateUsersLinkProperties();
+      await missingString.validateMissingString();
+    },
+  },
+  {
+    name: 'Permissions',
+    url: '/en/tenant/idv-demo/permissions',
+    fixtureKey: 'userManagementNavigation',
+    setup: async (fixture) => {
+      await fixture.goesToUserManagement();
+    },
+    validate: async (fixture, missingString) => {
+      await fixture.validatePermissionsLinkProperties();
       await fixture.validateUsersLinkProperties();
       await missingString.validateMissingString();
     },

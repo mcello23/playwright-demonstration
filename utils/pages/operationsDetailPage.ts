@@ -91,7 +91,7 @@ export class operationDetailCommands {
     }
 
     // Operation ID format validation
-    const operationIdLocator = this.page.locator('p.facephi-ui-label', { hasText: 'ID:' });
+    const operationIdLocator = this.page.locator('p.facephi-ui-label', { hasText: 'User:' });
     await expect(operationIdLocator).toBeVisible();
 
     const idTextContent = await operationIdLocator.textContent();

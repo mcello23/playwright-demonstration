@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Page, Response } from '@playwright/test';
 import { stepPOM } from 'utils/controller/e2e';
 
 export class apiCommands {
@@ -96,19 +96,34 @@ export class apiCommands {
 
   @stepPOM('Validates a Rendering Server Components (RSC) response')
   async waitForMultipleRSCResponses(count = 1, options = { timeout: 10000 }) {
-    try {
-      for (let i = 0; i < count; i++) {
-        const response = await this.page.waitForResponse(
-          (response) => response.url().includes('_rsc=') && response.status() === 200,
-          { timeout: options.timeout }
-        );
+    interface RSCResponse extends Response {}
+    const capturedResponses: RSCResponse[] = [];
 
-        console.log(`✅ URL received: ${response.url()}`);
-        console.log(`✅ Status: ${response.status()}`);
-      }
-    } catch (error) {
-      console.warn('⚠️ Not able to capture all RSC response. Continuing test...');
-      await this.page.waitForTimeout(1000);
-    }
+    return new Promise((resolve) => {
+      const handler = (response: RSCResponse): void => {
+        if (response.url().includes('_rsc=') && response.status() === 200) {
+          console.log(`✅ RSC URL captured: ${response.url()}`);
+          console.log(`✅ Status: ${response.status()}`);
+          capturedResponses.push(response);
+
+          if (capturedResponses.length >= count) {
+            this.page.removeListener('response', handler);
+            resolve(capturedResponses);
+          }
+        }
+      };
+
+      this.page.on('response', handler);
+
+      setTimeout(() => {
+        this.page.removeListener('response', handler);
+        if (capturedResponses.length < count) {
+          console.warn(
+            `⚠️ Timeout: Captured only ${capturedResponses.length}/${count} RSC responses`
+          );
+        }
+        resolve(capturedResponses);
+      }, options.timeout);
+    });
   }
 }

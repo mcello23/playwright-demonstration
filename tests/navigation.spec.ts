@@ -12,7 +12,7 @@ test.describe('Happy Path: Navigates to all IDV pages, validating URLs, HREF val
           identitiesNavigation,
           userManagementNavigation,
         }) => {
-          await dashboardPage.loadsMainURL();
+          await dashboardPage.loadsURLSkipsTutorial();
 
           const fixtureMap = {
             operationsAndDasbhaord,

@@ -1,16 +1,21 @@
 import { expect, Page } from '@playwright/test';
 import { stepPOM } from 'utils/controller/e2e';
 
+interface UserCredentials {
+  email: string;
+  password: string;
+}
+
 export class loginCommands {
   page: Page;
   constructor(page: Page) {
     this.page = page;
   }
 
-  @stepPOM('Logs-in with an unsigned user')
-  async loginUnsigned() {
-    if (!process.env.USER_EMAIL_1 || !process.env.USER_PASSWORD_1) {
-      throw new Error("Env variables USER_EMAIL e USER_PASSWORD aren't set");
+  @stepPOM('Logs-in with an user')
+  async loginUnsigned(credentials: UserCredentials) {
+    if (!credentials.email || !credentials.password) {
+      throw new Error('Email and password should be provided');
     }
 
     await this.page.waitForSelector('form', { state: 'visible' });
@@ -18,10 +23,10 @@ export class loginCommands {
     const emailInput = this.page.getByRole('textbox', { name: 'Email address' });
     await emailInput.waitFor({ state: 'visible' });
     await emailInput.focus();
-    await emailInput.fill(process.env.USER_EMAIL_1);
+    await emailInput.fill(credentials.email);
 
     const emailValue = await emailInput.inputValue();
-    expect(emailValue).toBe(process.env.USER_EMAIL_1);
+    expect(emailValue).toBe(credentials.email);
 
     const nextButton = this.page.getByRole('button', { name: 'Next' });
     await nextButton.waitFor({ state: 'visible' });
@@ -30,11 +35,12 @@ export class loginCommands {
     const passwordInput = this.page.getByRole('textbox', { name: 'Password' });
     await passwordInput.waitFor({ state: 'visible' });
     await passwordInput.focus();
-    await passwordInput.fill(process.env.USER_PASSWORD_1);
+    await passwordInput.fill(credentials.password);
 
     await this.page.getByRole('button', { name: 'Continue' }).click();
 
     await this.page.waitForURL(/.*tenant.*/, { waitUntil: 'commit' });
+    await this.page.locator('[data-test="welcome-modal-skip-button"]').click();
 
     // Failsafe
     await expect(this.page.getByRole('img', { name: 'Error image' })).not.toBeVisible({

@@ -4,6 +4,7 @@ import { stepPOM, verifyDateRangeInput } from 'utils/controller/e2e';
 import { getFormattedDateRange } from 'utils/helpers/calandarHelper';
 import { StringsValidationBase, TextAssertion } from 'utils/helpers/miscHelper';
 import { operationsTexts } from 'utils/strings/operations-row.strings';
+import { dashboardCommands } from './dashboardPage';
 
 export class operationPageCommands {
   page: Page;
@@ -14,12 +15,20 @@ export class operationPageCommands {
   private printPromise: Promise<void> | undefined;
 
   @stepPOM('Navigates to Operations page')
-  async goesToOperations() {
+  async goesToOperations(dashboardPage: dashboardCommands) {
+    await dashboardPage.loadsURL();
     await this.page.getByRole('link', { name: 'Operations' }).click();
   }
 
   @stepPOM('Navigates to Operations page')
-  async goesToOperationsWait() {
+  async goesToOperationsSkipTutorial(dashboardPage: dashboardCommands) {
+    await dashboardPage.loadsURLSkipsTutorial();
+    await this.page.getByRole('link', { name: 'Operations' }).click();
+  }
+
+  @stepPOM('Navigates to Operations page')
+  async goesToOperationsWait(dashboardPage: dashboardCommands) {
+    await dashboardPage.loadsURLSkipsTutorial();
     await this.page.getByRole('link', { name: 'Operations' }).click();
     await this.page.waitForURL('**/operations');
   }
@@ -27,7 +36,7 @@ export class operationPageCommands {
   @stepPOM('Validates Operations page is visible')
   async operationsHeaderVisible() {
     const operationsHeader = this.page
-      .locator('[data-test="header"] div')
+      .locator('[data-test="header-title"]')
       .filter({ hasText: 'Operations' });
     await expect(operationsHeader).toBeVisible();
   }
@@ -341,7 +350,7 @@ export class operationPageCommands {
   // Column toggles selector
   @stepPOM('Clicks on column selector')
   async clickOnColumnSelector() {
-    await this.page.getByRole('button').filter({ hasText: /^$/ }).nth(2).click();
+    await this.page.locator('[data-test="hide-columns"]').click();
     const viewSelector = this.page.locator('[data-test="hide-columns"]');
     await expect(viewSelector).toBeVisible();
   }
@@ -392,6 +401,7 @@ export class OperationsStringsValidation extends StringsValidationBase {
   @stepPOM('Navigates to Operations page and locates every string')
   async navigateToOperations(locale: string) {
     await this.page.goto(`/${locale}`, { waitUntil: 'commit' });
+    await this.page.locator('[data-test="welcome-modal-skip-button"]').click();
     await this.page.locator('[data-test="Operations"]').click();
     await this.page.locator('[data-test="header"]').focus();
   }

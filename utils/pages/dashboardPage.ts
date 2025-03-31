@@ -1,5 +1,7 @@
+import { faker } from '@faker-js/faker';
 import { Page, expect } from '@playwright/test';
 import { stepPOM, verifyDateRangeInput } from 'utils/controller/e2e';
+import { apiCommands } from 'utils/helpers/apiHelper';
 import { getFormattedDateRange } from 'utils/helpers/calandarHelper';
 import { StringsValidationBase, TextAssertion } from 'utils/helpers/miscHelper';
 import { dashboardTexts } from 'utils/strings/dashboard.strings';
@@ -32,10 +34,29 @@ export class dashboardCommands {
   }
 
   @stepPOM('Loads main page after login')
-  async loadsMainURL() {
-    await this.page.waitForURL(/.*tenant.*/);
-    const filterElement = this.page.locator('[data-test="filter-by-date"]');
-    await expect(filterElement).toBeVisible();
+  async loadsURLSkipsTutorial() {
+    await this.page.waitForURL(/.*tenant.*/), { waitUntil: 'commit' };
+    await this.page.locator('[data-test="welcome-modal-skip-button"]').click();
+    await expect(this.page.locator('[data-test="filter-by-date"]')).toBeVisible();
+  }
+
+  @stepPOM('Loads main page after login')
+  async loadsURL() {
+    await this.page.waitForURL(/.*tenant.*/), { waitUntil: 'commit' };
+    await expect(this.page.locator('[data-test="filter-by-date"]')).toBeVisible();
+  }
+
+  @stepPOM('Clicks on "Show welcome tour" button')
+  async clicksAndValidatesTutorial() {
+    await this.page.locator('[data-test="header-welcome-tour-button"]').click();
+    await expect(this.page.locator('[data-test="welcome-modal"]')).toMatchAriaSnapshot(`
+      - img
+      - img
+      - paragraph: Identity verification flows without code.
+      - paragraph: Shall we get started?
+      - paragraph: Discover how IDV Suite allows you to create, manage and import complete identity verification flows, with just a few clicks.
+      - button "Skip"
+    `);
   }
 
   // Profile
@@ -53,7 +74,7 @@ export class dashboardCommands {
   }
 
   @stepPOM('Validates Dashboard elements page')
-  async seesFilterDate() {
+  async validatesDashboradElements() {
     await expect(this.page.locator('[data-test="input-container"]')).toBeVisible();
     await expect(this.page.locator('[data-test="option-time-1"]')).toBeVisible();
     await expect(this.page.locator('[data-test="filter-by-date"]')).toBeVisible();
@@ -91,7 +112,7 @@ export class dashboardCommands {
   }
 
   @stepPOM('Clicks on 24 hours button filter and validates RSC responses')
-  async clicksHoursButtonAndValidatesRSC(apiHelpers: any) {
+  async clicksHoursButtonAndValidatesRSC(apiHelpers: apiCommands) {
     await this.hourCheckbox.click();
     await expect(this.hourCheckbox).toHaveAttribute('aria-checked', 'true');
     await apiHelpers.waitForMultipleRSCResponses(2);
@@ -105,14 +126,14 @@ export class dashboardCommands {
   }
 
   @stepPOM('Clicks on 7 days button filter and validates RSC responses')
-  async clicks7DaysButtonAndValidatesRSC(apiHelpers: any) {
+  async clicks7DaysButtonAndValidatesRSC(apiHelpers: apiCommands) {
     await this.sevenDaysCheckbox.click();
     await expect(this.sevenDaysCheckbox).toHaveAttribute('aria-checked', 'true');
     await apiHelpers.waitForMultipleRSCResponses(2);
   }
 
   @stepPOM('Clicks on 30 days filter and validates RSC responses')
-  async clicks30DaysButtonAndValidatesRSC(apiHelpers: any) {
+  async clicks30DaysButtonAndValidatesRSC(apiHelpers: apiCommands) {
     await this.thirtyDaysCheckbox.click();
     await expect(this.thirtyDaysCheckbox).toHaveAttribute('aria-checked', 'true');
     await apiHelpers.waitForMultipleRSCResponses(2);
@@ -125,7 +146,7 @@ export class dashboardCommands {
   }
 
   @stepPOM('Validates charts after calendar selection')
-  async validateChartsAfterCalendarSelection(apiHelpers: any) {
+  async validateChartsAfterCalendarSelection(apiHelpers: apiCommands) {
     await apiHelpers.waitForMultipleRSCResponses(1);
 
     const count = await this.chartsDashboard.count();
@@ -192,6 +213,30 @@ export class dashboardCommands {
     await this.page.goto('/en/tenant/idv-prueba/operations', { waitUntil: 'commit' });
   }
 
+  @stepPOM('Searches a Tenant associated with the user and sees it in the UI')
+  async searchesValidTenantAndValidates() {
+    const searchInput = this.page.getByRole('textbox', { name: 'Search tenant' });
+    await searchInput.fill('idv-prueba');
+    await expect(this.page.getByRole('button', { name: 'idv-prueba idv-prueba' })).toBeVisible();
+    await expect(
+      this.page.getByRole('button', { name: 'demo idv-demo 8d04089d-8273-' })
+    ).not.toBeVisible();
+  }
+
+  @stepPOM('Searches a Tenant not associated with the user and sees the error image in UI')
+  async searchesUnvalidTenantAndValidates() {
+    const comanyName = faker.company.name();
+
+    const searchInput = this.page.getByRole('textbox', { name: 'Search tenant' });
+    await searchInput.fill(comanyName);
+    await expect(this.page.getByText('Oops, no matchesWe couldn’t')).toMatchAriaSnapshot(`
+      - img "Error image"
+      - paragraph: Oops, no matches
+      - paragraph: We couldn’t find any tenants
+      - paragraph: Maybe try a different search?
+    `);
+  }
+
   // Accessibility
   @stepPOM('Validates all Aria attributes in the Dashboard page')
   async seesAriaAttributesDashboard() {
@@ -200,6 +245,9 @@ export class dashboardCommands {
       - button "demo":
         - paragraph: demo
         - img
+      - tooltip:
+        - button:
+          - img
       - button "marcelocosta@facephi.com":
         - img
         - paragraph: marcelocosta@facephi.com
@@ -212,6 +260,9 @@ export class dashboardCommands {
         - button "demo":
           - paragraph: demo
           - img
+        - tooltip:
+          - button:
+            - img
         - button "marcelocosta@facephi.com":
           - img
           - paragraph: marcelocosta@facephi.com
@@ -223,7 +274,7 @@ export class dashboardCommands {
         - checkbox "7 days" [checked]
         - checkbox /\\d+ days/
         - img
-        - paragraph: /\\d+/
+        - paragraph: "5"
         - paragraph: New onboardings
         - img
         - paragraph: "0"
@@ -270,6 +321,9 @@ export class dashboardCommands {
         - button "demo":
           - paragraph: demo
           - img
+        - tooltip:
+          - button:
+            - img
         - button "marcelocosta@facephi.com":
           - img
           - paragraph: marcelocosta@facephi.com
@@ -281,7 +335,7 @@ export class dashboardCommands {
         - checkbox "7 days" [checked]
         - checkbox /\\d+ days/
         - img
-        - paragraph: /\\d+/
+        - paragraph: "5"
         - paragraph: New onboardings
         - img
         - paragraph: "0"
@@ -324,7 +378,7 @@ export class DashboardStringsValidation extends StringsValidationBase {
   @stepPOM('Navigates to Dashboard page and locates every string')
   async navigateToDashboard(locale: string) {
     await this.page.goto(`/${locale}`, { waitUntil: 'commit' });
-    await this.page.locator('[data-test="header-logo"]').click();
+    await this.page.locator('[data-test="welcome-modal-skip-button"]').click();
   }
 
   getDashboardAssertions(locale: string): TextAssertion[] {

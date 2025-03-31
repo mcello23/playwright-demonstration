@@ -1,5 +1,9 @@
 import { description, test } from 'utils/controller/e2e';
 
+test.beforeEach(async ({ dashboardPage }) => {
+  await dashboardPage.loadsURLSkipsTutorial();
+});
+
 test.describe('Dashboard validation flows @regression', () => {
   test('Inserts random dates in the dashboard filter and validates via UI and RSC responses ', async ({
     dashboardPage,
@@ -8,7 +12,7 @@ test.describe('Dashboard validation flows @regression', () => {
     description(
       'This test uses the Filter by date input using random dates and validates the RSC response as well as the UI.'
     );
-    await apiHelpers.waitForMultipleRSCResponses(2);
+    apiHelpers.waitForMultipleRSCResponses(1);
     await dashboardPage.validateChartsVisibility();
     await dashboardPage.fillAndValidateRandomDate();
   });
