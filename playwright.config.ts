@@ -147,7 +147,7 @@ export default defineConfig({
         storageState: getStorageState('webkit'),
         video: 'retain-on-failure',
         launchOptions: {
-          slowMo: 100,
+          slowMo: 50,
         },
       },
     },
