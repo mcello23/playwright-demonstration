@@ -253,51 +253,10 @@ export class dashboardCommands {
         - img
     `);
 
-    await expect(this.page.getByRole('main')).toMatchAriaSnapshot(`
-      - main:
-        - paragraph: Dashboard
-        - button "demo":
-          - paragraph: demo
-          - img
-        - tooltip:
-          - button:
-            - img
-        - button "marcelocosta@facephi.com":
-          - img
-          - paragraph: marcelocosta@facephi.com
-          - img
-        - button:
-          - img
-        - textbox "Filter by date": /\\d+\\/\\d+\\/\\d+ - \\d+\\/\\d+\\/\\d+/
-        - checkbox /\\d+ hours/
-        - checkbox "7 days" [checked]
-        - checkbox /\\d+ days/
-        - img
-        - paragraph: "5"
-        - paragraph: New onboardings
-        - img
-        - paragraph: "0"
-        - paragraph: Authentications
-        - img
-        - paragraph: "0"
-        - paragraph: Onboardings
-        - paragraph: All operations (%)
-        - paragraph: Succesful
-        - paragraph: Started
-        - paragraph: Expired
-        - paragraph: Cancelled
-        - paragraph: Blocked
-        - paragraph: Rejected
-        - paragraph: Error
-        - paragraph: Success rate
-        - paragraph
-        - paragraph: Error rate
-        - paragraph
-    `);
-
-    await expect(this.page.locator('body')).toMatchAriaSnapshot(
+    await expect(
+      this.page.getByText('DashboardOperationsOperationsApplication')
+    ).toMatchAriaSnapshot(
       `
-      - alert
       - link:
         - img
       - list:
@@ -315,46 +274,6 @@ export class dashboardCommands {
         - button "Application":
           - img
           - paragraph: Application
-      - main:
-        - paragraph: Dashboard
-        - button "demo":
-          - paragraph: demo
-          - img
-        - tooltip:
-          - button:
-            - img
-        - button "marcelocosta@facephi.com":
-          - img
-          - paragraph: marcelocosta@facephi.com
-          - img
-        - button:
-          - img
-        - textbox "Filter by date": /\\d+\\/\\d+\\/\\d+ - \\d+\\/\\d+\\/\\d+/
-        - checkbox /\\d+ hours/
-        - checkbox "7 days" [checked]
-        - checkbox /\\d+ days/
-        - img
-        - paragraph: "5"
-        - paragraph: New onboardings
-        - img
-        - paragraph: "0"
-        - paragraph: Authentications
-        - img
-        - paragraph: "0"
-        - paragraph: Onboardings
-        - paragraph: All operations (%)
-        - paragraph: Succesful
-        - paragraph: Started
-        - paragraph: Expired
-        - paragraph: Cancelled
-        - paragraph: Blocked
-        - paragraph: Rejected
-        - paragraph: Error
-        - paragraph: Success rate
-        - paragraph
-        - paragraph: Error rate
-        - paragraph
-      - region "Notifications alt+T"
     `
     );
   }

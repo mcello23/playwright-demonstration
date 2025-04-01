@@ -18,6 +18,7 @@ export class loginCommands {
       throw new Error('Email and password should be provided');
     }
 
+    await this.page.waitForURL(/.*login.*/);
     await this.page.waitForSelector('form', { state: 'visible' });
 
     const emailInput = this.page.getByRole('textbox', { name: 'Email address' });

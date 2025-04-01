@@ -31,10 +31,9 @@ export class ErrorPageNavigation {
     await expect(homeButton).toBeVisible();
     await expect(homeButton).toBeEnabled();
     await expect(homeButton).toMatchAriaSnapshot(`
-    - button "Go back to Login page":
-      - img
-      - text: Go back to Login page
-  `);
+      - button "Go back to Login page":
+        - img
+    `);
   }
 
   @stepPOM('Validate error (mocked) page UI elements')

@@ -1,10 +1,5 @@
 import { test } from 'utils/controller/e2e';
 
-const userCredentials = {
-  email: process.env.USER_TEST_EMAIL,
-  password: process.env.USER_TEST_PASSWORD,
-};
-
 test.describe('Happy path: Tenants validation @regression', async () => {
   test.beforeEach(async ({ dashboardPage }) => {
     await dashboardPage.loadsURLSkipsTutorial();
@@ -56,8 +51,8 @@ test.describe('Negative path: Profile and tenants validation @regression', () =>
 
   test.beforeEach(async ({ loginPage }) => {
     await loginPage.loginUnsigned({
-      email: userCredentials.email as string,
-      password: userCredentials.password as string,
+      email: process.env.USER_TEST_EMAIL as string,
+      password: process.env.USER_TEST_PASSWORD as string,
     });
   });
   //TODO: add different loggedin auth state for this test

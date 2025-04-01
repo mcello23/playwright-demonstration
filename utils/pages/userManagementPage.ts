@@ -21,9 +21,9 @@ export class userManagementCommands {
         - paragraph
         - paragraph: Personal information
         - text: Name
-        - textbox [disabled]: /^[A-Z][a-zA-Z]*$/
+        - textbox [disabled]: Seamus
         - text: Surname
-        - textbox [disabled]: /^[A-Z][a-zA-Z\-]*$/
+        - textbox [disabled]: Kshlerin
         - paragraph: Account settings
         - text: Email
         - img

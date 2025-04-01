@@ -116,11 +116,16 @@ export default defineConfig({
   ],
   globalSetup: path.resolve(__dirname, 'utils/global-setup.ts'),
   use: {
-    baseURL: 'https://idv-suite.identity-platform.dev/',
+    baseURL: 'https://idv-suite.identity-platform.dev/en',
     viewport: { width: 1280, height: 720 },
     trace: 'on',
     screenshot: 'on',
+    video: 'retain-on-failure',
     ignoreHTTPSErrors: true,
+    permissions: ['geolocation'],
+    timezoneId: 'Europe/Paris',
+    bypassCSP: true,
+    headless: false,
   },
   projects: [
     {
@@ -128,7 +133,6 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         storageState: getStorageState('chromium'),
-        video: 'retain-on-failure',
         permissions: ['clipboard-read', 'clipboard-write'],
       },
     },
@@ -137,7 +141,6 @@ export default defineConfig({
       use: {
         ...devices['Desktop Firefox'],
         storageState: getStorageState('firefox'),
-        video: 'retain-on-failure',
       },
     },
     {
@@ -145,10 +148,6 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
         storageState: getStorageState('webkit'),
-        video: 'retain-on-failure',
-        launchOptions: {
-          slowMo: 50,
-        },
       },
     },
   ],
