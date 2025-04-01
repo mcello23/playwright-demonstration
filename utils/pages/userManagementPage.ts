@@ -21,26 +21,26 @@ export class userManagementCommands {
         - paragraph
         - paragraph: Personal information
         - text: Name
-        - textbox [disabled]: Seamus
+        - textbox [disabled]
         - text: Surname
-        - textbox [disabled]: Kshlerin
+        - textbox [disabled]
         - paragraph: Account settings
         - text: Email
         - img
-        - textbox [disabled]: testing-idv@facephi.com
+        - textbox [disabled]
         - button "Recover password"
         - paragraph: Language & timezone
         - text: Language
         - img
-        - textbox [disabled]: Spanish
+        - textbox [disabled]
         - img
         - text: Timezone
         - img
-        - textbox [disabled]: Europe/Madrid
+        - textbox [disabled]
         - img
         - paragraph: User management
         - text: Role
-        - textbox [disabled]: Admin
+        - textbox [disabled]
         - img
         - button "Edit"
         - paragraph: Roles

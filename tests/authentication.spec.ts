@@ -10,7 +10,6 @@ test.describe('Happy Path: Authenticates correctly to IDV and validates Login an
     description(
       'Validation of Login flow, using an Unsigned state, intercepting OpenID token and validating UI elements in landing page.'
     );
-
     const tokenDataPromise = apiHelpers.validatesOIDCTokenAndParams();
 
     await loginPage.loginUnsigned({

@@ -25,6 +25,14 @@ export class ErrorForceCommands {
 
     expect(responseReceived).toBeFalsy();
   }
+
+  @stepPOM('Simulating CPU throttling for CI environments')
+  async simulatesCPUThrotling(page: Page) {
+    const context = page.context();
+    const cdpSession = await context.newCDPSession(page);
+    // 4-6x CPU throttling is recommended for simulating CI environments
+    await cdpSession.send('Emulation.setCPUThrottlingRate', { rate: 20 });
+  }
 }
 
 export class MissingStringCommand {
