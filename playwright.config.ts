@@ -125,7 +125,6 @@ export default defineConfig({
     permissions: ['geolocation'],
     timezoneId: 'Europe/Paris',
     bypassCSP: true,
-    headless: false,
   },
   projects: [
     {
