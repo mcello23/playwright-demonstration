@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2]
+        shardIndex: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4.2.2
 
@@ -53,7 +53,7 @@ jobs:
           USER_TEST_PASSWORD: ${{ secrets.USER_TEST_PASSWORD }}
           BASE_URL: ${{ vars.BASE_URL || 'https://idv-suite.identity-platform.dev' }}
           HOME: /root
-        run: yarn playwright test --shard=${{ matrix.shardIndex }}/2
+        run: yarn playwright test --shard=${{ matrix.shardIndex }}/3
         continue-on-error: true
 
       - name: Upload test results

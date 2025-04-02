@@ -1,3 +1,4 @@
+import { CurrentsConfig, currentsReporter } from '@currents/playwright';
 import { defineConfig, devices } from '@playwright/test';
 import { Status } from 'allure-js-commons';
 import dotenv from 'dotenv';
@@ -13,6 +14,11 @@ interface StorageStateObject {
   cookies: any[];
   origins: any[];
 }
+
+const currentsConfig: CurrentsConfig = {
+  recordKey: process.env.CURRENTS_RECORD_KEY as string,
+  projectId: process.env.CURRENTS_PROJECT_ID as string,
+};
 
 type StorageState = string | StorageStateObject;
 type BrowserName = 'chromium' | 'firefox' | 'webkit';
@@ -43,6 +49,7 @@ export default defineConfig({
   fullyParallel: false,
   reporter: [
     ['list'],
+    currentsReporter(currentsConfig),
     [
       'allure-playwright',
       {
@@ -118,13 +125,9 @@ export default defineConfig({
   use: {
     baseURL: 'https://idv-suite.identity-platform.dev/en',
     viewport: { width: 1280, height: 720 },
-    trace: 'on',
-    screenshot: 'on',
-    video: 'retain-on-failure',
     ignoreHTTPSErrors: true,
     permissions: ['geolocation'],
     timezoneId: 'Europe/Paris',
-    bypassCSP: true,
   },
   projects: [
     {
@@ -133,6 +136,9 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: getStorageState('chromium'),
         permissions: ['clipboard-read', 'clipboard-write'],
+        trace: 'on',
+        screenshot: 'on',
+        video: 'retain-on-failure',
       },
     },
     {
@@ -140,6 +146,9 @@ export default defineConfig({
       use: {
         ...devices['Desktop Firefox'],
         storageState: getStorageState('firefox'),
+        trace: 'on',
+        screenshot: 'on',
+        video: 'retain-on-failure',
       },
     },
     {
@@ -147,6 +156,9 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
         storageState: getStorageState('webkit'),
+        trace: 'on-first-retry',
+        video: 'on-first-retry',
+        screenshot: 'on',
       },
     },
   ],
