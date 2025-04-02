@@ -158,7 +158,7 @@ export default defineConfig({
         storageState: getStorageState('webkit'),
         trace: 'on-first-retry',
         video: 'on-first-retry',
-        screenshot: 'on',
+        screenshot: 'on-first-failure',
       },
     },
   ],
