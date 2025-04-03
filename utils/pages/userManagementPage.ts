@@ -125,4 +125,36 @@ export class userManagementCommands {
     `
     );
   }
+
+  @stepPOM('Updating image profile')
+  async updatesImageProfile(imageFormat: string, imagePath: string) {
+    const targetURL =
+      'https://idv-suite.identity-platform.dev/en/tenant/idv-demo/user-management/b9896f8d-4e74-4976-84f7-c557e90b273f';
+
+    const fileChooserPromise = this.page.waitForEvent('filechooser');
+
+    let postRequestIntercepted = false;
+    await this.page.route(targetURL, async (route, request) => {
+      if (request.method() === 'POST') {
+        console.log(`${imageFormat} image upload intercepted!`);
+        postRequestIntercepted = true;
+        const response = await route.fetch();
+        expect(response.status()).toBe(200);
+        await route.continue();
+      } else {
+        await route.continue();
+      }
+    });
+
+    await this.page.locator('[data-test="edit-icon"]').click();
+
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(imagePath);
+
+    await expect.poll(() => postRequestIntercepted, { timeout: 10000 }).toBe(true);
+    await this.page.locator('[data-test="button-save"]').click();
+    await expect(this.page.locator('[data-test="toast-message"]')).toMatchAriaSnapshot(`
+      - paragraph: User edited
+      `);
+  }
 }

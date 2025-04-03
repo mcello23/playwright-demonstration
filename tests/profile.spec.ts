@@ -1,5 +1,11 @@
 import { test } from 'utils/controller/e2e';
 
+const imageFormats = [
+  { format: 'jpg', path: 'tests/avatar-tests/formats/format_jpg.jpg' },
+  { format: 'png', path: 'tests/avatar-tests/formats/format_png.png' },
+  { format: 'jpeg', path: 'tests/avatar-tests/formats/format_jpeg.jpeg' },
+];
+
 test.beforeEach(async ({ dashboardPage }) => {
   await dashboardPage.loadsURLSkipsTutorial();
 });
@@ -27,15 +33,28 @@ test.describe('User Management validation', () => {
     await userManagementPage.validatesUserManagementAriaSnapshot();
   });
 
-  test('Edits a User and validates all inputs and dropdown menus @smoke', async ({
-    userManagementPage,
-  }) => {
-    await userManagementPage.clicksOnEditButton();
-    await userManagementPage.validatesAllInputsAndDropdown();
-  });
+  test.describe('Editing Profile tests', () => {
+    test.beforeEach(async ({ userManagementPage }) => {
+      await userManagementPage.clicksOnEditButton();
+    });
+    test('Enters a User profile and validates that all inputs and dropdown menus follow requirements @smoke', async ({
+      userManagementPage,
+    }) => {
+      await userManagementPage.validatesAllInputsAndDropdown();
+    });
 
-  test('Edits profile', async ({ userManagementPage }) => {
-    await userManagementPage.clicksOnEditButton();
-    await userManagementPage.editsProfile();
+    test('Updates user names with random inputs and validates it in the UI', async ({
+      userManagementPage,
+    }) => {
+      await userManagementPage.editsProfile();
+    });
+
+    for (const { format, path } of imageFormats) {
+      test(`Edits the user avatar with ${format.toUpperCase()} format and validates in UI and intercepts request`, async ({
+        userManagementPage,
+      }) => {
+        await userManagementPage.updatesImageProfile(format, path);
+      });
+    }
   });
 });

@@ -57,7 +57,7 @@ test.describe('Negative path: Profile and tenants validation @regression', () =>
   });
   //TODO: add different loggedin auth state for this test
 
-  test('Access a IDV URL with a tenant not associated to my user and sees the 404 page', async ({
+  test('Access a IDV URL with a tenant not associated to my user and sees the unauthorized page', async ({
     dashboardPage,
     errorPage,
   }) => {
@@ -65,7 +65,7 @@ test.describe('Negative path: Profile and tenants validation @regression', () =>
     await errorPage.validateErrorPageUI();
   });
 
-  test('Access a IDV URL with a tenant not associated to my user, sees the 404 page and returns to landing', async ({
+  test('Access a IDV URL with a tenant not associated to my user, sees the unauthorized page and returns to landing', async ({
     dashboardPage,
     errorPage,
     loginPage,
