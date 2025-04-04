@@ -7,11 +7,10 @@ export class operationDetailCommands {
     this.page = page;
   }
 
-  // Clicks on different types of operations details
   @stepPOM('Clicks on any operation detail')
   async entersOperationDetail_Any() {
     const resultsPage = this.page.locator('#tableBody');
-    const successfullRow = resultsPage.locator('[data-test^="table-row-"]').nth(1);
+    const successfullRow = resultsPage.locator('[data-test^="table-row-"]').first();
 
     const successOperation = successfullRow.locator('[data-test^="operationDetail-"]');
     await successOperation.click();
@@ -20,37 +19,111 @@ export class operationDetailCommands {
 
   @stepPOM('Clicks on a successful operation detail')
   async entersOperationDetail_Successful() {
-    const resultsPage = this.page.locator('#tableBody');
-    const successfullRow = resultsPage
-      .locator('[data-test^="table-row-"]')
-      .filter({
-        hasText: /Successful|Exitoso|Conseguiu/,
-      })
-      .nth(1);
+    const maxPagesToCheck = 3;
+    let currentPage = 1;
+    let foundSuccessfulOperation = false;
+    const maxRetries = 3;
 
-    const successOperation = successfullRow.locator('[data-test^="operationDetail-"]');
-    await successOperation.click();
-    await this.page.waitForRequest('**/operations/**');
+    while (currentPage <= maxPagesToCheck && !foundSuccessfulOperation) {
+      console.log(`Verifying page ${currentPage} for successful operations...`);
+
+      if (currentPage > 1) {
+        const currentUrl = this.page.url();
+        const baseUrl = currentUrl.split('?')[0];
+        let retryCount = 0;
+        let navigationSuccessful = false;
+
+        while (retryCount < maxRetries && !navigationSuccessful) {
+          try {
+            await this.page.goto(`${baseUrl}/operations?page=${currentPage}`);
+            await this.page.waitForSelector('#tableBody', { state: 'visible' });
+            navigationSuccessful = true;
+          } catch (error) {
+            console.error(
+              `Navigation to page ${currentPage} failed (attempt ${retryCount + 1}): ${error}`
+            );
+            retryCount++;
+            await this.page.waitForTimeout(1000);
+          }
+        }
+      }
+
+      const resultsPage = this.page.locator('#tableBody');
+      const successfulRows = resultsPage
+        .locator('[data-test^="table-row-"]')
+        .filter({ hasText: /Successful|Exitoso|Conseguiu/ });
+
+      const count = await successfulRows.count();
+
+      if (count > 0) {
+        foundSuccessfulOperation = true;
+        const successfulRow = count > 1 ? successfulRows.nth(1) : successfulRows.first();
+        const successOperation = successfulRow.locator('[data-test^="operationDetail-"]');
+        await successOperation.click();
+        await this.page.waitForRequest('**/operations/**');
+      } else {
+        currentPage++;
+      }
+    }
   }
 
   @stepPOM('Clicks on a rejected operation detail')
   async entersOperationDetail_Rejected() {
-    const resultsPage = this.page.locator('#tableBody');
-    const rejectedRow = resultsPage
-      .locator('[data-test^="table-row-"]')
-      .filter({
-        hasText: /Rejected|Rechazado|Rejeitado/,
-      })
-      .first();
+    const maxPagesToCheck = 3;
+    let currentPage = 1;
+    let foundRejectedOperation = false;
+    const maxRetries = 3;
 
-    const errorStatusElement = rejectedRow.locator(
-      'span.facephi-ui-status[style*="--colors-error400"]'
-    );
-    await expect(errorStatusElement).toBeVisible();
+    while (currentPage <= maxPagesToCheck && !foundRejectedOperation) {
+      console.log(`Verifying page ${currentPage} for rejected operations...`);
 
-    const rejectedOperationElement = rejectedRow.locator('[data-test^="operationDetail-"]').nth(0);
-    await rejectedOperationElement.click();
-    await this.page.waitForRequest('**/operations/**');
+      if (currentPage > 1) {
+        const currentUrl = this.page.url();
+        const baseUrl = currentUrl.split('?')[0];
+        let retryCount = 0;
+        let navigationSuccessful = false;
+
+        while (retryCount < maxRetries && !navigationSuccessful) {
+          try {
+            await this.page.goto(`${baseUrl}/operations?page=${currentPage}`);
+            await this.page.waitForSelector('#tableBody', { state: 'visible' });
+            navigationSuccessful = true;
+          } catch (error) {
+            console.error(
+              `Navigation to page ${currentPage} failed (attempt ${retryCount + 1}): ${error}`
+            );
+            retryCount++;
+
+            await this.page.waitForTimeout(1000);
+          }
+        }
+      }
+
+      const resultsPage = this.page.locator('#tableBody');
+      const rejectedRows = resultsPage
+        .locator('[data-test^="table-row-"]')
+        .filter({ hasText: /Rejected|Rechazado|Rejeitado/ });
+
+      const count = await rejectedRows.count();
+
+      if (count > 0) {
+        foundRejectedOperation = true;
+        const rejectedRow = count > 1 ? rejectedRows.nth(1) : rejectedRows.first();
+
+        const errorStatusElement = rejectedRow.locator(
+          'span.facephi-ui-status[style*="--colors-error400"]'
+        );
+        await expect(errorStatusElement).toBeVisible();
+
+        const rejectedOperationElement = rejectedRow
+          .locator('[data-test^="operationDetail-"]')
+          .first();
+        await rejectedOperationElement.click();
+        await this.page.waitForRequest('**/operations/**');
+      } else {
+        currentPage++;
+      }
+    }
   }
 
   @stepPOM('Validates all header elements are visible and in the correct format inside a Operation')
@@ -159,7 +232,7 @@ export class operationDetailCommands {
 
   @stepPOM('Validates error styling and messages')
   async validatesErrorStatusIcons() {
-    const errorDiv = this.page.locator('div.facephi-ui-flex[style*="--colors-error400"]');
+    const errorDiv = this.page.locator('div.facephi-ui-flex[style*="--colors-error400"]').first();
     await expect(errorDiv).toBeVisible();
 
     const errorMessage = this.page.locator('div', { hasText: /^Failed step/ }).first();

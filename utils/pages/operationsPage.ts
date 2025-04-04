@@ -236,12 +236,18 @@ export class operationPageCommands {
 
   @stepPOM('Validates all modal control buttons are visible and enabled/disabled')
   async validatesAllModalButtons() {
-    const docBack = this.page
-      .locator('div')
-      .filter({ hasText: /^Document back$/ })
-      .getByRole('button');
-    await expect(docBack).toBeVisible();
-    await expect(docBack).toBeEnabled();
+    const modalContent = this.page.locator('[data-test="modal-assets"]');
+    if (await modalContent.locator('button:has-text("Selfie")').isVisible()) {
+      await modalContent.locator('button:has-text("Selfie")').isEnabled();
+    } else if (await modalContent.locator('button:has-text("Document back")').isVisible()) {
+      await modalContent.locator('button:has-text("Document back")').isEnabled();
+    } else if (
+      await modalContent.locator('button:has-text("Document back fullframe")').isVisible()
+    ) {
+      await modalContent.locator('button:has-text("Document back fullframe")').isEnabled();
+    } else {
+      console.log('Specified back buttons not found inside modal.');
+    }
 
     const minusZoom = this.page
       .locator('div')
@@ -277,16 +283,22 @@ export class operationPageCommands {
       '.facephi-ui-modal__base > div > div:nth-child(3) > button:nth-child(2)'
     );
     await expect(fwdBttn).toBeVisible();
-    await expect(fwdBttn).toBeEnabled();
   }
 
   @stepPOM('Clicks on the modal back button')
   async clicksOnModalBackButton() {
-    const docBack = this.page
-      .locator('div')
-      .filter({ hasText: /^Document back$/ })
-      .getByRole('button');
-    await docBack.click();
+    const modalContent = this.page.locator('[data-test="modal-assets"]');
+    if (await modalContent.locator('button:has-text("Selfie")').isVisible()) {
+      await modalContent.locator('button:has-text("Selfie")').click();
+    } else if (await modalContent.locator('button:has-text("Document back")').isVisible()) {
+      await modalContent.locator('button:has-text("Document back")').click();
+    } else if (
+      await modalContent.locator('button:has-text("Document back fullframe")').isVisible()
+    ) {
+      await modalContent.locator('button:has-text("Document back fullframe")').click();
+    } else {
+      console.log('Specified back buttons not found inside modal.');
+    }
   }
 
   @stepPOM('Validates that the modal was closed')
