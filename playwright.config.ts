@@ -95,7 +95,7 @@ const reporters: any = [
 ];
 
 if (process.env.CI) {
-  reporters.push([currentsReporter(currentsConfig)]);
+  reporters.push(['currents', currentsReporter(currentsConfig)]);
 }
 
 type StorageState = string | StorageStateObject;
