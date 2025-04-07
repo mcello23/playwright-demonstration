@@ -157,4 +157,17 @@ export class userManagementCommands {
       - paragraph: User edited
       `);
   }
+
+  @stepPOM('Clicks on recover password')
+  async clicksOnRecoverPassword() {
+    await this.page.getByRole('button', { name: 'Recover password' }).click();
+  }
+
+  @stepPOM('Validates success toast message of e-mail sent')
+  async validatesSuccessToastMessage() {
+    const successToast = this.page.locator('[data-test="toast-message"]');
+    await expect(successToast).toBeVisible();
+    await expect(successToast).toHaveText('Sent email to recover password');
+    await expect(this.page.locator('div.facephi-ui-toast__wrapper--type_success')).toBeVisible();
+  }
 }

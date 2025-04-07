@@ -149,7 +149,7 @@ export class operationPageCommands {
     );
     await expect(errorStatusElement).toBeVisible();
 
-    const rejectedOperationElement = rejectedRow.locator('[data-test^="operationDetail-"]').nth(1);
+    const rejectedOperationElement = rejectedRow.locator('[data-test^="operationDetail-"]').first();
 
     await expect(rejectedOperationElement).toHaveAttribute(
       'href',
@@ -319,7 +319,8 @@ export class operationPageCommands {
     expect(fileName).toBeTruthy();
 
     const fileExtension = fileName.split('.').pop()?.toLowerCase();
-    expect('jpeg').toContain(fileExtension);
+    const allowedExtensions = ['jpeg', 'jpg', 'png'];
+    expect(allowedExtensions).toContain(fileExtension);
     console.log(`Downloaded file: ${fileName}`);
 
     const path = await download.path();

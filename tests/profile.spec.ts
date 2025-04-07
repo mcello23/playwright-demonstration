@@ -56,5 +56,11 @@ test.describe('User Management validation', () => {
         await userManagementPage.updatesImageProfile(format, path);
       });
     }
+    test('Clicks on recover password and validates success toast message in the UI', async ({
+      userManagementPage,
+    }) => {
+      await userManagementPage.clicksOnRecoverPassword();
+      await userManagementPage.validatesSuccessToastMessage();
+    });
   });
 });
