@@ -92,8 +92,11 @@ const reporters: any = [
       plugins: ['screen-diff', 'behaviors'],
     },
   ],
-  ...(process.env.CI ? [[currentsReporter(currentsConfig)]] : []),
 ];
+
+if (process.env.CI) {
+  reporters.push([currentsReporter(currentsConfig)]);
+}
 
 type StorageState = string | StorageStateObject;
 type BrowserName = 'chromium' | 'firefox' | 'webkit';
