@@ -15,14 +15,14 @@ test.describe('Operations page validation @regression', () => {
 
   test('Uses the calendar component with random dates, validating UI "X" and "Clear all" buttons and Rendering Server Components (RSC) responses', async ({
     operationPage,
-    apiHelpers,
+    rscHelpers,
     calendarHelper,
   }) => {
     await calendarHelper.opensCalendar();
     await calendarHelper.goToPreviousMonth();
     await calendarHelper.selectRandomDateRange();
 
-    apiHelpers.waitForMultipleRSCResponses(2);
+    rscHelpers.waitForMultipleRSCResponses(2);
 
     await operationPage.clicksOnXButtonToClearInput();
 
@@ -30,7 +30,7 @@ test.describe('Operations page validation @regression', () => {
     await calendarHelper.goToPreviousMonth();
     await calendarHelper.selectRandomDateRange();
 
-    apiHelpers.waitForMultipleRSCResponses(2);
+    rscHelpers.waitForMultipleRSCResponses(2);
 
     await operationPage.clicksOnClearAllButtonToClearInput();
   });
@@ -86,5 +86,9 @@ test.describe('Operations page validation @regression', () => {
   }) => {
     await operationPage.clickOnColumnSelector();
     await operationPage.selectsRandomTooglesAndLogsNotVisibles();
+  });
+
+  test('Validates Operations navigation using pagination footer', async ({ operationPage }) => {
+    await operationPage.validatePagination();
   });
 });

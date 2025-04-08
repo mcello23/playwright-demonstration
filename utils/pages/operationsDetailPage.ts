@@ -181,7 +181,7 @@ export class operationDetailCommands {
     // TODO: add other locales
     const operationStatus = this.page
       .locator('div')
-      .filter({ hasText: /^Successful|Started|Rejected$/ })
+      .filter({ hasText: /^Successful|Started|Rejected|Expired$/ })
       .nth(0);
     await expect(operationStatus).toBeVisible();
   }

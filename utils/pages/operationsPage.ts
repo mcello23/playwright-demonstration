@@ -405,6 +405,29 @@ export class operationPageCommands {
       console.log(`✅ Column "${columnLabel}" is not visilbe`);
     }
   }
+
+  @stepPOM('Validates pagination of Operations page')
+  async validatePagination() {
+    await this.page.waitForSelector('[data-test="page-2"]', { state: 'visible' });
+    console.log('Clicks on page 2...');
+    await this.page.locator('[data-test="page-2"]').click();
+
+    await this.page.waitForURL('**/operations?page=2');
+    await this.page.waitForSelector('#tableBody', { state: 'visible' });
+
+    console.log(`URL now is: ${this.page.url()}`);
+    expect(this.page.url()).toContain('operations?page=2');
+
+    await this.page.waitForSelector('[data-test="page-3"]', { state: 'visible' });
+    console.log('Clicks on page 3...');
+    await this.page.locator('[data-test="page-3"]').click();
+
+    await this.page.waitForURL('**/operations?page=3');
+    await this.page.waitForSelector('#tableBody', { state: 'visible' });
+
+    console.log(`URL now is: ${this.page.url()}`);
+    expect(this.page.url()).toContain('operations?page=3');
+  }
 }
 export class OperationsStringsValidation extends StringsValidationBase {
   constructor(page: Page) {
@@ -420,7 +443,7 @@ export class OperationsStringsValidation extends StringsValidationBase {
   }
   getOperationsAssertions(locale: string): TextAssertion[] {
     const data = (operationsTexts as OperationsTexts)[locale];
-    type OperationsTexts = /*unresolved*/ any;
+    type OperationsTexts = any;
 
     return [
       {

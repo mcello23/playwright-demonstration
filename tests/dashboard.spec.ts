@@ -7,37 +7,38 @@ test.beforeEach(async ({ dashboardPage }) => {
 test.describe('Dashboard validation flows @regression', () => {
   test('Inserts random dates in the dashboard filter and validates via UI and RSC responses ', async ({
     dashboardPage,
-    apiHelpers,
+
+    rscHelpers,
   }) => {
     description(
       'This test uses the Filter by date input using random dates and validates the RSC response as well as the UI.'
     );
-    apiHelpers.waitForMultipleRSCResponses(1);
+    rscHelpers.waitForMultipleRSCResponses(1);
     await dashboardPage.validateChartsVisibility();
     await dashboardPage.fillAndValidateRandomDate();
   });
 
   test('Clicks on the Dashboard buttons filters and validates RSC responses and Echarts in UI', async ({
     dashboardPage,
-    apiHelpers,
+    rscHelpers,
   }) => {
     description(
       'This test clicks on every checkbox of the Dashboard, validates UI (Echarts), as well as RSC responses.'
     );
 
-    await dashboardPage.clicksHoursButtonAndValidatesRSC(apiHelpers);
+    await dashboardPage.clicksHoursButtonAndValidatesRSC(rscHelpers);
     await dashboardPage.validatesUIDashboardResponse();
 
-    await dashboardPage.clicks7DaysButtonAndValidatesRSC(apiHelpers);
+    await dashboardPage.clicks7DaysButtonAndValidatesRSC(rscHelpers);
     await dashboardPage.validatesUIDashboardResponse();
 
-    await dashboardPage.clicks30DaysButtonAndValidatesRSC(apiHelpers);
+    await dashboardPage.clicks30DaysButtonAndValidatesRSC(rscHelpers);
     await dashboardPage.validatesUIDashboard30days();
   });
 
   test('Uses the calendar pop-up and validates all RSC responses and Echarts in UI', async ({
     dashboardPage,
-    apiHelpers,
+    rscHelpers,
     calendarHelper,
   }) => {
     description(
@@ -48,6 +49,6 @@ test.describe('Dashboard validation flows @regression', () => {
     await calendarHelper.goToPreviousMonth();
     await calendarHelper.selectRandomDateRange();
 
-    await dashboardPage.validateChartsAfterCalendarSelection(apiHelpers);
+    await dashboardPage.validateChartsAfterCalendarSelection(rscHelpers);
   });
 });

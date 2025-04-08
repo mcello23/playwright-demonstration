@@ -93,8 +93,12 @@ export class apiCommands {
       }
     });
   }
+}
 
-  @stepPOM('Validates a Rendering Server Components (RSC) response')
+export class rscCommands {
+  constructor(private page: Page) {}
+
+  @stepPOM('Validates a React Server Components (RSC) response')
   async waitForMultipleRSCResponses(count = 1, options = { timeout: 10000 }) {
     interface RSCResponse extends Response {}
     const capturedResponses: RSCResponse[] = [];
@@ -118,9 +122,7 @@ export class apiCommands {
       setTimeout(() => {
         this.page.removeListener('response', handler);
         if (capturedResponses.length < count) {
-          console.warn(
-            `⚠️ Timeout: Captured only ${capturedResponses.length}/${count} RSC responses`
-          );
+          console.warn(`⚠️ Timeout: Captured ${capturedResponses.length}/${count} RSC responses`);
         }
         resolve(capturedResponses);
       }, options.timeout);

@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { Page, expect } from '@playwright/test';
 import { stepPOM, verifyDateRangeInput } from 'utils/controller/e2e';
-import { apiCommands } from 'utils/helpers/apiHelper';
 import { getFormattedDateRange } from 'utils/helpers/calandarHelper';
 import { StringsValidationBase, TextAssertion } from 'utils/helpers/miscHelper';
+import { rscCommands } from 'utils/helpers/networkHelper';
 import { dashboardTexts } from 'utils/strings/dashboard.strings';
 
 export class dashboardCommands {
@@ -111,10 +111,10 @@ export class dashboardCommands {
   }
 
   @stepPOM('Clicks on 24 hours button filter and validates RSC responses')
-  async clicksHoursButtonAndValidatesRSC(apiHelpers: apiCommands) {
+  async clicksHoursButtonAndValidatesRSC(rscHelpers: rscCommands) {
     await this.hourCheckbox.click();
     await expect(this.hourCheckbox).toHaveAttribute('aria-checked', 'true');
-    await apiHelpers.waitForMultipleRSCResponses(2);
+    await rscHelpers.waitForMultipleRSCResponses(2);
   }
 
   @stepPOM('Validates Echarts responses on UI')
@@ -125,17 +125,17 @@ export class dashboardCommands {
   }
 
   @stepPOM('Clicks on 7 days button filter and validates RSC responses')
-  async clicks7DaysButtonAndValidatesRSC(apiHelpers: apiCommands) {
+  async clicks7DaysButtonAndValidatesRSC(rscHelpers: rscCommands) {
     await this.sevenDaysCheckbox.click();
     await expect(this.sevenDaysCheckbox).toHaveAttribute('aria-checked', 'true');
-    await apiHelpers.waitForMultipleRSCResponses(2);
+    await rscHelpers.waitForMultipleRSCResponses(2);
   }
 
   @stepPOM('Clicks on 30 days filter and validates RSC responses')
-  async clicks30DaysButtonAndValidatesRSC(apiHelpers: apiCommands) {
+  async clicks30DaysButtonAndValidatesRSC(rscHelpers: rscCommands) {
     await this.thirtyDaysCheckbox.click();
     await expect(this.thirtyDaysCheckbox).toHaveAttribute('aria-checked', 'true');
-    await apiHelpers.waitForMultipleRSCResponses(2);
+    await rscHelpers.waitForMultipleRSCResponses(2);
   }
 
   @stepPOM('Validates Echarts responses on UI')
@@ -145,8 +145,8 @@ export class dashboardCommands {
   }
 
   @stepPOM('Validates charts after calendar selection')
-  async validateChartsAfterCalendarSelection(apiHelpers: apiCommands) {
-    await apiHelpers.waitForMultipleRSCResponses(1);
+  async validateChartsAfterCalendarSelection(rscHelpers: rscCommands) {
+    await rscHelpers.waitForMultipleRSCResponses(1);
 
     const count = await this.chartsDashboard.count();
     expect(count).toBeGreaterThanOrEqual(2);

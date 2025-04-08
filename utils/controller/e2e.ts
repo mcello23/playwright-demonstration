@@ -1,6 +1,5 @@
 import { test as baseTest, expect, Page } from '@playwright/test';
 import { description } from 'allure-js-commons';
-import { apiCommands } from 'utils/helpers/apiHelper';
 import { CalendarCommands, verifyDateRangeInput } from 'utils/helpers/calandarHelper';
 import { ErrorForceCommands, MissingStringCommand } from 'utils/helpers/miscHelper';
 import { MockCommands } from 'utils/helpers/mockFixtures';
@@ -13,6 +12,7 @@ import {
   NavigationTestsManager,
   UserManagementNavigation,
 } from 'utils/helpers/navigationHelper';
+import { apiCommands, rscCommands } from 'utils/helpers/networkHelper';
 import { dashboardCommands, DashboardStringsValidation } from 'utils/pages/dashboardPage';
 import { ErrorPageNavigation } from 'utils/pages/errorPage';
 import { loginCommands } from 'utils/pages/loginPage';
@@ -52,6 +52,7 @@ interface CustomFixtures {
   operationDetailPage: operationDetailCommands;
   navigationTestsManager: NavigationTestsManager;
   userManagementPage: userManagementCommands;
+  rscHelpers: rscCommands;
 }
 
 export const test = baseTest.extend<CustomFixtures>({
@@ -79,6 +80,11 @@ export const test = baseTest.extend<CustomFixtures>({
   apiHelpers: async ({ page }: { page: Page }, use: (api: apiCommands) => Promise<void>) => {
     const api = new apiCommands(page);
     await use(api);
+  },
+
+  rscHelpers: async ({ page }: { page: Page }, use: (rsc: rscCommands) => Promise<void>) => {
+    const rsc = new rscCommands(page);
+    await use(rsc);
   },
 
   dashboardPage: async (
@@ -216,6 +222,7 @@ export {
   operationDetailCommands,
   operationPageCommands,
   OperationsStringsValidation,
+  rscCommands,
   userManagementCommands,
   UserManagementNavigation,
   verifyDateRangeInput,
