@@ -31,12 +31,12 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@currents/playwright": "^1.11.7",
+    "@currents/playwright": "^1.12.0",
     "@faker-js/faker": "^9.6.0",
     "@playwright/test": "^1.51.1",
-    "@types/node": "^22.13.13",
-    "@typescript-eslint/eslint-plugin": "^8.28.0",
-    "@typescript-eslint/parser": "^8.28.0",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
     "allure-commandline": "^2.33.0",
     "allure-playwright": "^3.2.1",
     "dotenv": "^16.4.7",
@@ -44,10 +44,10 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-define-config": "^2.1.0",
     "eslint-plugin-playwright": "^2.2.0",
-    "eslint-plugin-prettier": "^5.2.4",
+    "eslint-plugin-prettier": "^5.2.6",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.28.0"
+    "typescript-eslint": "^8.29.1"
   }
 }
