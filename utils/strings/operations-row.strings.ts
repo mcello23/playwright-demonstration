@@ -10,7 +10,7 @@ type OperationsTexts = {
     Assets: string | RegExp;
     status: string;
     actions: string | RegExp;
-    sarted: string;
+    expired: string;
     successful: string;
     rejected: string;
   };
@@ -28,7 +28,7 @@ export const operationsTexts: OperationsTexts = {
     Assets: 'Assets',
     status: 'Status',
     actions: 'Actions',
-    sarted: 'Started',
+    expired: 'Expired',
     successful: 'Successful',
     rejected: 'Rejected',
   },
@@ -43,7 +43,7 @@ export const operationsTexts: OperationsTexts = {
     Assets: 'Ficheros',
     status: 'Estado',
     actions: 'Acciones',
-    sarted: 'Iniciada',
+    expired: 'Caducada',
     successful: 'Exitosa',
     rejected: 'Rechazada',
   },
@@ -55,10 +55,10 @@ export const operationsTexts: OperationsTexts = {
     userID: 'ID do usuário',
     type: 'Tipo',
     steps: 'Passos',
-    Assets: /Ativos/,
+    Assets: 'Ativos',
     status: 'Status',
     actions: /Ações/,
-    sarted: 'Iniciado',
+    expired: 'Expirado',
     successful: 'Conseguiu',
     rejected: 'Negado',
   }, // TODO: add filters and buttons texts

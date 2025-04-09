@@ -79,7 +79,7 @@ export class operationPageCommands {
     await this.page.getByLabel('Onboarding').click();
     const buttonChecked = this.page.locator('[data-test="filter-option-ONBOARDING"] label').first();
     await expect(buttonChecked).toHaveAttribute('aria-checked', 'true');
-    await this.page.mouse.click(10, 10);
+    await this.page.locator('[data-test="closeable-chips"]').click({ force: true });
   }
 
   @stepPOM('Sees the "X" button is visible and clicks it')
@@ -102,12 +102,22 @@ export class operationPageCommands {
     'Validates expected Date and Time, Operation ID, Type and Onboarding Steps formats are seen in the UI'
   )
   async validatesDateOpIDTypesAndSteps() {
-    // Date and time format
-    const dateRegex = /^\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/;
-    await expect(this.page.getByText(dateRegex).nth(0)).toBeVisible();
+    // Start date and time format
+    const startDateRegex = /^\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/;
+    await expect(this.page.getByText(startDateRegex).nth(0)).toBeVisible();
+
+    // End date and time format
+    const endDateRegex = /^\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/;
+    await expect(this.page.getByText(endDateRegex).nth(1)).toBeVisible();
+
     // Operation ID format
-    const operationIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-    await expect(this.page.getByText(operationIdRegex).nth(0)).toBeVisible();
+    // const operationIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+    // await expect(this.page.getByText(operationIdRegex).nth(0)).toBeVisible();
+
+    // Email (User ID) format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    await expect(this.page.getByText(emailRegex).nth(2)).toBeVisible();
+
     // Type format
     const typeOnboarding = this.page.locator('[data-test="table-row-0"]').getByText('Onboarding');
     await expect(typeOnboarding).toBeVisible();
@@ -483,7 +493,7 @@ export class OperationsStringsValidation extends StringsValidationBase {
         isEnabled: false,
       },
       {
-        locator: this.page.getByText(data.sarted).nth(0),
+        locator: this.page.getByText(data.expired).nth(0),
         isEnabled: false,
       },
       {

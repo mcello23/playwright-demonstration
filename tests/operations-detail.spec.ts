@@ -44,6 +44,12 @@ test.describe('Operations page validation @regression', async () => {
       navigateFunc: async (page: Page) => await page.getByRole('button', { name: 'OCR' }).click(),
       validationFuncs: ['validatesMainSectionHeadings', 'validatesCollapsableButtons'],
     },
+    {
+      name: 'Timeline',
+      navigateFunc: async (page: Page) =>
+        await page.getByRole('button', { name: 'Timeline' }).click(),
+      validationFuncs: ['validatesTimelineElements_Successful'],
+    },
   ] as const;
 
   for (const section of operationSections) {
@@ -59,7 +65,11 @@ test.describe('Operations page validation @regression', async () => {
         }
 
         if (section.name === 'OCR') {
-          await operationDetailPage.entersOCRSection();
+          await operationDetailPage.entersOCRTab();
+        }
+
+        if (section.name === 'Timeline') {
+          await operationDetailPage.entersTimelineTab();
         }
       });
 
