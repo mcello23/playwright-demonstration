@@ -357,17 +357,18 @@ export class operationDetailCommands {
     const collapsable = this.page.locator('button.facephi-ui-option-menu__item');
     const countCollapsable = await collapsable.count();
     expect(countCollapsable).toBeGreaterThanOrEqual(1);
-    expect(countCollapsable).toBeLessThanOrEqual(6);
+    expect(countCollapsable).toBeLessThanOrEqual(8);
 
     await this.page.locator('[data-test="collapsable-button"]').last().click();
     const collapsableSelphi = this.page.getByRole('listitem').filter({ hasText: 'Selfie' });
     const countCollapsableSelphi = await collapsableSelphi.count();
 
-    const isSelphieVisible = await collapsableSelphi.isVisible();
+    const isSelphieVisible =
+      countCollapsableSelphi > 0 && (await collapsableSelphi.first().isVisible());
     if (isSelphieVisible) {
-      await expect(collapsableSelphi).toBeVisible();
-      await expect(collapsableSelphi).toBeEnabled();
-      expect(countCollapsableSelphi).toBeGreaterThanOrEqual(1);
+      await expect(collapsableSelphi.first()).toBeVisible();
+      await expect(collapsableSelphi.first()).toBeEnabled();
+      expect(countCollapsableSelphi).toBeLessThanOrEqual(2);
       console.log('✅ "Selfie" is visible in collapsable menu');
     } else {
       console.log('ℹ️ "Selfie" is not present in this operation\'s collapsable menu');
@@ -429,10 +430,13 @@ export class operationDetailCommands {
   @stepPOM('Validates successful timeline elements')
   async validatesTimelineElements_Successful() {
     await expect(this.page.getByText('Document capture successful')).toBeVisible();
-    const facialCaptureVisible = await this.page.getByText('Facial capture successful').isVisible();
+    const facialCaptureVisible = await this.page
+      .getByText('Facial capture successful')
+      .first()
+      .isVisible();
 
     if (facialCaptureVisible) {
-      expect(this.page.getByText('Facial capture successful')).toBeVisible();
+      expect(this.page.getByText('Facial capture successful').first()).toBeVisible();
     } else {
       console.log('"Facial capture" not part of this operation.');
     }

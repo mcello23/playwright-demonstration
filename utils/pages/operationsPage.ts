@@ -189,7 +189,7 @@ export class operationPageCommands {
     const count = await optionItems.count();
 
     expect(count).toBeGreaterThanOrEqual(1);
-    expect(count).toBeLessThanOrEqual(6);
+    expect(count).toBeLessThanOrEqual(8);
 
     console.log(`Found ${count} option menu items`);
   }

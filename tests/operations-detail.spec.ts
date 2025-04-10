@@ -80,4 +80,18 @@ test.describe('Operations page validation @regression', async () => {
       });
     });
   }
+  test.describe.skip('Validates specific operations based on business requirements', () => {
+    test('Validates a successfull operation', async ({ page }) => {
+      await page.goto('');
+    });
+
+    test('Validates advanced tracking tab inside a operation in Frontend', async ({
+      page,
+      baseURL,
+    }) => {
+      await page.goto(
+        `${baseURL}/operations/c8b279fd-e6ad-4a66-8d1e-a3a7f2a29ca8?tab=advancedTracking`
+      );
+    });
+  });
 });
