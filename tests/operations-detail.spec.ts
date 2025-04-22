@@ -80,17 +80,18 @@ test.describe('Operations page validation @regression', async () => {
       });
     });
   }
-  test.describe.skip('Validates specific operations based on business requirements', () => {
-    test('Validates a successfull operation', async ({ page }) => {
-      await page.goto('');
+  test.describe('Validates specific operations based on business requirements', () => {
+    test.skip('Validates a successful operation', async ({ operationDetailPage }) => {
+      await operationDetailPage.validatesTimelineSpecific_Successful();
+      await operationDetailPage.validatesThumbnailImages(3);
     });
 
-    test('Validates advanced tracking tab inside a operation in Frontend', async ({
+    test.skip('Validates advanced tracking tab inside a operation in Frontend', async ({
       page,
       baseURL,
     }) => {
       await page.goto(
-        `${baseURL}/operations/c8b279fd-e6ad-4a66-8d1e-a3a7f2a29ca8?tab=advancedTracking`
+        `${baseURL}/tenant/idv-demo/operations/c8b279fd-e6ad-4a66-8d1e-a3a7f2a29ca8?tab=advancedTracking`
       );
     });
   });

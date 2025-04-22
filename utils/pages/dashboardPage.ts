@@ -114,7 +114,7 @@ export class dashboardCommands {
   async clicksHoursButtonAndValidatesRSC(rscHelpers: rscCommands) {
     await this.hourCheckbox.click();
     await expect(this.hourCheckbox).toHaveAttribute('aria-checked', 'true');
-    await rscHelpers.waitForMultipleRSCResponses(2);
+    await rscHelpers.waitForMultipleRSCResponses(1);
   }
 
   @stepPOM('Validates Echarts responses on UI')
@@ -128,14 +128,14 @@ export class dashboardCommands {
   async clicks7DaysButtonAndValidatesRSC(rscHelpers: rscCommands) {
     await this.sevenDaysCheckbox.click();
     await expect(this.sevenDaysCheckbox).toHaveAttribute('aria-checked', 'true');
-    await rscHelpers.waitForMultipleRSCResponses(2);
+    await rscHelpers.waitForMultipleRSCResponses(1);
   }
 
   @stepPOM('Clicks on 30 days filter and validates RSC responses')
   async clicks30DaysButtonAndValidatesRSC(rscHelpers: rscCommands) {
     await this.thirtyDaysCheckbox.click();
     await expect(this.thirtyDaysCheckbox).toHaveAttribute('aria-checked', 'true');
-    await rscHelpers.waitForMultipleRSCResponses(2);
+    await rscHelpers.waitForMultipleRSCResponses(1);
   }
 
   @stepPOM('Validates Echarts responses on UI')

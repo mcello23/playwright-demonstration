@@ -26,7 +26,7 @@ export class ErrorForceCommands {
     expect(responseReceived).toBeFalsy();
   }
 
-  @stepPOM('Simulating CPU throttling for CI environments')
+  @stepPOM('Simulating CPU throttling for non-CI environments')
   async simulatesCPUThrotling(page: Page) {
     const context = page.context();
     const cdpSession = await context.newCDPSession(page);

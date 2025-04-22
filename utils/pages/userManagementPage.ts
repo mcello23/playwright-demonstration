@@ -8,8 +8,9 @@ export class userManagementCommands {
     this.page = page;
   }
 
-  @stepPOM('Clicks on a user from the list')
-  async clicksOnUser() {
+  @stepPOM('Clicks the Test User details')
+  async clicksOnTestUser() {
+    await this.page.locator('[data-test="next-page"]').click();
     await this.page.locator('[data-test="user-b9896f8d-4e74-4976-84f7-c557e90b273f"]').click();
   }
 

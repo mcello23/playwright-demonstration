@@ -3,16 +3,19 @@ type OperationsTexts = {
     lang: string;
     title: string;
     startDate: string;
-    endDate: string;
+    operationID: string;
     userID: string;
+    docNumber: string;
+    name: string | RegExp;
+    surname: string | RegExp;
     type: string;
     steps: string;
-    Assets: string | RegExp;
+    assets: string | RegExp;
     status: string;
     actions: string | RegExp;
-    expired: string;
-    successful: string;
-    rejected: string;
+    started: string;
+    // successful: string;
+    // rejected: string;
   };
 };
 
@@ -21,45 +24,54 @@ export const operationsTexts: OperationsTexts = {
     lang: 'en',
     title: 'Operations',
     startDate: 'Start Date',
-    endDate: 'End Date',
+    operationID: 'Operation ID',
     userID: 'User ID',
+    docNumber: 'Document number',
+    name: /Name/,
+    surname: /Surname/,
     type: 'Type',
     steps: 'Steps',
-    Assets: 'Assets',
+    assets: 'Assets',
     status: 'Status',
     actions: 'Actions',
-    expired: 'Expired',
-    successful: 'Successful',
-    rejected: 'Rejected',
+    started: 'Started',
+    // successful: 'Successful',
+    // rejected: 'Rejected',
   },
   es: {
     lang: 'es',
     title: 'Operaciones',
     startDate: 'Fecha de inicio',
-    endDate: 'Fecha de finalización',
+    operationID: 'ID de operación',
     userID: 'ID de usuario',
+    docNumber: 'Número de documento',
+    name: 'Nombre',
+    surname: 'Apellidos',
     type: 'Tipo',
     steps: 'Pasos',
-    Assets: 'Ficheros',
+    assets: 'Ficheros',
     status: 'Estado',
     actions: 'Acciones',
-    expired: 'Caducada',
-    successful: 'Exitosa',
-    rejected: 'Rechazada',
+    started: 'Iniciada',
+    // successful: 'Exitosa',
+    // rejected: 'Rechazada',
   },
   pt: {
     lang: 'pt',
     title: 'Operações',
     startDate: 'Data de Início',
-    endDate: 'Data de Término',
+    operationID: 'ID da operação',
     userID: 'ID do usuário',
+    docNumber: 'Número do documento',
+    name: /Nome/,
+    surname: /Sobrenome/,
     type: 'Tipo',
     steps: 'Passos',
-    Assets: 'Ativos',
+    assets: 'Ativos',
     status: 'Status',
     actions: /Ações/,
-    expired: 'Expirado',
-    successful: 'Conseguiu',
-    rejected: 'Negado',
+    started: 'Iniciado',
+    // successful: 'Conseguiu',
+    // rejected: 'Negado',
   }, // TODO: add filters and buttons texts
 };

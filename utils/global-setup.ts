@@ -40,12 +40,12 @@ async function createUnsignedState() {
   }
 }
 
-async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit') {
-  const authFilePath = path.join(authDir, `auth-${browserType}.json`);
+async function loginAndSaveState(browserName: 'chromium' | 'firefox' | 'webkit') {
+  const authFilePath = path.join(authDir, `auth-${browserName}.json`);
 
-  console.log(`🔑 Starting login with ${browserType}...`);
+  console.log(`🔑 Starting login with ${browserName}...`);
   const browserTypeMap = { chromium, firefox, webkit };
-  const browserLauncher = browserTypeMap[browserType];
+  const browserLauncher = browserTypeMap[browserName];
 
   const browser = await browserLauncher.launch();
   const context = await browser.newContext();
@@ -68,11 +68,11 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
     try {
       await page.waitForURL('**/tenant/**', { waitUntil: 'commit' });
 
-      console.log(`✅ Login successful with ${browserType}! Saving state...`);
+      console.log(`✅ Login successful with ${browserName}! Saving state...`);
       await context.storageState({ path: authFilePath });
     } catch (error) {
-      console.error(`❌ Login with ${browserType} failed! Issue: ${error}`);
-      await page.screenshot({ path: path.join(authDir, `redirect-fail-${browserType}.png`) });
+      console.error(`❌ Login with ${browserName} failed! Issue: ${error}`);
+      await page.screenshot({ path: path.join(authDir, `redirect-fail-${browserName}.png`) });
     }
 
     // Failsafe
@@ -83,9 +83,9 @@ async function loginAndSaveState(browserType: 'chromium' | 'firefox' | 'webkit')
     const isErrorHeaderVisible = await errorHeader.isVisible().catch(() => false);
 
     if (isErrorImageVisible || isErrorHeaderVisible) {
-      console.error(`⛔ Cookies error detected with ${browserType} login`);
-      await page.screenshot({ path: path.join(authDir, `error-${browserType}.png`) });
-      throw new Error(`Login error when using ${browserType} to login`);
+      console.error(`⛔ Cookies error detected with ${browserName} login`);
+      await page.screenshot({ path: path.join(authDir, `error-${browserName}.png`) });
+      throw new Error(`Login error when using ${browserName} to login`);
     }
   } catch (error) {
     await browser.close();
@@ -96,18 +96,18 @@ async function handleBrowsersBasedOnSharding(config: FullConfig) {
   const shard = config.shard;
   if (shard) {
     const { total, current } = shard;
-    let browserType: 'chromium' | 'firefox' | 'webkit';
+    let browserName: 'chromium' | 'firefox' | 'webkit';
 
     if (total === 3) {
       if (current === 1) {
-        browserType = 'chromium';
+        browserName = 'chromium';
       } else if (current === 2) {
-        browserType = 'firefox';
+        browserName = 'firefox';
       } else {
-        browserType = 'webkit';
+        browserName = 'webkit';
       }
-      console.log(`🔧 Executing login only for ${browserType} (shard ${current}/${total})`);
-      await loginAndSaveState(browserType);
+      console.log(`🔧 Executing login only for ${browserName} (shard ${current}/${total})`);
+      await loginAndSaveState(browserName);
     } else {
       console.warn(
         `⚠️ Shard number (${total}) isn't supported for shard optimization. Executing login for all browsers.`

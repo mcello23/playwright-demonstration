@@ -13,7 +13,7 @@ test.describe('Operations page validation @regression', () => {
     await operationPage.validatesDateOpIDTypesAndSteps();
   });
 
-  test('Uses the calendar component with random dates, validating UI "X" and "Clear all" buttons and Rendering Server Components (RSC) responses', async ({
+  test('Uses the calendar component with random dates, validating UI "X" and "Clear all" buttons and React Server Components (RSC) responses', async ({
     operationPage,
     rscHelpers,
     calendarHelper,
@@ -58,7 +58,7 @@ test.describe('Operations page validation @regression', () => {
     await operationPage.clicksOnFilesButton_SuccesOp();
     await operationPage.clicksOnADocument();
     await operationPage.seesImageInsideModal();
-    await operationPage.clicksOnModalBackButton();
+    await operationPage.clicksOnModalXButton();
     await operationPage.validateModalClosed();
   });
 

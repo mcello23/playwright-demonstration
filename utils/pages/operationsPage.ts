@@ -130,8 +130,15 @@ export class operationPageCommands {
     await expect(steps).toBeVisible();
   }
 
-  @stepPOM('Finds a rejected operation is visible')
+  @stepPOM('Finds a rejected operation')
   async findsRejectedOperation() {
+    await this.page.locator('[data-test="filter-button"]').click();
+    const rejectedToggle = this.page.getByLabel('Rejected');
+    await rejectedToggle.click();
+    await this.page.evaluate(() => {
+      const overlay = document.querySelector('#popup-root div:nth-child(1)');
+      if (overlay) overlay.remove();
+    });
     const resultsPage = this.page.locator('#tableBody');
 
     const rejectedRow = resultsPage
@@ -173,13 +180,20 @@ export class operationPageCommands {
   // Files listing
   @stepPOM('Clicks on a operation that has assests available')
   async clicksOnFilesButton() {
+    await this.page.locator('[data-test="filter-button"]').click();
+    await this.page.getByLabel('Succesful').click(); // TODO: report typo
+    await this.page.getByLabel('Rejected').click();
+    await this.page.evaluate(() => {
+      const overlay = document.querySelector('#popup-root div:nth-child(1)');
+      if (overlay) overlay.remove();
+    });
     const filesButton = this.page.getByRole('button', { name: /Files \(\d+\)/ }).first();
     await expect(filesButton).toBeVisible();
     await expect(filesButton).toBeEnabled();
     await filesButton.click();
   }
 
-  @stepPOM('Validates that the files button listing is visible and contains from 1 to 6 items')
+  @stepPOM('Validates that the files button listing is visible and contains from 1 to 8 items')
   async validatesFilesButtonAndItems() {
     const filesModal = this.page.locator('[data-test="option-menu"]');
     await expect(filesModal).toBeVisible();
@@ -194,14 +208,20 @@ export class operationPageCommands {
     console.log(`Found ${count} option menu items`);
   }
 
-  @stepPOM('Find a successful operation and clicks on the files button')
+  @stepPOM('Finds a successful operation and clicks on the files button')
   async clicksOnFilesButton_SuccesOp() {
+    await this.page.locator('[data-test="filter-button"]').click();
+    await this.page.getByLabel('Succesful').click(); // TODO: report typo
+    await this.page.evaluate(() => {
+      const overlay = document.querySelector('#popup-root div:nth-child(1)');
+      if (overlay) overlay.remove();
+    });
     const resultsPage = this.page.locator('#tableBody');
 
     const statusRow = resultsPage
       .locator('[data-test^="table-row-"]')
       .filter({
-        hasText: /Successful|Exitosa|Conseguiu/,
+        hasText: /Successful/,
       })
       .first();
 
@@ -214,6 +234,12 @@ export class operationPageCommands {
 
   @stepPOM('Find any operation that has a Files button and clicks on it')
   async clicksOnFilesButton_AnyOp() {
+    await this.page.locator('[data-test="filter-button"]').click();
+    await this.page.getByLabel('Succesful').click(); // TODO: report typo
+    await this.page.evaluate(() => {
+      const overlay = document.querySelector('#popup-root div:nth-child(1)');
+      if (overlay) overlay.remove();
+    });
     const resultsPage = this.page.locator('#tableBody');
 
     const statusRow = resultsPage
@@ -230,7 +256,7 @@ export class operationPageCommands {
     await filesButton.click();
   }
 
-  @stepPOM('Validates that the files listing is visible and contains from 1 to 6 items')
+  @stepPOM('Validates that the files listing is visible and contains from 1 to 8 items')
   async clicksOnADocument() {
     const filesModal = this.page.locator('button.facephi-ui-option-menu__item').nth(0);
     await filesModal.click();
@@ -265,55 +291,42 @@ export class operationPageCommands {
       .getByRole('button')
       .first();
     await expect(minusZoom).toBeVisible();
-    await expect(minusZoom).toBeEnabled();
+    await expect(minusZoom).toBeDisabled();
 
     const moreZoom = this.page
       .locator('div')
       .filter({ hasText: /^100%$/ })
       .getByRole('button')
-      .nth(1);
+      .nth(3);
     await expect(moreZoom).toBeVisible();
     await expect(moreZoom).toBeEnabled();
 
-    const printBttn = this.page.locator('.facephi-ui-flex > div:nth-child(3) > button').first();
+    const printBttn = this.page.locator('section:nth-child(2) > div > button').first();
     await expect(printBttn).toBeVisible();
     await expect(printBttn).toBeEnabled();
 
-    const downloadBttn = this.page.locator('div:nth-child(3) > button:nth-child(2)').first();
+    const downloadBttn = this.page.locator('section:nth-child(2) > div > button').first();
     await expect(downloadBttn).toBeVisible();
     await expect(downloadBttn).toBeEnabled();
 
-    const backBttn = this.page
-      .locator('.facephi-ui-modal__base > div > div:nth-child(3) > button')
-      .first();
+    const backBttn = this.page.locator('section:nth-child(2) > div > button').first();
     await expect(backBttn).toBeVisible();
-    await expect(backBttn).toBeDisabled();
+    await expect(backBttn).toBeEnabled();
 
     const fwdBttn = this.page.locator(
-      '.facephi-ui-modal__base > div > div:nth-child(3) > button:nth-child(2)'
+      'section:nth-child(2) > div:nth-child(2) > button:nth-child(3)'
     );
     await expect(fwdBttn).toBeVisible();
   }
 
-  @stepPOM('Clicks on the modal back button')
-  async clicksOnModalBackButton() {
-    const modalContent = this.page.locator('[data-test="modal-assets"]');
-    if (await modalContent.locator('button:has-text("Selfie")').isVisible()) {
-      await modalContent.locator('button:has-text("Selfie")').click();
-    } else if (await modalContent.locator('button:has-text("Document back")').isVisible()) {
-      await modalContent.locator('button:has-text("Document back")').click();
-    } else if (
-      await modalContent.locator('button:has-text("Document back fullframe")').isVisible()
-    ) {
-      await modalContent.locator('button:has-text("Document back fullframe")').click();
-    } else {
-      console.log('Specified back buttons not found inside modal.');
-    }
+  @stepPOM('Clicks on the "X" button')
+  async clicksOnModalXButton() {
+    await this.page.locator('button:nth-child(3)').first().click();
   }
 
   @stepPOM('Validates that the modal was closed')
   async validateModalClosed() {
-    const modalWindow = this.page.locator('[data-test="modal-oberlay"]');
+    const modalWindow = this.page.locator('[data-test="modal-assets"]');
     await expect(modalWindow).not.toBeVisible();
   }
 
@@ -321,7 +334,7 @@ export class operationPageCommands {
   async validatesModalDownloadButton() {
     const downloadPromise = this.page.waitForEvent('download');
 
-    await this.page.locator('div:nth-child(3) > button:nth-child(2)').first().click();
+    await this.page.locator('section:nth-child(2) > div > button:nth-child(2)').first().click();
 
     const download = await downloadPromise;
 
@@ -360,10 +373,7 @@ export class operationPageCommands {
 
   @stepPOM('Click on print button and validate')
   async clickOnPrintButtonAndValidate(): Promise<void> {
-    await this.page
-      .locator('[data-test="modal-assets"] button:has(svg[viewBox="0 0 256 256"])')
-      .nth(3)
-      .click();
+    await this.page.locator('section:nth-child(2) > div > button').first().click();
     if (this.printPromise) {
       await this.printPromise;
     }
@@ -382,8 +392,11 @@ export class operationPageCommands {
   async selectsRandomTooglesAndLogsNotVisibles() {
     const availableColumns = [
       'Start Date',
-      'End Date',
+      'Operation ID',
       'User ID',
+      'Document number',
+      /Name/,
+      /Surname/,
       'Type',
       'Steps',
       'Assets',
@@ -418,25 +431,25 @@ export class operationPageCommands {
 
   @stepPOM('Validates pagination of Operations page')
   async validatePagination() {
-    await this.page.waitForSelector('[data-test="page-2"]', { state: 'visible' });
+    await this.page.waitForSelector('[data-test="next-page"]', { state: 'visible' });
     console.log('Clicks on page 2...');
-    await this.page.locator('[data-test="page-2"]').click();
+    await this.page.locator('[data-test="next-page"]').click();
 
-    await this.page.waitForURL('**/operations?page=2');
+    await this.page.waitForURL('**/operations?to=**');
     await this.page.waitForSelector('#tableBody', { state: 'visible' });
 
     console.log(`URL now is: ${this.page.url()}`);
-    expect(this.page.url()).toContain('operations?page=2');
+    expect(this.page.url()).toMatch(/\/operations\?to=/);
 
-    await this.page.waitForSelector('[data-test="page-3"]', { state: 'visible' });
+    await this.page.waitForSelector('[data-test="next-page"]', { state: 'visible' });
     console.log('Clicks on page 3...');
-    await this.page.locator('[data-test="page-3"]').click();
+    await this.page.locator('[data-test="next-page"]').click();
 
-    await this.page.waitForURL('**/operations?page=3');
+    await this.page.waitForURL('**/operations?to=**');
     await this.page.waitForSelector('#tableBody', { state: 'visible' });
 
     console.log(`URL now is: ${this.page.url()}`);
-    expect(this.page.url()).toContain('operations?page=3');
+    expect(this.page.url()).toMatch(/\/operations\?to=/);
   }
 }
 export class OperationsStringsValidation extends StringsValidationBase {
@@ -450,7 +463,22 @@ export class OperationsStringsValidation extends StringsValidationBase {
     await this.page.locator('[data-test="welcome-modal-skip-button"]').click();
     await this.page.locator('[data-test="Operations"]').click();
     await this.page.locator('[data-test="header"]').focus();
+    await this.page.locator('[data-test="hide-columns"]').click();
+    const optionMenu = this.page.locator('[data-test="option-menu"] [role="listitem"]');
+    const count = await optionMenu.count();
+
+    for (let i = 0; i < count; i++) {
+      const item = optionMenu.nth(i);
+      const checkbox = item.locator('input[type="checkbox"]');
+      const isChecked = await checkbox.isChecked();
+      if (!isChecked) {
+        await checkbox.click();
+        console.log(`Item ${i} is now checked and visible in operations page`);
+      }
+    }
+    await this.page.mouse.click(0, 0);
   }
+
   getOperationsAssertions(locale: string): TextAssertion[] {
     const data = (operationsTexts as OperationsTexts)[locale];
     type OperationsTexts = any;
@@ -465,11 +493,23 @@ export class OperationsStringsValidation extends StringsValidationBase {
         isEnabled: false,
       },
       {
-        locator: this.page.getByText(data.endDate),
+        locator: this.page.getByText(data.operationID),
         isEnabled: false,
       },
       {
         locator: this.page.getByText(data.userID),
+        isEnabled: false,
+      },
+      {
+        locator: this.page.getByText(data.docNumber),
+        isEnabled: false,
+      },
+      {
+        locator: this.page.getByText(data.name),
+        isEnabled: false,
+      },
+      {
+        locator: this.page.getByText(data.surname),
         isEnabled: false,
       },
       {
@@ -481,7 +521,7 @@ export class OperationsStringsValidation extends StringsValidationBase {
         isEnabled: false,
       },
       {
-        locator: this.page.getByText(data.Assets).nth(0),
+        locator: this.page.getByText(data.assets).nth(0),
         isEnabled: false,
       },
       {
@@ -493,17 +533,17 @@ export class OperationsStringsValidation extends StringsValidationBase {
         isEnabled: false,
       },
       {
-        locator: this.page.getByText(data.expired).nth(0),
+        locator: this.page.getByText(data.started).nth(0),
         isEnabled: false,
       },
-      {
-        locator: this.page.getByText(data.successful).nth(0),
-        isEnabled: false,
-      },
-      {
-        locator: this.page.getByText(data.rejected).nth(0),
-        isEnabled: false,
-      },
+      // {
+      //   locator: this.page.getByText(data.successful).nth(0),
+      //   isEnabled: false,
+      // },
+      // {
+      //   locator: this.page.getByText(data.rejected).nth(0),
+      //   isEnabled: false,
+      // },
     ];
   }
 

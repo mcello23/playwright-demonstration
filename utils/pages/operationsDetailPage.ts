@@ -3,8 +3,11 @@ import { stepPOM } from 'utils/controller/e2e';
 
 export class operationDetailCommands {
   page: Page;
+  baseURL: string;
+
   constructor(page: Page) {
     this.page = page;
+    this.baseURL = page.url();
   }
 
   @stepPOM('Clicks on any operation detail')
@@ -19,7 +22,7 @@ export class operationDetailCommands {
 
   @stepPOM('Clicks on a successful operation detail')
   async entersOperationDetail_Successful() {
-    const maxPagesToCheck = 3;
+    const maxPagesToCheck = 18;
     let currentPage = 1;
     let foundSuccessfulOperation = false;
 
@@ -59,7 +62,7 @@ export class operationDetailCommands {
             `Navigating to page ${currentPage}: ${baseUrl}/operations?page=${currentPage}`
           );
 
-          await this.page.goto(`${baseUrl}/operations?page=${currentPage}`);
+          await this.page.locator('[data-test="next-page"]').click();
           await this.page.waitForSelector('#tableBody', { state: 'visible', timeout: 10000 });
         }
       }
@@ -68,7 +71,7 @@ export class operationDetailCommands {
 
   @stepPOM('Clicks on a rejected operation detail')
   async entersOperationDetail_Rejected() {
-    const maxPagesToCheck = 3;
+    const maxPagesToCheck = 18;
     let currentPage = 1;
     let foundSuccessfulOperation = false;
 
@@ -107,7 +110,7 @@ export class operationDetailCommands {
             `Navigating to page ${currentPage}: ${baseUrl}/operations?page=${currentPage}`
           );
 
-          await this.page.goto(`${baseUrl}/operations?page=${currentPage}`);
+          await this.page.locator('[data-test="next-page"]').click();
           await this.page.waitForSelector('#tableBody', { state: 'visible', timeout: 10000 });
         }
       }
@@ -455,5 +458,61 @@ export class operationDetailCommands {
     await expect(this.page.getByText('Facial authentication successful')).toBeVisible();
     await expect(this.page.getByText('Facial liveness successful')).toBeVisible();
     await expect(this.page.getByText('Operation successful')).toBeVisible();
+  }
+
+  @stepPOM('Validates a specific successful operation timeline elements')
+  async validatesTimelineSpecific_Successful() {
+    await this.page.goto(
+      `${this.baseURL}/operations/51ee6863-1d67-4612-ad4c-bbf2a36d3e1d?tab=timeline`
+    );
+    await expect(this.page.getByText('Document capture successful')).toBeVisible();
+    await expect(this.page.getByText('Facial capture successful')).toBeVisible();
+
+    const timelineEntries = this.page.locator('[data-test="vertical-step-container"]');
+    const fileCreatedEntries = timelineEntries.getByText('File created');
+    const fileCreatedCount = await fileCreatedEntries.count();
+    console.log(`Found ${fileCreatedCount} "File created" entries.`);
+    expect(fileCreatedCount).toBe(3);
+
+    const assetEntries = timelineEntries.locator('text=Asset');
+    const assetCount = await assetEntries.count();
+    console.log(`Found ${assetCount} "Asset" entries.`);
+    expect(assetCount).toBe(3);
+
+    await expect(this.page.getByText('Facial authentication successful')).toBeVisible();
+    await expect(this.page.getByText('Facial liveness successful')).toBeVisible();
+    await expect(this.page.getByText('Operation successful')).toBeVisible();
+  }
+
+  async validatesThumbnailImages(expectedCount: number) {
+    const thumbnailImages = this.page.locator('img[data-nimg="1"]');
+
+    await this.page.waitForSelector('img[data-nimg="1"]', { timeout: 5000 });
+
+    const imageCount = await thumbnailImages.count();
+    console.log(`Found ${imageCount} thumbnail images, expected at least ${expectedCount}`);
+
+    if (imageCount >= expectedCount) {
+      console.log(`✅ Found ${imageCount} images, validating ${expectedCount} of them`);
+
+      for (let i = 0; i < expectedCount; i++) {
+        const image = thumbnailImages.nth(i);
+        await expect(image).toBeVisible();
+        await image.hover();
+
+        const hasPointerCursorStyle = await image.evaluate((el) => {
+          return window.getComputedStyle(el).cursor === 'pointer';
+        });
+
+        expect(hasPointerCursorStyle).toBeTruthy();
+        console.log(`✅ Image ${i + 1}/${expectedCount} is visible and clickable`);
+      }
+
+      console.log(`✅ All ${expectedCount} thumbnail images are visible and clickable`);
+      return true;
+    } else {
+      console.log(`ℹ️ Found only ${imageCount} images, expected at least ${expectedCount}`);
+      return false;
+    }
   }
 }

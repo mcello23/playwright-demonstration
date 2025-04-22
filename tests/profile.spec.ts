@@ -24,7 +24,7 @@ test.describe('Profile options and tutorial modal validation @regression', async
 test.describe('User Management validation', () => {
   test.beforeEach(async ({ userManagementNavigation, userManagementPage }) => {
     await userManagementNavigation.goesToUserManagement();
-    await userManagementPage.clicksOnUser();
+    await userManagementPage.clicksOnTestUser();
   });
 
   test('Validates User Management page elements are visible in the UI @smoke', async ({

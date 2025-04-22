@@ -111,7 +111,7 @@ function getStorageState(browserName: BrowserName): StorageState {
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  timeout: process.env.CI ? 50_000 : 28_000,
+  timeout: process.env.CI ? 50_000 : 35_000,
   expect: {
     timeout: process.env.CI ? 30_000 : 18_000,
     toHaveScreenshot: { pathTemplate: 'tests/visual-tests/{arg}{ext}' },

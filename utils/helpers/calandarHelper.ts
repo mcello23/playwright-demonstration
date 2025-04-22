@@ -27,7 +27,7 @@ export class CalendarCommands {
     return this.selectDateRange(startDay, endDay);
   }
 
-  @stepPOM('Selects specific date range')
+  @stepPOM('Cliks on random dates')
   async selectDateRange(startDay: number, endDay: number) {
     const startButton = await this.getDayButton(startDay);
     if (startButton) {

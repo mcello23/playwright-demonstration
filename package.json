@@ -32,22 +32,22 @@
   "description": "",
   "devDependencies": {
     "@currents/playwright": "^1.12.0",
-    "@faker-js/faker": "^9.6.0",
+    "@faker-js/faker": "^9.7.0",
     "@playwright/test": "^1.51.1",
     "@types/node": "^22.14.0",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.1",
     "allure-commandline": "^2.33.0",
     "allure-playwright": "^3.2.1",
-    "dotenv": "^16.4.7",
-    "eslint": "^9.23.0",
-    "eslint-config-prettier": "^10.1.1",
+    "dotenv": "^16.5.0",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
     "eslint-define-config": "^2.1.0",
     "eslint-plugin-playwright": "^2.2.0",
     "eslint-plugin-prettier": "^5.2.6",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.2",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^8.29.1"
   }
 }
