@@ -91,4 +91,22 @@ test.describe('Operations page validation @regression', () => {
   test('Validates Operations navigation using pagination footer', async ({ operationPage }) => {
     await operationPage.validatePagination();
   });
+
+  test('Validates that Operations URL is randomly changed and it loads correctly, matching inserted number with pagination footer', async ({
+    operationPage,
+  }) => {
+    await operationPage.goesToRandomURL_ValidatesFooter();
+  });
+
+  test("Clicks on footer page and validates that the loading doesn't show anymore @regression", async ({
+    operationPage,
+  }) => {
+    await operationPage.clicksSamePage();
+  });
+
+  test('Negative test: Navigates to unexistent results page of Operations and validates error message', async ({
+    operationPage,
+  }) => {
+    await operationPage.goesToRandomURL_ValidatesError();
+  });
 });

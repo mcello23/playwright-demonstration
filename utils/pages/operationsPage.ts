@@ -429,7 +429,7 @@ export class operationPageCommands {
     }
   }
 
-  @stepPOM('Validates pagination of Operations page')
+  @stepPOM('Validates pagination of Operations page by clicking on the next page button')
   async validatePagination() {
     await this.page.waitForSelector('[data-test="next-page"]', { state: 'visible' });
     console.log('Clicks on page 2...');
@@ -438,8 +438,8 @@ export class operationPageCommands {
     await this.page.waitForURL('**/operations?to=**');
     await this.page.waitForSelector('#tableBody', { state: 'visible' });
 
-    console.log(`URL now is: ${this.page.url()}`);
     expect(this.page.url()).toMatch(/\/operations\?to=/);
+    console.log(`URL now is: ${this.page.url()}`);
 
     await this.page.waitForSelector('[data-test="next-page"]', { state: 'visible' });
     console.log('Clicks on page 3...');
@@ -448,10 +448,69 @@ export class operationPageCommands {
     await this.page.waitForURL('**/operations?to=**');
     await this.page.waitForSelector('#tableBody', { state: 'visible' });
 
-    console.log(`URL now is: ${this.page.url()}`);
     expect(this.page.url()).toMatch(/\/operations\?to=/);
+    console.log(`URL now is: ${this.page.url()}`);
+  }
+
+  @stepPOM('Navigates to random page number via URL and validates it')
+  async goesToRandomURL_ValidatesFooter() {
+    const currentUrl = this.page.url();
+    const url = new URL(currentUrl);
+    const pageNumber = faker.number.int({ min: 3, max: 19 });
+
+    url.searchParams.set('page', pageNumber.toString());
+
+    const newUrl = url.toString();
+    console.log(`Navigating to page ${pageNumber} via URL: ${newUrl}`);
+
+    await this.page.goto(newUrl);
+
+    await this.page.waitForURL(newUrl);
+    await this.page.waitForSelector('#tableBody', { state: 'visible' });
+
+    expect(this.page.url()).toContain(`page=${pageNumber}`);
+    console.log(`Successfully navigated to page ${pageNumber}`);
+    const paginationButton = this.page.locator(`[data-test="page-${pageNumber}"]`);
+    await expect(paginationButton).toBeVisible();
+    console.log(`URL page matches pagination number ${paginationButton}`);
+  }
+
+  @stepPOM('Navigates to invalid URL and validates error message')
+  async goesToRandomURL_ValidatesError() {
+    const currentUrl = this.page.url();
+    const url = new URL(currentUrl);
+    const pageNumber = faker.number.int({ min: 160, max: 300 });
+
+    url.searchParams.set('page', pageNumber.toString());
+
+    const newUrl = url.toString();
+    console.log(`Navigating to page ${pageNumber} via URL: ${newUrl}`);
+
+    await this.page.goto(newUrl);
+
+    await this.page.waitForURL(newUrl);
+    await expect(this.page.locator('#tableBody')).not.toBeVisible();
+    await expect(this.page.getByRole('img', { name: 'No results for this filter' })).toBeVisible();
+
+    await expect(this.page.locator('[data-test="empty-state-test"] div').first())
+      .toMatchAriaSnapshot(`
+      - img "No results for this filter image"
+      - paragraph: No results found for this filter
+      - paragraph: Try adjusting the filters or check back later for new results
+      `);
+
+    expect(this.page.url()).toContain(`page=${pageNumber}`);
+    console.log(`Successfully navigated to page ${pageNumber}`);
+    console.log('Error message is visible');
+  }
+
+  @stepPOM('Navigates to invalid URL and validates error message')
+  async clicksSamePage() {
+    await this.page.locator('[data-test="page-1"]').click();
+    await expect(this.page.locator('.facephi-ui-spinner__spinner')).not.toBeVisible();
   }
 }
+
 export class OperationsStringsValidation extends StringsValidationBase {
   constructor(page: Page) {
     super(page);

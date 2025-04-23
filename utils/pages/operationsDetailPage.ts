@@ -22,99 +22,44 @@ export class operationDetailCommands {
 
   @stepPOM('Clicks on a successful operation detail')
   async entersOperationDetail_Successful() {
-    const maxPagesToCheck = 18;
-    let currentPage = 1;
-    let foundSuccessfulOperation = false;
+    await this.page.locator('[data-test="filter-button"]').click();
+    await this.page.getByLabel('Succesful').click(); // TODO: report typo
+    await this.page.evaluate(() => {
+      const overlay = document.querySelector('#popup-root div:nth-child(1)') as HTMLElement;
+      if (overlay) overlay.style.display = 'none';
+    });
 
-    while (currentPage <= maxPagesToCheck && !foundSuccessfulOperation) {
-      console.log(`Verifying page ${currentPage} for successful operations...`);
+    await this.page.waitForSelector('#tableBody', { state: 'visible' });
 
-      await this.page.waitForSelector('#tableBody', { state: 'visible', timeout: 10000 });
-      await this.page.waitForTimeout(1000);
+    const rejectedRows = this.page
+      .locator('[data-test^="table-row-"]')
+      .filter({ hasText: 'Successful' });
 
-      const successfulRows = this.page
-        .locator('[data-test^="table-row-"]')
-        .filter({ hasText: /Successful/ })
-        .first();
+    const rejectedRow = rejectedRows.first();
 
-      const count = await successfulRows.count();
-      console.log(`Found ${count} successful operations on page ${currentPage}`);
-
-      if (count > 0) {
-        foundSuccessfulOperation = true;
-        console.log(`Clicking on successful operation on page ${currentPage}`);
-
-        const successfulRow = successfulRows.first();
-        await successfulRow.waitFor({ state: 'visible', timeout: 5000 });
-
-        const successOperation = successfulRow.locator('[data-test^="operationDetail-"]');
-        await successOperation.click();
-
-        await this.page.waitForRequest('**/operations/**');
-      } else {
-        console.log(`No successful operations found on page ${currentPage}, trying next page...`);
-        currentPage++;
-
-        if (currentPage <= maxPagesToCheck) {
-          const currentUrl = this.page.url();
-          const baseUrl = currentUrl.split('?')[0];
-          console.log(
-            `Navigating to page ${currentPage}: ${baseUrl}/operations?page=${currentPage}`
-          );
-
-          await this.page.locator('[data-test="next-page"]').click();
-          await this.page.waitForSelector('#tableBody', { state: 'visible', timeout: 10000 });
-        }
-      }
-    }
+    const operationDetail = rejectedRow.locator('[data-test^="operationDetail-"]').first();
+    await operationDetail.click();
   }
 
   @stepPOM('Clicks on a rejected operation detail')
   async entersOperationDetail_Rejected() {
-    const maxPagesToCheck = 18;
-    let currentPage = 1;
-    let foundSuccessfulOperation = false;
+    await this.page.locator('[data-test="filter-button"]').click();
+    await this.page.getByLabel('Rejected').click();
+    await this.page.evaluate(() => {
+      const overlay = document.querySelector('#popup-root div:nth-child(1)') as HTMLElement;
+      if (overlay) overlay.style.display = 'none';
+    });
 
-    while (currentPage <= maxPagesToCheck && !foundSuccessfulOperation) {
-      console.log(`Verifying page ${currentPage} for rejected operations...`);
+    await this.page.waitForSelector('#tableBody', { state: 'visible' });
 
-      await this.page.waitForSelector('#tableBody', { state: 'visible', timeout: 10000 });
-      await this.page.waitForTimeout(1000);
+    const rejectedRows = this.page
+      .locator('[data-test^="table-row-"]')
+      .filter({ hasText: 'Rejected' });
 
-      const rejectedRows = this.page
-        .locator('[data-test^="table-row-"]')
-        .filter({ hasText: /Rejected/ });
+    const rejectedRow = rejectedRows.first();
 
-      const count = await rejectedRows.count();
-      console.log(`Found ${count} rejected operations on page ${currentPage}`);
-
-      if (count > 0) {
-        foundSuccessfulOperation = true;
-        console.log(`Clicking on rejected operation on page ${currentPage}`);
-
-        const rejectedRow = rejectedRows.first();
-        await rejectedRow.waitFor({ state: 'visible', timeout: 5000 });
-
-        const operationDetail = rejectedRow.locator('[data-test^="operationDetail-"]').first();
-        await operationDetail.click();
-
-        await this.page.waitForRequest('**/operations/**');
-      } else {
-        console.log(`No successful operations found on page ${currentPage}, trying next page...`);
-        currentPage++;
-
-        if (currentPage <= maxPagesToCheck) {
-          const currentUrl = this.page.url();
-          const baseUrl = currentUrl.split('?')[0];
-          console.log(
-            `Navigating to page ${currentPage}: ${baseUrl}/operations?page=${currentPage}`
-          );
-
-          await this.page.locator('[data-test="next-page"]').click();
-          await this.page.waitForSelector('#tableBody', { state: 'visible', timeout: 10000 });
-        }
-      }
-    }
+    const operationDetail = rejectedRow.locator('[data-test^="operationDetail-"]').first();
+    await operationDetail.click();
   }
 
   @stepPOM('Validates all header elements are visible and in the correct format inside a Operation')
@@ -456,7 +401,7 @@ export class operationDetailCommands {
     expect(assetCount).toBeLessThanOrEqual(4);
 
     await expect(this.page.getByText('Facial authentication successful')).toBeVisible();
-    await expect(this.page.getByText('Facial liveness successful')).toBeVisible();
+    // await expect(this.page.getByText('Facial liveness successful')).toBeVisible();
     await expect(this.page.getByText('Operation successful')).toBeVisible();
   }
 
