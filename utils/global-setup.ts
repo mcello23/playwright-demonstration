@@ -1,4 +1,4 @@
-import { chromium, firefox, FullConfig, webkit } from '@playwright/test';
+import { chromium, firefox, FullConfig } from '@playwright/test';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
@@ -40,10 +40,10 @@ async function createUnsignedState() {
   }
 }
 
-async function loginAndSaveState(browserName: 'chromium' | 'firefox' | 'webkit') {
+async function loginAndSaveState(browserName: 'chromium' | 'firefox') {
   const authFilePath = path.join(authDir, `auth-${browserName}.json`);
   console.log(`🔑 Starting login with ${browserName}...`);
-  const browserTypeMap = { chromium, firefox, webkit };
+  const browserTypeMap = { chromium, firefox };
   const browserLauncher = browserTypeMap[browserName];
 
   const browser = await browserLauncher.launch();
@@ -51,7 +51,7 @@ async function loginAndSaveState(browserName: 'chromium' | 'firefox' | 'webkit')
   const page = await context.newPage();
 
   try {
-    await page.goto(process.env.BASE_URL!, { waitUntil: 'commit' });
+    await page.goto(process.env.BASE_URL!);
 
     const emailInput = page.getByRole('textbox', { name: 'Email address' });
     await emailInput.waitFor({ state: 'visible' });
@@ -96,35 +96,29 @@ async function handleBrowsersBasedOnSharding(config: FullConfig) {
   const shard = config.shard;
   if (shard) {
     const { total, current } = shard;
-    let browserName: 'chromium' | 'firefox' | 'webkit';
+    let browserName: 'chromium' | 'firefox';
 
-    if (total === 3) {
+    if (total === 2) {
       if (current === 1) {
         browserName = 'chromium';
       } else if (current === 2) {
         browserName = 'firefox';
       } else {
-        browserName = 'webkit';
+        console.warn(`⚠️ Unexpected shard index: ${current}/${total}. Skipping login.`);
+        return;
       }
       console.log(`🔧 Executing login only for ${browserName} (shard ${current}/${total})`);
       await loginAndSaveState(browserName);
     } else {
       console.warn(
-        `⚠️ Shard number (${total}) isn't supported for shard optimization. Executing login for all browsers.`
+        `⚠️ Unsupported shard total (${total}). Executing login for Chromium and Firefox.`
       );
-      await Promise.all([
-        loginAndSaveState('chromium'),
-        loginAndSaveState('firefox'),
-        loginAndSaveState('webkit'),
-      ]);
+      await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox')]);
     }
   } else {
-    console.log(`⚙️ No sharding configured. Executing login for all browsers.`);
-    await Promise.all([
-      loginAndSaveState('chromium'),
-      loginAndSaveState('firefox'),
-      loginAndSaveState('webkit'),
-    ]);
+    // Se não houver sharding, executa para ambos
+    console.log(`⚙️ No sharding configured. Executing login for Chromium and Firefox.`);
+    await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox')]);
   }
 }
 

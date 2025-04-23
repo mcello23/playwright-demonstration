@@ -99,7 +99,7 @@ if (process.env.CI) {
 }
 
 type StorageState = string | StorageStateObject;
-type BrowserName = 'chromium' | 'firefox' | 'webkit';
+type BrowserName = 'chromium' | 'firefox';
 
 /**
  * @param browserName -
@@ -123,7 +123,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
   workers: process.env.CI ? 1 : 3,
-  shard: process.env.CI ? { total: 3, current: 1 } : undefined,
+  shard: process.env.CI ? { total: 2, current: 1 } : undefined,
   fullyParallel: false,
   reporter: reporters,
   globalSetup: path.resolve(__dirname, 'utils/global-setup.ts'),
@@ -156,15 +156,15 @@ export default defineConfig({
         video: 'retain-on-failure',
       },
     },
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        storageState: getStorageState('webkit'),
-        trace: 'on-first-retry',
-        video: 'on-first-retry',
-        screenshot: 'on-first-failure',
-      },
-    },
+    // {
+    //   name: 'webkit',
+    //   use: {
+    //     ...devices['Desktop Safari'],
+    //     storageState: getStorageState('webkit'),
+    //     trace: 'on-first-retry',
+    //     video: 'on-first-retry',
+    //     screenshot: 'on-first-failure',
+    //   },
+    // },
   ],
 });

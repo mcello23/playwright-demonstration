@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2, 3]
+        shardIndex: [1, 2]
     steps:
       - uses: actions/checkout@v4.2.2
 
@@ -34,7 +34,7 @@ jobs:
         shell: bash
       
       - name: Install Correct Yarn Version
-        run: yarn set version 4.8.1
+        run: yarn set version 4.9.1
         shell: bash
 
       - name: Install dependencies
@@ -55,7 +55,7 @@ jobs:
           CURRENTS_PROJECT_ID: ${{ secrets.CURRENTS_PROJECT_ID }}
           BASE_URL: ${{ vars.BASE_URL }}
           HOME: /root
-        run: yarn playwright test --shard=${{ matrix.shardIndex }}/3
+        run: yarn playwright test --shard=${{ matrix.shardIndex }}/2
         continue-on-error: true
 
       - name: Upload test results
@@ -78,7 +78,7 @@ jobs:
         shell: bash
       
       - name: Install Correct Yarn Version
-        run: yarn set version 4.8.1
+        run: yarn set version 4.9.1
         shell: bash
 
       - name: Install dependencies
