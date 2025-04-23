@@ -42,7 +42,6 @@ async function createUnsignedState() {
 
 async function loginAndSaveState(browserName: 'chromium' | 'firefox' | 'webkit') {
   const authFilePath = path.join(authDir, `auth-${browserName}.json`);
-
   console.log(`🔑 Starting login with ${browserName}...`);
   const browserTypeMap = { chromium, firefox, webkit };
   const browserLauncher = browserTypeMap[browserName];
@@ -65,29 +64,30 @@ async function loginAndSaveState(browserName: 'chromium' | 'firefox' | 'webkit')
     await passwordInput.fill(process.env.USER_PASSWORD!, { timeout: 40000 });
     await page.getByRole('button', { name: 'Continue' }).click();
 
-    try {
-      await page.waitForURL('**/tenant/**', { waitUntil: 'commit' });
-
-      console.log(`✅ Login successful with ${browserName}! Saving state...`);
-      await context.storageState({ path: authFilePath });
-    } catch (error) {
-      console.error(`❌ Login with ${browserName} failed! Issue: ${error}`);
-      await page.screenshot({ path: path.join(authDir, `redirect-fail-${browserName}.png`) });
-    }
+    await page.waitForURL('**/tenant/**', { waitUntil: 'commit', timeout: 30000 });
 
     // Failsafe
     const imageError = page.getByRole('img', { name: 'Error image' });
     const errorHeader = page.getByText('Sorry, aliens have stolen our server');
-
     const isErrorImageVisible = await imageError.isVisible().catch(() => false);
     const isErrorHeaderVisible = await errorHeader.isVisible().catch(() => false);
 
     if (isErrorImageVisible || isErrorHeaderVisible) {
-      console.error(`⛔ Cookies error detected with ${browserName} login`);
+      console.error(`⛔ Cookies/server error detected with ${browserName} login`);
       await page.screenshot({ path: path.join(authDir, `error-${browserName}.png`) });
       throw new Error(`Login error when using ${browserName} to login`);
     }
+
+    await context.storageState({ path: authFilePath });
+    if (!fs.existsSync(authFilePath)) {
+      throw new Error(`❌ Auth file not created: ${authFilePath}`);
+    }
+    console.log(`✅ Auth file created: ${authFilePath}`);
   } catch (error) {
+    console.error(`❌ Login with ${browserName} failed! Issue: ${error}`);
+    await page.screenshot({ path: path.join(authDir, `login-fail-${browserName}.png`) });
+    throw error;
+  } finally {
     await browser.close();
   }
 }
