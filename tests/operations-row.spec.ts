@@ -104,7 +104,7 @@ test.describe('Operations page validation @regression', () => {
     await operationPage.clicksSamePageFooter_ValidatesSpinner();
   });
 });
-test.describe('Negative tests: Inserts invalid data in operation input inputs and goes to invalid results page, validates error message', () => {
+test.describe('Negative tests: Invalid data, wrong operations page validation of error message', () => {
   test.beforeEach(async ({ operationPage, dashboardPage }) => {
     await operationPage.goesToOperationsWait(dashboardPage);
   });
