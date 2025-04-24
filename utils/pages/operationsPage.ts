@@ -486,9 +486,13 @@ export class operationPageCommands {
     const newUrl = url.toString();
     console.log(`Navigating to page ${pageNumber} via URL: ${newUrl}`);
 
-    await this.page.goto(newUrl);
+    try {
+      await this.page.goto(newUrl, { waitUntil: 'networkidle' });
+    } catch (e: any) {
+      console.warn('Navigation aborted as expected for invalid page:', e.message);
+    }
 
-    await this.page.waitForURL(newUrl);
+    await this.page.waitForURL(newUrl, { timeout: 5000 });
     await expect(this.page.locator('#tableBody')).not.toBeVisible();
     await expect(this.page.getByRole('img', { name: 'No results for this filter' })).toBeVisible();
 

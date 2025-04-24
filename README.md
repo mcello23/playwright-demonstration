@@ -17,7 +17,7 @@ corepack enable
 # Install
 yarn
 
-# Test execution for shards (1-3)
+# Test execution for shards (1-2)
 yarn test --shard=1
 
 # Open PW UI
