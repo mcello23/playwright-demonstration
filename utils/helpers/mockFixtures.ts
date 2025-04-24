@@ -19,18 +19,29 @@ export class MockCommands {
     const statusCode = options.statusCode;
     const message = options.message || `Simulating error ${statusCode}`;
     const contentType = options.contentType || 'application/json';
+    const endpoint = options.endpoint;
 
-    await this.page.route(options.endpoint, (route: Route) => {
-      route.fulfill({
-        status: statusCode,
-        contentType: contentType,
-        body: JSON.stringify({
-          error: true,
-          message: message,
-          code: statusCode,
-        }),
-      });
-    });
+    await this.page.route(
+      endpoint,
+      async (route: Route) => {
+        console.log(
+          `\n MOCKING: Intercepting ${route.request().method()} ${route.request().url()} -> Mocking ${statusCode}`
+        );
+
+        await route.fulfill({
+          status: statusCode,
+          contentType: contentType,
+          body: JSON.stringify({
+            error: true,
+            message: message,
+            code: statusCode,
+          }),
+        });
+
+        await this.page.unroute(endpoint);
+      },
+      { times: 1 }
+    );
   }
 
   @stepPOM('Listens for error messages in console')

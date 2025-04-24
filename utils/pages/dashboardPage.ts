@@ -146,11 +146,10 @@ export class dashboardCommands {
 
   @stepPOM('Validates charts after calendar selection')
   async validateChartsAfterCalendarSelection(rscHelpers: rscCommands) {
-    await rscHelpers.waitForMultipleRSCResponses(1);
-
     const count = await this.chartsDashboard.count();
     expect(count).toBeGreaterThanOrEqual(2);
     expect(count).toBeLessThanOrEqual(3);
+    await rscHelpers.waitForMultipleRSCResponses(1);
   }
 
   @stepPOM('Fills date input with random date and validates its value')

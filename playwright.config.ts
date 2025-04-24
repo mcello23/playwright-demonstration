@@ -122,7 +122,7 @@ export default defineConfig({
   testDir: './tests',
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 1 : 3,
+  workers: process.env.CI ? 1 : 2,
   shard: process.env.CI ? { total: 2, current: 1 } : undefined,
   fullyParallel: false,
   reporter: reporters,

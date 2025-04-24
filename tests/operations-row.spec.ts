@@ -98,15 +98,29 @@ test.describe('Operations page validation @regression', () => {
     await operationPage.goesToRandomURL_ValidatesFooter();
   });
 
-  test("Clicks on footer page and validates that the loading doesn't show anymore @regression", async ({
+  test('Clicks on number page of footer and validates that the spinner disappears @regression', async ({
     operationPage,
   }) => {
-    await operationPage.clicksSamePage();
+    await operationPage.clicksSamePageFooter_ValidatesSpinner();
   });
-
-  test('Negative test: Navigates to unexistent results page of Operations and validates error message', async ({
+});
+test.describe('Negative tests: Inserts invalid data in operation input inputs and goes to invalid results page, validates error message', () => {
+  test.beforeEach(async ({ operationPage, dashboardPage }) => {
+    await operationPage.goesToOperationsWait(dashboardPage);
+  });
+  test('Navigates to unexistent results page of Operations and validates error message', async ({
     operationPage,
   }) => {
     await operationPage.goesToRandomURL_ValidatesError();
+  });
+
+  test('Inserts random data in input search bar and returns error image', async ({
+    operationPage,
+  }) => {
+    await operationPage.inputsRandomName_ValidatesError();
+  });
+
+  test('Inserts random date in input search and returns error image', async ({ operationPage }) => {
+    await operationPage.inputsInvalidDateRange_ValidatesError();
   });
 });

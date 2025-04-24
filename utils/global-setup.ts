@@ -116,7 +116,6 @@ async function handleBrowsersBasedOnSharding(config: FullConfig) {
       await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox')]);
     }
   } else {
-    // Se não houver sharding, executa para ambos
     console.log(`⚙️ No sharding configured. Executing login for Chromium and Firefox.`);
     await Promise.all([loginAndSaveState('chromium'), loginAndSaveState('firefox')]);
   }

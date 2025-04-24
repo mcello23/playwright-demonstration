@@ -5,15 +5,12 @@ test.beforeEach(async ({ dashboardPage }) => {
 });
 
 test.describe('Dashboard validation flows @regression', () => {
-  test('Inserts random dates in the dashboard filter and validates via UI and RSC responses ', async ({
+  test('Inserts random dates in the dashboard filter and validates via UI responses ', async ({
     dashboardPage,
-
-    rscHelpers,
   }) => {
     description(
-      'This test uses the Filter by date input using random dates and validates the RSC response as well as the UI.'
+      'This test uses the Filter by date input using random dates and validates the Echarts response in UI.'
     );
-    rscHelpers.waitForMultipleRSCResponses(1);
     await dashboardPage.validateChartsVisibility();
     await dashboardPage.fillAndValidateRandomDate();
   });

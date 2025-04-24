@@ -54,10 +54,13 @@ test.describe('Happy Path: Navigates to all IDV pages, validating URLs, HREF val
   });
 });
 
-test.describe('Negative tests', () => {
-  test('Goes to a wrong URL and validates the 404 page', async ({ errorPage, missingString }) => {
+test.describe('Negative tests: 404 real page validation plus return home validation', () => {
+  test.beforeEach(async ({ errorPage }) => {
     await errorPage.navigateToWrongURL();
     await errorPage.validatesOldErrorPage();
+  });
+
+  test('Goes to a wrong URL and validates the 404 page', async ({ missingString }) => {
     await missingString.validateMissingString();
   });
 
@@ -65,8 +68,6 @@ test.describe('Negative tests', () => {
     errorPage,
     dashboardPage,
   }) => {
-    await errorPage.navigateToWrongURL();
-    await errorPage.validatesOldErrorPage();
     await errorPage.clicksOnErrorButtonSeesLanding(dashboardPage);
   });
 });

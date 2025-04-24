@@ -119,7 +119,7 @@ export class operationPageCommands {
     await expect(this.page.getByText(emailRegex).nth(2)).toBeVisible();
 
     // Type format
-    const typeOnboarding = this.page.locator('[data-test="table-row-0"]').getByText('Onboarding');
+    const typeOnboarding = this.page.locator('[data-test="table-row-0"]').getByText(/Onboarding/);
     await expect(typeOnboarding).toBeVisible();
     // Onboarding steps format
     const steps = this.page
@@ -504,8 +504,48 @@ export class operationPageCommands {
     console.log('Error message is visible');
   }
 
-  @stepPOM('Navigates to invalid URL and validates error message')
-  async clicksSamePage() {
+  @stepPOM('Inputs an invalid name and validates error message')
+  async inputsRandomName_ValidatesError() {
+    const randomName = faker.person.fullName();
+    await this.page.locator('[data-test="filter-by-search"]').fill(randomName);
+    await expect(this.page.locator('#tableBody')).not.toBeVisible();
+    await expect(this.page.getByRole('img', { name: 'No results for this filter' })).toBeVisible();
+
+    await expect(this.page.locator('[data-test="empty-state-test"] div').first())
+      .toMatchAriaSnapshot(`
+      - img "No results for this filter image"
+      - paragraph: No results found for this filter
+      - paragraph: Try adjusting the filters or check back later for new results
+      `);
+
+    console.log('Error message is visible');
+  }
+
+  @stepPOM('Inputs an invalid date range and validates error message')
+  async inputsInvalidDateRange_ValidatesError() {
+    const invalidDateRange = '01/01/1990 - 31/12/1994';
+
+    console.log(`Inputting invalid date range: ${invalidDateRange}`);
+
+    const dateInput = this.page.locator('[data-test="filter-by-date"]');
+    await dateInput.fill(invalidDateRange);
+    await this.page.mouse.click(0, 0);
+
+    await expect(this.page.locator('#tableBody')).not.toBeVisible({ timeout: 10000 });
+    await expect(this.page.getByRole('img', { name: 'No results for this filter' })).toBeVisible();
+
+    await expect(this.page.locator('[data-test="empty-state-test"] div').first())
+      .toMatchAriaSnapshot(`
+      - img "No results for this filter image"
+      - paragraph: No results found for this filter
+      - paragraph: Try adjusting the filters or check back later for new results
+      `);
+
+    console.log('Error message is visible');
+  }
+
+  @stepPOM('Clicks on footer page and validates that the loading spinner is not visible')
+  async clicksSamePageFooter_ValidatesSpinner() {
     await this.page.locator('[data-test="page-1"]').click();
     await expect(this.page.locator('.facephi-ui-spinner__spinner')).not.toBeVisible();
   }

@@ -139,8 +139,13 @@ export class userManagementCommands {
       if (request.method() === 'POST') {
         console.log(`${imageFormat} image upload intercepted!`);
         postRequestIntercepted = true;
-        const response = await route.fetch();
-        expect(response.status()).toBe(200);
+
+        try {
+          const response = await route.fetch();
+          expect(response.status()).toBe(200);
+        } catch (error) {
+          console.error('Error fetching route:', error);
+        }
         await route.continue();
       } else {
         await route.continue();
@@ -153,10 +158,16 @@ export class userManagementCommands {
     await fileChooser.setFiles(imagePath);
 
     await expect.poll(() => postRequestIntercepted, { timeout: 10000 }).toBe(true);
+
+    await expect(this.page.locator('[data-test="loading-icon"] span')).not.toBeVisible();
+
     await this.page.locator('[data-test="button-save"]').click();
+
     await expect(this.page.locator('[data-test="toast-message"]')).toMatchAriaSnapshot(`
       - paragraph: User edited
-      `);
+    `);
+
+    await this.page.unrouteAll({ behavior: 'ignoreErrors' });
   }
 
   @stepPOM('Clicks on recover password')

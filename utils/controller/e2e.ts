@@ -63,12 +63,10 @@ export const test = baseTest.extend<CustomFixtures>({
     });
     // afterEach cleanup logic here
   },
-
   loginPage: async ({ page }: { page: Page }, use: (loginPage: loginCommands) => Promise<void>) => {
     const login = new loginCommands(page);
     await use(login);
   },
-
   operationPage: async (
     { page }: { page: Page },
     use: (operationPage: operationPageCommands) => Promise<void>
@@ -76,17 +74,14 @@ export const test = baseTest.extend<CustomFixtures>({
     const operation = new operationPageCommands(page);
     await use(operation);
   },
-
   apiHelpers: async ({ page }: { page: Page }, use: (api: apiCommands) => Promise<void>) => {
     const api = new apiCommands(page);
     await use(api);
   },
-
   rscHelpers: async ({ page }: { page: Page }, use: (rsc: rscCommands) => Promise<void>) => {
     const rsc = new rscCommands(page);
     await use(rsc);
   },
-
   dashboardPage: async (
     { page }: { page: Page },
     use: (dashboardPage: dashboardCommands) => Promise<void>
@@ -94,7 +89,6 @@ export const test = baseTest.extend<CustomFixtures>({
     const dashboard = new dashboardCommands(page);
     await use(dashboard);
   },
-
   calendarHelper: async (
     { page }: { page: Page },
     use: (calendar: CalendarCommands) => Promise<void>
@@ -102,7 +96,6 @@ export const test = baseTest.extend<CustomFixtures>({
     const calendar = new CalendarCommands(page, new Date());
     await use(calendar);
   },
-
   operationsAndDasbhaord: async (
     { page }: { page: Page },
     use: (operationsAndDasbhaord: DashboardAndOperationNavigation) => Promise<void>
@@ -110,7 +103,6 @@ export const test = baseTest.extend<CustomFixtures>({
     const operationsAndDasbhaord = new DashboardAndOperationNavigation(page);
     await use(operationsAndDasbhaord);
   },
-
   antifraudAndRules: async (
     { page }: { page: Page },
     use: (antifraudAndRules: AntifraudAndRulesNavigation) => Promise<void>
@@ -118,7 +110,6 @@ export const test = baseTest.extend<CustomFixtures>({
     const antifraudAndRules = new AntifraudAndRulesNavigation(page);
     await use(antifraudAndRules);
   },
-
   flowsAndIntegrations: async (
     { page }: { page: Page },
     use: (flowsAndIntegrations: FlowsAndIntegrationsNavigation) => Promise<void>
@@ -126,7 +117,6 @@ export const test = baseTest.extend<CustomFixtures>({
     const flowsAndIntegrations = new FlowsAndIntegrationsNavigation(page);
     await use(flowsAndIntegrations);
   },
-
   identitiesNavigation: async (
     { page }: { page: Page },
     use: (identitiesNavigation: IdentitiesNavigation) => Promise<void>
@@ -134,7 +124,6 @@ export const test = baseTest.extend<CustomFixtures>({
     const identitiesNavigation = new IdentitiesNavigation(page);
     await use(identitiesNavigation);
   },
-
   userManagementNavigation: async (
     { page }: { page: Page },
     use: (userManagementNavigation: UserManagementNavigation) => Promise<void>
@@ -142,7 +131,6 @@ export const test = baseTest.extend<CustomFixtures>({
     const userManagementNavigation = new UserManagementNavigation(page);
     await use(userManagementNavigation);
   },
-
   errorPage: async (
     { page }: { page: Page },
     use: (errorPage: ErrorPageNavigation) => Promise<void>
@@ -150,12 +138,10 @@ export const test = baseTest.extend<CustomFixtures>({
     const errorPage = new ErrorPageNavigation(page);
     await use(errorPage);
   },
-
   mockHelpers: async ({ page }: { page: Page }, use: (mock: MockCommands) => Promise<void>) => {
     const mock = new MockCommands(page);
     await use(mock);
   },
-
   missingString: async (
     { page }: { page: Page },
     use: (missingString: MissingStringCommand) => Promise<void>
@@ -163,7 +149,6 @@ export const test = baseTest.extend<CustomFixtures>({
     const missingString = new MissingStringCommand(page);
     await use(missingString);
   },
-
   errorCommands: async (
     { page }: { page: Page },
     use: (errorCommands: ErrorForceCommands) => Promise<void>

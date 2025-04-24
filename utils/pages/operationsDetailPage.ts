@@ -334,7 +334,7 @@ export class operationDetailCommands {
     const expectedMainTexts = ['Document front', 'Document back'];
 
     for (const text of expectedMainTexts) {
-      const textElement = this.page.locator('p', { hasText: text }).isVisible();
+      const textElement = this.page.locator('p', { hasText: text }).first().isVisible();
       expect(textElement).toBeTruthy();
     }
     const expectedSubTexts = ['Scoring', 'Checks'];

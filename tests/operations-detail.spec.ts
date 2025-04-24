@@ -6,21 +6,21 @@ test.describe('Operations page validation @regression', async () => {
     await operationPage.goesToOperationsSkipTutorial(dashboardPage);
   });
 
-  test("Enters any operation and validates it's header elements and format @smoke", async ({
+  test("Enters a random operation and validates it's header elements and format @smoke", async ({
     operationDetailPage,
   }) => {
     await operationDetailPage.entersOperationDetail_Any();
     await operationDetailPage.validatesAllHeaderElements();
   });
 
-  test('Enters a rejected operation and validates all red/unsuccessful elements @smoke', async ({
+  test('Enters a random rejected operation and validates all red/unsuccessful elements @smoke', async ({
     operationDetailPage,
   }) => {
     await operationDetailPage.entersOperationDetail_Rejected();
     await operationDetailPage.validatesErrorStatusIcons();
   });
 
-  test('Enters a successful operation and validates all green/successful elements @smoke', async ({
+  test('Enters a random successful operation and validates all green/successful elements @smoke', async ({
     operationDetailPage,
   }) => {
     await operationDetailPage.entersOperationDetail_Successful();
@@ -53,7 +53,7 @@ test.describe('Operations page validation @regression', async () => {
   ] as const;
 
   for (const section of operationSections) {
-    test(`Validates ${section.name} section in successful operation @functionality`, async ({
+    test(`Validates ${section.name} section in a random successful operation`, async ({
       page,
       operationDetailPage,
     }) => {
