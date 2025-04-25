@@ -475,59 +475,60 @@ export class operationPageCommands {
     console.log(`URL page matches pagination number ${paginationButton}`);
   }
 
-  @stepPOM('Navigates to invalid URL and validates error message')
+  @stepPOM('Navigates to invalid random page number via URL and error message')
   async goesToRandomURL_ValidatesError() {
-    const currentUrl = this.page.url();
-    const url = new URL(currentUrl);
-    const pageNumber = faker.number.int({ min: 160, max: 300 });
+    const browser = this.page.context().browser();
+    const browserName = browser?.browserType().name();
+    const isFirefox = browserName === 'firefox';
 
-    url.searchParams.set('page', pageNumber.toString());
-
-    const newUrl = url.toString();
-    console.log(`Navigating to page ${pageNumber} via URL: ${newUrl}`);
-
-    let navigationFailed = false;
-    const browserName = this.page.context().browser()?.browserType().name();
-
-    try {
-      await this.page.goto(newUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
-    } catch (e: any) {
-      navigationFailed = true;
+    if (isFirefox) {
       console.warn(
-        `Navigation potentially aborted (expected for invalid page on ${browserName}): ${e.message}`
+        '⚠️ Test not supported on Firefox due to cookies restrictions. Validation lies on Chrome.'
       );
+      return;
     }
 
-    await this.page.waitForTimeout(500);
+    const baseUrl = 'https://idv-suite.identity-platform.dev/en/tenant/idv-demo/operations';
+
+    const randomDate = faker.date.recent({ days: 7 });
+    const isoTimestamp = randomDate.toISOString();
+    const encodedTimestamp = encodeURIComponent(isoTimestamp);
+    const pageNumber = faker.number.int({ min: 160, max: 300 });
+    const newUrl = `${baseUrl}?to=${encodedTimestamp}&page=${pageNumber}`;
+
+    console.log(`Navigating to invalid URL: ${newUrl}`);
+
+    try {
+      await this.page.goto(newUrl, { waitUntil: 'commit' });
+    } catch (e: any) {
+      console.warn(`Navigation potentially aborted (expected for invalid page): ${e.message}`);
+    }
+
     console.log(`Current URL after navigation attempt: ${this.page.url()}`);
 
-    if (browserName === 'firefox' && navigationFailed) {
-      console.log('Firefox navigation aborted as expected. Skipping detailed UI validation.');
-    } else {
-      console.log(`Attempting UI validation for ${browserName}...`);
-      try {
-        await expect(this.page.locator('#tableBody')).not.toBeVisible({ timeout: 10000 });
-        await expect(
-          this.page.getByRole('img', { name: 'No results for this filter' })
-        ).toBeVisible({
-          timeout: 20000,
-        });
-        await expect(this.page.locator('[data-test="empty-state-test"] div').first())
-          .toMatchAriaSnapshot(`
-          - img "No results for this filter image"
-          - paragraph: No results found for this filter
-          - paragraph: Try adjusting the filters or check back later for new results
-          `);
-        console.log('Error message UI elements validated successfully.');
-      } catch (uiError: any) {
-        console.warn(`UI validation failed after navigation attempt. Error: ${uiError.message}`);
-      }
+    console.log(`Attempting UI validation for error state...`);
+    try {
+      const errorImageLocator = this.page.getByRole('img', { name: 'No results for this filter' });
+      await expect(errorImageLocator).toBeVisible();
+
+      await expect(this.page.locator('#tableBody')).not.toBeVisible();
+
+      await expect(this.page.locator('[data-test="empty-state-test"] div').first())
+        .toMatchAriaSnapshot(`
+        - img "No results for this filter image"
+        - paragraph: No results found for this filter
+        - paragraph: Try adjusting the filters or check back later for new results
+        `);
+      console.log('Error message UI elements validated successfully.');
+    } catch (uiError: any) {
+      console.error(`UI validation failed after navigation attempt. Error: ${uiError.message}`);
+      throw uiError;
     }
   }
 
   @stepPOM('Inputs an invalid name and validates error message')
   async inputsRandomName_ValidatesError() {
-    const randomName = faker.person.fullName();
+    const randomName = faker.lorem.words();
     await this.page.locator('[data-test="filter-by-search"]').fill(randomName);
     await expect(this.page.locator('#tableBody')).not.toBeVisible();
     await expect(this.page.getByRole('img', { name: 'No results for this filter' })).toBeVisible();

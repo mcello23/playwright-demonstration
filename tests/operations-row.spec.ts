@@ -114,13 +114,15 @@ test.describe('Negative tests: Invalid data, wrong operations page validation of
     await operationPage.goesToRandomURL_ValidatesError();
   });
 
-  test('Inserts random data in input search bar and returns error image', async ({
+  test('Inserts random data at input search filter and returns error image', async ({
     operationPage,
   }) => {
     await operationPage.inputsRandomName_ValidatesError();
   });
 
-  test('Inserts random date in input search and returns error image', async ({ operationPage }) => {
+  test('Inserts an invalid date range at input date filter and returns error image', async ({
+    operationPage,
+  }) => {
     await operationPage.inputsInvalidDateRange_ValidatesError();
   });
 });
