@@ -95,6 +95,8 @@ test.describe('Operations page validation @regression', () => {
   test('Validates that Operations URL is randomly changed and it loads correctly, matching inserted number with pagination footer', async ({
     operationPage,
   }) => {
+    // Test in Firefox has a 'NS_BINDING_ABORTED' issue due to a Playwright bug: https://github.com/microsoft/playwright/issues/20749
+    // This test is skipped in Firefox
     await operationPage.goesToRandomURL_ValidatesFooter();
   });
 
@@ -111,7 +113,8 @@ test.describe('Negative tests: Invalid data, wrong operations page validation of
   test('Navigates to unexistent results page of Operations and validates error message', async ({
     operationPage,
   }) => {
-    // Test in Firefox has a 'NS_BINDING_ABORTED' bug due to Playwright code: https://github.com/microsoft/playwright/issues/20749
+    // Test in Firefox has a 'NS_BINDING_ABORTED' issue due to a Playwright bug: https://github.com/microsoft/playwright/issues/20749
+    // This test is skipped in Firefox
     await operationPage.goesToRandomURL_ValidatesError();
   });
 
