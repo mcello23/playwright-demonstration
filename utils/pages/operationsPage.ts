@@ -518,7 +518,7 @@ export class operationPageCommands {
 
   @stepPOM('Inputs an invalid name and validates error message')
   async inputsRandomName_ValidatesError() {
-    const randomName = faker.lorem.words();
+    const randomName = faker.lorem.words(8);
     await this.page.locator('[data-test="filter-by-search"]').fill(randomName);
     await expect(this.page.locator('#tableBody')).not.toBeVisible();
     await expect(this.page.getByRole('img', { name: 'No results for this filter' })).toBeVisible();
