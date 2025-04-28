@@ -94,12 +94,7 @@ test.describe('Operations page validation @regression', () => {
 
   test('Validates that Operations URL is randomly changed and it loads correctly, matching inserted number with pagination footer', async ({
     operationPage,
-    browserName,
   }) => {
-    test.skip(
-      browserName === 'firefox' && process.env.CI === 'true',
-      'Test not supported on Firefox in CI environment'
-    );
     await operationPage.goesToRandomURL_ValidatesFooter();
   });
 
@@ -115,7 +110,12 @@ test.describe('Negative tests: Invalid data, wrong operations page validation of
   });
   test('Navigates to unexistent results page of Operations and validates error message', async ({
     operationPage,
+    browserName,
   }) => {
+    test.skip(
+      browserName === 'firefox' && process.env.CI === 'true',
+      'Test not supported on Firefox in CI environment'
+    );
     await operationPage.goesToRandomURL_ValidatesError();
   });
 
