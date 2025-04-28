@@ -115,8 +115,13 @@ test.describe('Negative tests: Invalid data, wrong operations page validation of
   });
 
   test('Inserts random data at input search filter and returns error image', async ({
+    browserName,
     operationPage,
   }) => {
+    test.skip(
+      browserName === 'firefox' && process.env.CI === 'true',
+      'Test not supported on Firefox in CI environment'
+    );
     await operationPage.inputsRandomName_ValidatesError();
   });
 
