@@ -463,7 +463,7 @@ export class operationPageCommands {
     const newUrl = url.toString();
     console.log(`Navigating to page ${pageNumber} via URL: ${newUrl}`);
 
-    await this.page.goto(newUrl);
+    await this.page.goto(newUrl, { waitUntil: 'networkidle' });
 
     await this.page.waitForURL(newUrl);
     await this.page.waitForSelector('#tableBody', { state: 'visible' });
