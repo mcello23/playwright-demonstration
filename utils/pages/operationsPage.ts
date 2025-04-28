@@ -477,11 +477,16 @@ export class operationPageCommands {
 
   @stepPOM('Navigates to invalid random page number via URL and error message')
   async goesToRandomURL_ValidatesError() {
+    const shouldSkipTest = (browserName: string | undefined): boolean => {
+      const isFirefox = browserName === 'firefox';
+      const isCI = process.env.CI === 'true';
+      return isFirefox && isCI;
+    };
+
     const browser = this.page.context().browser();
     const browserName = browser?.browserType().name();
-    const isFirefox = browserName === 'firefox';
 
-    if (isFirefox) {
+    if (shouldSkipTest(browserName)) {
       console.warn(
         '⚠️ Test not supported on Firefox due to cookies restrictions. Validation lies on Chrome.'
       );
