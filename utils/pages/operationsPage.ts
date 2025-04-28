@@ -463,7 +463,7 @@ export class operationPageCommands {
     const newUrl = url.toString();
     console.log(`Navigating to page ${pageNumber} via URL: ${newUrl}`);
 
-    await this.page.goto(newUrl, { waitUntil: 'networkidle' });
+    await this.page.goto(newUrl);
 
     await this.page.waitForURL(newUrl);
     await this.page.waitForSelector('#tableBody', { state: 'visible' });
@@ -477,14 +477,6 @@ export class operationPageCommands {
 
   @stepPOM('Navigates to invalid random page number via URL and error message')
   async goesToRandomURL_ValidatesError() {
-    const browser = this.page.context().browser();
-    const browserName = browser?.browserType().name();
-
-    if (browserName === 'firefox' && process.env.CI === 'true') {
-      console.warn('⚠️ Test not supported on Firefox due to cookies restrictions. Skipping test.');
-      return;
-    }
-
     const baseUrl = 'https://idv-suite.identity-platform.dev/en/tenant/idv-demo/operations';
 
     const randomDate = faker.date.recent({ days: 7 });
