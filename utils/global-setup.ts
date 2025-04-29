@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const requiredEnvVars = ['USER_EMAIL', 'USER_PASSWORD', 'BASE_URL'];
+const requiredEnvVars = ['USER_EMAIL', 'USER_TEST_PASSWORD', 'BASE_URL'];
 requiredEnvVars.forEach((varName) => {
   if (!process.env[varName]) {
     throw new Error(`❌ Missing environment variable: ${varName}`);
@@ -61,7 +61,7 @@ async function loginAndSaveState(browserName: 'chromium' | 'firefox') {
 
     const passwordInput = page.getByRole('textbox', { name: 'Password' });
     await passwordInput.waitFor({ state: 'visible' });
-    await passwordInput.fill(process.env.USER_PASSWORD!, { timeout: 40000 });
+    await passwordInput.fill(process.env.USER_TEST_PASSWORD!, { timeout: 40000 });
     await page.getByRole('button', { name: 'Continue' }).click();
 
     await page.waitForURL('**/tenant/**', { waitUntil: 'commit', timeout: 30000 });

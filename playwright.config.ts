@@ -129,8 +129,6 @@ export default defineConfig({
   globalSetup: path.resolve(__dirname, 'utils/global-setup.ts'),
   use: {
     baseURL: 'https://idv-suite.identity-platform.dev/en',
-    viewport: { width: 1280, height: 720 },
-    ignoreHTTPSErrors: true,
     permissions: ['geolocation'],
     timezoneId: 'Europe/Paris',
   },
@@ -144,6 +142,8 @@ export default defineConfig({
         trace: 'on',
         screenshot: 'on',
         video: 'retain-on-failure',
+        viewport: { width: 1920, height: 1080 },
+        ignoreHTTPSErrors: true,
       },
     },
     {
@@ -154,6 +154,8 @@ export default defineConfig({
         trace: 'on',
         screenshot: 'on',
         video: 'retain-on-failure',
+        viewport: { width: 1920, height: 1080 },
+        ignoreHTTPSErrors: true,
       },
     },
     // {

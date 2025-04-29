@@ -48,7 +48,6 @@ jobs:
       - name: Run Playwright tests separated by browser
         env:
           USER_EMAIL: ${{ secrets.USER_EMAIL }}
-          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
           USER_TEST_EMAIL: ${{ secrets.USER_TEST_EMAIL }}
           USER_TEST_PASSWORD: ${{ secrets.USER_TEST_PASSWORD }}
           CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}

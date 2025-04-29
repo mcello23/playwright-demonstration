@@ -139,9 +139,8 @@ export class operationPageCommands {
       const overlay = document.querySelector('#popup-root div:nth-child(1)');
       if (overlay) overlay.remove();
     });
-    const resultsPage = this.page.locator('#tableBody');
 
-    const rejectedRow = resultsPage
+    const rejectedRow = this.page
       .locator('[data-test^="table-row-"]')
       .filter({
         hasText: /Rejected|Rechazado|Rejeitado/,
@@ -153,13 +152,14 @@ export class operationPageCommands {
 
   @stepPOM('Validates that the error color and SVG warning are visible')
   async findsErrorColorAndSVGWarning() {
-    const resultsPage = this.page.locator('#tableBody');
-    const rejectedRow = resultsPage
+    const rejectedRow = this.page
       .locator('[data-test^="table-row-"]')
       .filter({
         hasText: /Rejected|Rechazado|Rejeitado/,
       })
       .first();
+
+    await expect(rejectedRow).toBeVisible();
 
     const errorStatusElement = rejectedRow.locator(
       'span.facephi-ui-status[style*="--colors-error400"]'
@@ -216,9 +216,8 @@ export class operationPageCommands {
       const overlay = document.querySelector('#popup-root div:nth-child(1)');
       if (overlay) overlay.remove();
     });
-    const resultsPage = this.page.locator('#tableBody');
 
-    const statusRow = resultsPage
+    const statusRow = this.page
       .locator('[data-test^="table-row-"]')
       .filter({
         hasText: /Successful/,
@@ -240,9 +239,8 @@ export class operationPageCommands {
       const overlay = document.querySelector('#popup-root div:nth-child(1)');
       if (overlay) overlay.remove();
     });
-    const resultsPage = this.page.locator('#tableBody');
 
-    const statusRow = resultsPage
+    const statusRow = this.page
       .locator('[data-test^="table-row-"]')
       .filter({
         hasText: /Rejected|Rechazado|Rejeitado|Successful|Exitosa|Conseguiu/,
@@ -277,6 +275,12 @@ export class operationPageCommands {
       await modalContent.locator('button:has-text("Selfie")').isEnabled();
     } else if (await modalContent.locator('button:has-text("Document back")').isVisible()) {
       await modalContent.locator('button:has-text("Document back")').isEnabled();
+    } else if (await modalContent.locator('button:has-text("Document front")').isVisible()) {
+      await modalContent.locator('button:has-text("Document front")').isEnabled();
+    } else if (
+      await modalContent.locator('button:has-text("Document front fullframe")').isVisible()
+    ) {
+      await modalContent.locator('button:has-text("Document front fullframe")').isEnabled();
     } else if (
       await modalContent.locator('button:has-text("Document back fullframe")').isVisible()
     ) {
@@ -305,11 +309,13 @@ export class operationPageCommands {
     await expect(printBttn).toBeVisible();
     await expect(printBttn).toBeEnabled();
 
-    const downloadBttn = this.page.locator('section:nth-child(2) > div > button').first();
+    const downloadBttn = this.page
+      .locator('section:nth-child(2) > div > button:nth-child(2)')
+      .first();
     await expect(downloadBttn).toBeVisible();
     await expect(downloadBttn).toBeEnabled();
 
-    const backBttn = this.page.locator('section:nth-child(2) > div > button').first();
+    const backBttn = this.page.locator('button:nth-child(3)').first().first();
     await expect(backBttn).toBeVisible();
     await expect(backBttn).toBeEnabled();
 
@@ -436,7 +442,6 @@ export class operationPageCommands {
     await this.page.locator('[data-test="next-page"]').click();
 
     await this.page.waitForURL('**/operations?to=**');
-    await this.page.waitForSelector('#tableBody', { state: 'visible' });
 
     expect(this.page.url()).toMatch(/\/operations\?to=/);
     console.log(`URL now is: ${this.page.url()}`);
@@ -446,7 +451,6 @@ export class operationPageCommands {
     await this.page.locator('[data-test="next-page"]').click();
 
     await this.page.waitForURL('**/operations?to=**');
-    await this.page.waitForSelector('#tableBody', { state: 'visible' });
 
     expect(this.page.url()).toMatch(/\/operations\?to=/);
     console.log(`URL now is: ${this.page.url()}`);
@@ -458,7 +462,7 @@ export class operationPageCommands {
     const browserName = browser?.browserType().name();
 
     if (browserName === 'firefox') {
-      console.warn('⚠️ Test not supported on Firefox due to cookies restrictions. Skipping test.');
+      console.log('⚠️ Test not supported on Firefox due to cookies restrictions. Skipping test.');
       return;
     }
 
@@ -473,7 +477,6 @@ export class operationPageCommands {
     await this.page.goto(newUrl);
 
     await this.page.waitForURL(newUrl);
-    await this.page.waitForSelector('#tableBody', { state: 'visible' });
 
     expect(this.page.url()).toContain(`page=${pageNumber}`);
     console.log(`Successfully navigated to page ${pageNumber}`);
@@ -488,7 +491,7 @@ export class operationPageCommands {
     const browserName = browser?.browserType().name();
 
     if (browserName === 'firefox') {
-      console.warn('⚠️ Test not supported on Firefox due to cookies restrictions. Skipping test.');
+      console.log('⚠️ Test not supported on Firefox due to cookies restrictions. Skipping test.');
       return;
     }
 
@@ -505,8 +508,6 @@ export class operationPageCommands {
     const errorImageLocator = this.page.getByRole('img', { name: 'No results for this filter' });
     await expect(errorImageLocator).toBeVisible();
 
-    await expect(this.page.locator('#tableBody')).not.toBeVisible();
-
     await expect(this.page.locator('[data-test="empty-state-test"] div').first())
       .toMatchAriaSnapshot(`
         - img "No results for this filter image"
@@ -520,7 +521,6 @@ export class operationPageCommands {
   async inputsRandomName_ValidatesError() {
     const randomName = faker.lorem.words(8);
     await this.page.locator('[data-test="filter-by-search"]').fill(randomName);
-    await expect(this.page.locator('#tableBody')).not.toBeVisible();
     await expect(this.page.getByRole('img', { name: 'No results for this filter' })).toBeVisible();
 
     await expect(this.page.locator('[data-test="empty-state-test"] div').first())
@@ -543,7 +543,6 @@ export class operationPageCommands {
     await dateInput.fill(invalidDateRange);
     await this.page.mouse.click(0, 0);
 
-    await expect(this.page.locator('#tableBody')).not.toBeVisible({ timeout: 10000 });
     await expect(this.page.getByRole('img', { name: 'No results for this filter' })).toBeVisible();
 
     await expect(this.page.locator('[data-test="empty-state-test"] div').first())

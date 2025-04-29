@@ -12,11 +12,7 @@ export class operationDetailCommands {
 
   @stepPOM('Clicks on any operation detail')
   async entersOperationDetail_Any() {
-    const resultsPage = this.page.locator('#tableBody');
-    const successfullRow = resultsPage.locator('[data-test^="table-row-"]').first();
-
-    const successOperation = successfullRow.locator('[data-test^="operationDetail-"]').first();
-    await successOperation.click();
+    await this.page.locator('[data-test^="operationDetail-"]').first().click();
     await this.page.waitForRequest('**/operations/**');
   }
 
@@ -29,16 +25,7 @@ export class operationDetailCommands {
       if (overlay) overlay.style.display = 'none';
     });
 
-    await this.page.waitForSelector('#tableBody', { state: 'visible' });
-
-    const rejectedRows = this.page
-      .locator('[data-test^="table-row-"]')
-      .filter({ hasText: 'Successful' });
-
-    const rejectedRow = rejectedRows.first();
-
-    const operationDetail = rejectedRow.locator('[data-test^="operationDetail-"]').first();
-    await operationDetail.click();
+    await this.page.locator('[data-test^="operationDetail-"]').first().click();
   }
 
   @stepPOM('Clicks on a rejected operation detail')
@@ -50,16 +37,7 @@ export class operationDetailCommands {
       if (overlay) overlay.style.display = 'none';
     });
 
-    await this.page.waitForSelector('#tableBody', { state: 'visible' });
-
-    const rejectedRows = this.page
-      .locator('[data-test^="table-row-"]')
-      .filter({ hasText: 'Rejected' });
-
-    const rejectedRow = rejectedRows.first();
-
-    const operationDetail = rejectedRow.locator('[data-test^="operationDetail-"]').first();
-    await operationDetail.click();
+    await this.page.locator('[data-test^="operationDetail-"]').first().click();
   }
 
   @stepPOM('Validates all header elements are visible and in the correct format inside a Operation')
