@@ -1,7 +1,7 @@
 # Playwright E2E Testing
 
 <p align="left">
- <a href="https://curly-spork-6ky5gr3.pages.github.io"><img src="https://img.shields.io/badge/E2E_Tests_Report-Allure-blue" alt="E2E Report Link"></a>
+ <a href="https://mcello23.github.io/playwright-demonstration"><img src="https://img.shields.io/badge/E2E_Tests_Report-Allure-blue" alt="E2E Report Link"></a>
 </p>
 
 Testing IDV with PW (API / UI)
